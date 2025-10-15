@@ -32,7 +32,14 @@ export class UserEntity extends BaseEntity {
   })
   role: UserRole; // Nombre de la columna será 'role'
 
-  
+  //Columna para soft-delete
   @DeleteDateColumn({ nullable: true })
   deletedAt?: Date;
+
+  //Columna para token de recuperación de contraseña
+  @Column({ type: 'text', nullable: true })
+  resetPasswordToken?: string | null; 
+
+  @Column({ type: 'timestamp', nullable: true })
+  resetPasswordExpires?: Date | null;
 }

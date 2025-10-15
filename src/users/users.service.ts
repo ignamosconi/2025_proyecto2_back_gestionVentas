@@ -12,13 +12,16 @@ import { UserResponseDto } from './dto/user-response.dto';
 import { validatePasswordStrength } from './helpers/validatePasswordStrength';
 import { UserRole } from './helpers/enum.roles';
 import { IUsersService } from './interfaces/users.service.interface';
-
+import type { IMailerService } from 'src/mailer/interfaces/mailer.service.interface';
 
 @Injectable()
 export class UsersService implements IUsersService{
   constructor(
     @Inject('IUserRepository')
     private readonly userRepository: IUserRepository,
+
+    @Inject('IMailerService')
+    private readonly mailerService: IMailerService,
   ) { }
 
   private toUserResponse(user: UserEntity): UserResponseDto {
@@ -49,38 +52,53 @@ export class UsersService implements IUsersService{
 
 
   // Registro público (solo EMPLOYEE)
-async registerAsEmployee(body: RegisterEmployeeDTO): Promise<UserResponseDto> {
-  validatePasswordStrength(body.password, body.email, body.firstName, body.lastName);
+  async registerAsEmployee(body: RegisterEmployeeDTO): Promise<UserResponseDto> {
+    validatePasswordStrength(body.password, body.email, body.firstName, body.lastName);
 
-  if (await this.userRepository.findByEmail(body.email)) {
-    throw new BadRequestException('Ya existe un usuario con ese email');
+    if (await this.userRepository.findByEmail(body.email)) {
+      throw new BadRequestException('Ya existe un usuario con ese email');
+    }
+
+    const user = new UserEntity();
+    Object.assign(user, body);
+    user.password = hashSync(user.password, 10);
+    user.role = UserRole.EMPLOYEE; // Forzamos EMPLOYEE
+
+    const savedUser = await this.userRepository.save(user);
+
+    // Enviar correo de bienvenida
+    await this.mailerService.sendMail(
+      savedUser.email,
+      '¡Bienvenido a la plataforma!',
+      `<h1>Hola ${savedUser.firstName} 👋</h1><p>Gracias por registrarte como empleado.</p>`
+    );
+
+    return this.toUserResponse(savedUser);
   }
 
-  const user = new UserEntity();
-  Object.assign(user, body);
-  user.password = hashSync(user.password, 10);
-  user.role = UserRole.EMPLOYEE; // 🔒 Forzamos EMPLOYEE
+  // Registro por OWNER (puede ser OWNER o EMPLOYEE)
+  async registerByOwner(body: RegisterEmployeeOwnerDTO): Promise<UserResponseDto> {
+    validatePasswordStrength(body.password, body.email, body.firstName, body.lastName);
 
-  const savedUser = await this.userRepository.save(user);
-  return this.toUserResponse(savedUser);
-}
+    if (await this.userRepository.findByEmail(body.email)) {
+      throw new BadRequestException('Ya existe un usuario con ese email');
+    }
 
-// Registro por OWNER (puede ser OWNER o EMPLOYEE)
-async registerByOwner(body: RegisterEmployeeOwnerDTO): Promise<UserResponseDto> {
-  validatePasswordStrength(body.password, body.email, body.firstName, body.lastName);
+    const user = new UserEntity();
+    Object.assign(user, body);
+    user.password = hashSync(user.password, 10);
+    user.role = body.role ?? UserRole.EMPLOYEE; // si no lo pasa, es EMPLOYEE
 
-  if (await this.userRepository.findByEmail(body.email)) {
-    throw new BadRequestException('Ya existe un usuario con ese email');
+    const savedUser = await this.userRepository.save(user);
+
+    //Enviar correo de bienvenida
+    await this.mailerService.sendMail(
+      savedUser.email,
+      '¡Bienvenido!',
+      `<h1>Hola ${savedUser.firstName}</h1><p>Tu cuenta fue creada por un OWNER.</p>`
+    );
+    return this.toUserResponse(savedUser);
   }
-
-  const user = new UserEntity();
-  Object.assign(user, body);
-  user.password = hashSync(user.password, 10);
-  user.role = body.role ?? UserRole.EMPLOYEE; // si no lo pasa, es EMPLOYEE
-
-  const savedUser = await this.userRepository.save(user);
-  return this.toUserResponse(savedUser);
-}
 
   async update(id: number, body: UpdateUserDTO): Promise<UserResponseDto> {
     //Todos los atributos son opcionales al actualizar. 
@@ -116,5 +134,38 @@ async registerByOwner(body: RegisterEmployeeOwnerDTO): Promise<UserResponseDto> 
     if (!result) throw new NotFoundException('No se pudo restaurar el usuario. Verifica que la ID exista.');
 
     return { message: `Usuario ID N°${id} restaurado correctamente.` };
+  }
+
+  
+  /*
+    RECUPERACIÓN CONTRASEÑA
+  */
+  async setResetPasswordToken(userId: number, token: string, expires: Date): Promise<void> {
+    await this.userRepository.update(userId, {
+      resetPasswordToken: token,
+      resetPasswordExpires: expires,
+    });
+  }
+
+  async findByResetToken(token: string): Promise<UserEntity | null> {
+    return this.userRepository.findByResetToken(token);
+  }
+
+  async updatePassword(userId: number, newPassword: string): Promise<void> {
+    const hashed = hashSync(newPassword, 10);
+    await this.userRepository.update(userId, {
+      password: hashed,
+      resetPasswordToken: null,
+      resetPasswordExpires: null,
+    });
+  }
+
+  async sendPasswordResetEmail(email: string, resetLink: string): Promise<void> {
+    await this.mailerService.sendMail(
+      email,
+      'Recuperación de contraseña',
+      `<p>Para restablecer tu contraseña haz clic en el siguiente enlace:</p>
+      <a href="${resetLink}">${resetLink}</a>`
+    );
   }
 }

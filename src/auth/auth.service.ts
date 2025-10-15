@@ -3,6 +3,7 @@
 import {
   Inject,
   Injectable,
+  NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
 import { LoginDTO } from './dto/login.dto';
@@ -11,11 +12,16 @@ import { compareSync } from 'bcrypt';
 import { UsersService } from '../users/users.service';
 import type { IJwtService } from './interfaces/jwt.service.interface';
 import { IAuthService } from './interfaces/auth.service.interface';
+import { randomBytes } from 'crypto';
+import { addHours, isAfter } from 'date-fns';
+import { validatePasswordStrength } from 'src/users/helpers/validatePasswordStrength';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class AuthService implements IAuthService {
   constructor(
     private readonly usersService: UsersService,
+    private readonly configService: ConfigService,
     @Inject('IJwtService') private readonly jwtService: IJwtService,
   ) {}
 
@@ -46,5 +52,50 @@ export class AuthService implements IAuthService {
         'refresh',
       ),
     };
+  }
+
+
+
+  /*
+    OLVIDÉ MI CONTRASEÑA
+  */
+  async forgotPassword(email: string): Promise<{ message: string }> {
+    const user = await this.usersService.findByEmail(email);
+    if (!user) throw new NotFoundException('Usuario no encontrado.');
+
+    // Generar token aleatorio
+    const token = randomBytes(32).toString('hex');
+
+    // Guardar token y fecha de expiración (1 hora)
+    const expires = addHours(new Date(), 1);
+
+    await this.usersService.setResetPasswordToken(user.id, token, expires);
+
+    // Obtener URL del frontend desde .env
+    const frontendUrl = this.configService.get<string>('FRONTEND_URL');
+
+    // Construir link dinámico
+    const resetLink = `${frontendUrl}/reset-password?token=${token}`;
+
+    await this.usersService.sendPasswordResetEmail(user.email, resetLink);
+
+    return { message: 'Email para restablecer contraseña enviado.' };
+  }
+
+  async resetPassword(token: string, newPassword: string): Promise<{ message: string }> {
+    const user = await this.usersService.findByResetToken(token);
+    if (!user) throw new UnauthorizedException('Token inválido o expirado.');
+
+    if (!user.resetPasswordExpires || isAfter(new Date(), user.resetPasswordExpires)) {
+      throw new UnauthorizedException('Token expirado.');
+    }
+
+    // Validar nuevo password
+    validatePasswordStrength(newPassword, user.email, user.firstName, user.lastName);
+
+    // Cambiar contraseña y limpiar token
+    await this.usersService.updatePassword(user.id, newPassword);
+
+    return { message: 'Contraseña actualizada correctamente.' };
   }
 }
