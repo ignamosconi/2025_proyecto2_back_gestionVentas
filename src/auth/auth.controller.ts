@@ -7,10 +7,11 @@ import { AuthGuard } from './guards/auth.guard';
 import type { RequestWithUser } from './interfaces/request-with-user.interface';
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { RefreshToken } from './decorators/refresh-token.decorator';
+import { IAuthController } from './interfaces/auth.controller.interface';
 
 @ApiTags('Auth') // Agrupa en Swagger
 @Controller('auth')
-export class AuthController {
+export class AuthController implements IAuthController {
   constructor(private readonly service: AuthService) {}
 
   @ApiOperation({ summary: 'Inicia sesión y obtiene tokens' })
@@ -44,7 +45,7 @@ export class AuthController {
   @ApiResponse({ status: 200, description: 'Datos del usuario actual' })
   @UseGuards(AuthGuard)
   @Get('me')
-  me(@Req() req: RequestWithUser) {
+  async me(@Req() req: RequestWithUser) {   //No tiene DTO porque es de práctica.
     return {
       id: req.user.id,
       email: req.user.email,

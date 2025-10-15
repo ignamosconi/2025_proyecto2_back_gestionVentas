@@ -1,4 +1,4 @@
-import { BaseEntity, Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { BaseEntity, Column, DeleteDateColumn, Entity, PrimaryGeneratedColumn } from 'typeorm';
 import { UserRole } from '../helpers/enum.roles';
 
 @Entity('users')
@@ -32,4 +32,7 @@ export class UserEntity extends BaseEntity {
   })
   role: UserRole; // Nombre de la columna será 'role'
 
+  
+  @DeleteDateColumn({ nullable: true })
+  deletedAt?: Date;
 }

@@ -7,7 +7,12 @@ import { JwtService } from './jwt.service';
   inyectarlo en cualquier otro módulo (como UsersService o AuthGuard).
 */
 @Module({
-  providers: [JwtService],
-  exports: [JwtService],
+  providers: [
+    {
+      provide: 'IJwtService',
+      useClass: JwtService,
+    }
+  ],
+  exports: ['IJwtService'],
 })
 export class JwtModule {}

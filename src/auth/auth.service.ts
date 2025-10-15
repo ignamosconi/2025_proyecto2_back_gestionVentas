@@ -1,21 +1,22 @@
 //ARCHIVO: auth.service.ts
 
 import {
-  BadRequestException,
+  Inject,
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
 import { LoginDTO } from './dto/login.dto';
 import { TokenPairDTO } from './dto/token-pair.dto';
-import { JwtService } from './jwt/jwt.service';
 import { compareSync } from 'bcrypt';
 import { UsersService } from '../users/users.service';
+import type { IJwtService } from './interfaces/jwt.service.interface';
+import { IAuthService } from './interfaces/auth.service.interface';
 
 @Injectable()
-export class AuthService {
+export class AuthService implements IAuthService {
   constructor(
     private readonly usersService: UsersService,
-    private readonly jwtService: JwtService,
+    @Inject('IJwtService') private readonly jwtService: IJwtService,
   ) {}
 
   async tokens(token: string) {

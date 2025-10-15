@@ -11,6 +11,7 @@ import { UserResponseDto } from './dto/user-response.dto';
 import { RolesGuard } from 'src/auth/guards/roles.guard';
 import { UserRole } from './helpers/enum.roles';
 import { Roles } from 'src/auth/decorators/roles.decorator';
+import { IUsersController } from './interfaces/users.controller.interface';
 
 /*
   PROTECCIÓN DE ENDPOINTS:
@@ -20,16 +21,26 @@ import { Roles } from 'src/auth/decorators/roles.decorator';
 */
 
 @Controller('users')
-export class UsersController {
+export class UsersController implements IUsersController {
   constructor(private service: UsersService) {}
 
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Lista todos los usuarios' })
-  @UseGuards(AuthGuard)
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles(UserRole.OWNER)
   @Get()
   findAll(): Promise<UserResponseDto[]> {
     console.log("Obteniendo todos los ususarios")
     return this.service.findAll();
+  }
+
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Lista de usuarios soft-deleted' })
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles(UserRole.OWNER)
+  @Get('/deleted')
+  findAllDeleted(): Promise<UserResponseDto[]> {
+    return this.service.findAllDeleted();
   }
 
   //REGISTER "PÚBLICO", sólo crea usuarios con rol EMPLOYEE.
@@ -44,14 +55,15 @@ export class UsersController {
   @ApiOperation({ summary: 'OWNER crea un usuario (puede ser EMPLOYEE u OWNER)' })
   @UseGuards(AuthGuard, RolesGuard)
   @Roles(UserRole.OWNER)
-  @Post('register-role')
+  @Post('register-owner')
   createUserByOwner(@Body() body: RegisterEmployeeOwnerDTO): Promise<UserResponseDto> {
     return this.service.registerByOwner(body);
   }
 
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Actualiza un usuario' })
-  @UseGuards(AuthGuard)
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles(UserRole.OWNER)
   @Patch('/:id')
   update(@Param('id', ParseIntPipe) id: number, @Body() body: UpdateUserDTO): Promise<UserResponseDto> {
     console.log('Actualizando usuario')
@@ -65,6 +77,16 @@ export class UsersController {
   @Delete('/:id')
   delete(@Param('id', ParseIntPipe) id: number): Promise<MessageResponseDTO> {
     console.log('Eliminando usuario')
-    return this.service.delete(id);
+    return this.service.softDelete(id);
+  }
+
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Restaura un usuario soft-deleted' })
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles(UserRole.OWNER)
+  @Patch('/:id/restore')
+  restore(@Param('id', ParseIntPipe) id: number): Promise<MessageResponseDTO> {
+    console.log('Restaurando usuario')
+    return this.service.restore(id);
   }
 }

@@ -1,10 +1,10 @@
 //ARCHIVO: users.repository.ts
 import { Injectable, InternalServerErrorException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { Repository } from "typeorm";
+import { IsNull, Not, Repository } from "typeorm";
 
 import { UserEntity } from "../entities/user.entity";
-import { IUserRepository } from "./users.repository.interface";
+import { IUserRepository } from "../interfaces/users.repository.interface";
 
 @Injectable()
 export class UserRepository implements IUserRepository {
@@ -20,6 +20,19 @@ export class UserRepository implements IUserRepository {
             return this.repo.find();
         } catch (error) {
             throw new InternalServerErrorException('Error al obtener todos los usuarios. ' + error);
+        }
+    }
+
+    async findAllDeleted(): Promise<UserEntity[]> {
+        try {
+            return this.repo.find({
+            withDeleted: true,
+            where: {
+                deletedAt: Not(IsNull()),
+            },
+            });
+        } catch (error) {
+            throw new InternalServerErrorException('Error al obtener usuarios eliminados. ' + error);
         }
     }
 
@@ -57,7 +70,7 @@ export class UserRepository implements IUserRepository {
     }
   }
 
-  async delete(id: number): Promise<boolean> {
+  async softDelete(id: number): Promise<boolean> {
     try {
         /*
             El método delete() de TypeORM devuelve un objeto DeleteResult. Su atributo .affected 
@@ -68,10 +81,19 @@ export class UserRepository implements IUserRepository {
                 true: significa que el resultado fue 1, entonces se eliminó exitosamente.
                 false: Significa que el resultado fue 0, entonces no se eliminó exitosamente.
         */
-        const result = await this.repo.delete(id);
-        return (result.affected !== 0);
+        const result = await this.repo.softDelete(id);
+        return result.affected !== 0;
     } catch (error) {
-        throw new InternalServerErrorException('Error al eliminar el usuario. ' + error);
+        throw new InternalServerErrorException('Error al eliminar (soft-delete) el usuario. ' + error);
+    }
+  }
+
+  async restore(id: number): Promise<boolean> {
+    try {
+        const result = await this.repo.restore(id);
+        return result.affected !== 0;
+    } catch (error) {
+        throw new InternalServerErrorException('Error al restaurar el usuario. ' + error);
     }
   }
 }

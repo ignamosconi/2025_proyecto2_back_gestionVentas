@@ -8,9 +8,10 @@ import * as jwt from 'jsonwebtoken';
 import { Payload } from '../interfaces/payload.interface';
 import { ConfigService } from '@nestjs/config';
 import { JwtConfigTokens } from '../interfaces/jwt-config.interface';
+import { IJwtService } from '../interfaces/jwt.service.interface';
 
 @Injectable()
-export class JwtService {
+export class JwtService implements IJwtService {
   //Creamos una config vacía con 2 tokens, los cuales tendrán c/u un secret y un expiresIn.
   readonly config: JwtConfigTokens;
 

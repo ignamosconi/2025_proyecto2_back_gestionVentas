@@ -1,8 +1,9 @@
 //ARCHIVO: auth.middleware.ts
-import { CanActivate, ExecutionContext, Injectable, UnauthorizedException } from "@nestjs/common";
+import { CanActivate, ExecutionContext, Inject, Injectable, UnauthorizedException } from "@nestjs/common";
 import { JwtService } from "../jwt/jwt.service";
 import { UsersService } from "../../users/users.service";
 import { RequestWithUser } from "../interfaces/request-with-user.interface";
+import type { IJwtService } from "../interfaces/jwt.service.interface";
 
 /*
   Cuando usemos @UseGuards(AuthGuard), Nest va a ejecutar el método canActivate() antes de entrar
@@ -16,7 +17,7 @@ import { RequestWithUser } from "../interfaces/request-with-user.interface";
 export class AuthGuard implements CanActivate {
   
   constructor(
-    private jwtService: JwtService, 
+    @Inject('IJwtService') private readonly jwtService: IJwtService,
     private usersService: UsersService
   ) {}
   

@@ -5,16 +5,17 @@ import { RegisterEmployeeOwnerDTO } from './dto/register-employee-owner.dto';
 
 import { UserEntity } from './entities/user.entity';
 import { hashSync} from 'bcrypt';
-import type { IUserRepository } from './repositories/users.repository.interface';
+import type { IUserRepository } from './interfaces/users.repository.interface';
 import { UpdateUserDTO } from './dto/update-user.dto';
 import { MessageResponseDTO } from '../auth/dto/message-response.dto';
 import { UserResponseDto } from './dto/user-response.dto';
 import { validatePasswordStrength } from './helpers/validatePasswordStrength';
 import { UserRole } from './helpers/enum.roles';
+import { IUsersService } from './interfaces/users.service.interface';
 
 
 @Injectable()
-export class UsersService {
+export class UsersService implements IUsersService{
   constructor(
     @Inject('IUserRepository')
     private readonly userRepository: IUserRepository,
@@ -26,6 +27,7 @@ export class UsersService {
       email: user.email,
       firstName: user.firstName,
       lastName: user.lastName,
+      role: user.role,
     };
   }
 
@@ -33,6 +35,11 @@ export class UsersService {
   async findAll(): Promise<UserResponseDto[]> {
     const users =  await this.userRepository.findAll()
     return users.map(this.toUserResponse)
+  }
+
+  async findAllDeleted(): Promise<UserResponseDto[]> {
+    const deletedUsers = await this.userRepository.findAllDeleted();
+    return deletedUsers.map(this.toUserResponse);
   }
 
   //Usado por auth.service en login()
@@ -97,10 +104,17 @@ async registerByOwner(body: RegisterEmployeeOwnerDTO): Promise<UserResponseDto> 
     return this.toUserResponse(actualizado)  
   }
 
-  async delete(id: number): Promise<MessageResponseDTO> {
-    const result = await this.userRepository.delete(id)
+  async softDelete(id: number): Promise<MessageResponseDTO> {
+    const result = await this.userRepository.softDelete(id)
     if (!result) throw new NotFoundException('No se pudo eliminar el usuario. Verifica que la ID exista.');
     
     return { message: 'Usuario ID N°' + id + ' eliminado.'  }
+  }
+
+  async restore(id: number): Promise<MessageResponseDTO> {
+    const result = await this.userRepository.restore(id);
+    if (!result) throw new NotFoundException('No se pudo restaurar el usuario. Verifica que la ID exista.');
+
+    return { message: `Usuario ID N°${id} restaurado correctamente.` };
   }
 }
