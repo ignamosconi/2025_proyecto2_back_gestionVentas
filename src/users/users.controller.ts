@@ -40,6 +40,7 @@ export class UsersController implements IUsersController {
   @Roles(UserRole.OWNER)
   @Get('/deleted')
   findAllDeleted(): Promise<UserResponseDto[]> {
+    console.log("Obteniendo todos los ususarios soft-deleted")
     return this.service.findAllDeleted();
   }
 
@@ -47,6 +48,7 @@ export class UsersController implements IUsersController {
   @ApiOperation({ summary: 'Registro público de usuario EMPLOYEE' })
   @Post('register')
   registerPublic(@Body() body: RegisterEmployeeDTO): Promise<UserResponseDto> {
+    console.log("Registrando al usuario" + body.email + "con rol EMPLOYEE")
     return this.service.registerAsEmployee(body);
   }
 
@@ -57,6 +59,7 @@ export class UsersController implements IUsersController {
   @Roles(UserRole.OWNER)
   @Post('register-owner')
   createUserByOwner(@Body() body: RegisterEmployeeOwnerDTO): Promise<UserResponseDto> {
+    console.log("OWNER registrando al usuario " + body.email +"con rol "+ body.role)
     return this.service.registerByOwner(body);
   }
 
@@ -76,7 +79,7 @@ export class UsersController implements IUsersController {
   @Roles(UserRole.OWNER)
   @Delete('/:id')
   delete(@Param('id', ParseIntPipe) id: number): Promise<MessageResponseDTO> {
-    console.log('Eliminando usuario')
+    console.log('Soft-deleting al usuario')
     return this.service.softDelete(id);
   }
 
