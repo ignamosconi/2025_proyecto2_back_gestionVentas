@@ -96,4 +96,11 @@ export class UserRepository implements IUserRepository {
         throw new InternalServerErrorException('Error al restaurar el usuario. ' + error);
     }
   }
+  async findByResetToken(token: string): Promise<UserEntity | null> {
+    try {
+        return await this.repo.findOne({ where: { resetPasswordToken: token } });
+    } catch (error) {
+        throw new InternalServerErrorException('Error al buscar usuario por token de reseteo. ' + error);
+    }
+  }
 }

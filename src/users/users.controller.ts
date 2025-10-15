@@ -48,7 +48,7 @@ export class UsersController implements IUsersController {
   @ApiOperation({ summary: 'Registro público de usuario EMPLOYEE' })
   @Post('register')
   registerPublic(@Body() body: RegisterEmployeeDTO): Promise<UserResponseDto> {
-    console.log("Registrando al usuario" + body.email + "con rol EMPLOYEE")
+    console.log("Registrando al usuario" + body.email + " con rol EMPLOYEE")
     return this.service.registerAsEmployee(body);
   }
 
@@ -59,7 +59,7 @@ export class UsersController implements IUsersController {
   @Roles(UserRole.OWNER)
   @Post('register-owner')
   createUserByOwner(@Body() body: RegisterEmployeeOwnerDTO): Promise<UserResponseDto> {
-    console.log("OWNER registrando al usuario " + body.email +"con rol "+ body.role)
+    console.log("OWNER registrando al usuario " + body.email +" con rol "+ body.role)
     return this.service.registerByOwner(body);
   }
 

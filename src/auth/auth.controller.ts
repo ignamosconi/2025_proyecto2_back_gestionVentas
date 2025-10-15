@@ -8,6 +8,8 @@ import type { RequestWithUser } from './interfaces/request-with-user.interface';
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { RefreshToken } from './decorators/refresh-token.decorator';
 import { IAuthController } from './interfaces/auth.controller.interface';
+import { ForgotPasswordDTO } from './dto/forgot-password.dto';
+import { ResetPasswordDTO } from './dto/reset-password.dto';
 
 @ApiTags('Auth') // Agrupa en Swagger
 @Controller('auth')
@@ -55,5 +57,23 @@ export class AuthController implements IAuthController {
       phone: req.user.phone,
       role: req.user.role,
     }
+  }
+
+
+
+  /*
+    OLVIDÉ MI CONTRASEÑA
+  */
+ 
+  // Endpoint para solicitar recuperación de contraseña
+  @Post('forgot-password')
+  async forgotPassword(@Body() body: ForgotPasswordDTO) {
+    return this.service.forgotPassword(body.email);
+  }
+
+  // Endpoint para resetear contraseña usando token
+  @Post('reset-password')
+  async resetPassword(@Body() body: ResetPasswordDTO) {
+    return this.service.resetPassword(body.token, body.password);
   }
 }
