@@ -1,0 +1,8 @@
+*   [33md941656[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mdevelop[m[33m, [m[1;31morigin/develop[m[33m)[m Merge pull request #1 from ignamosconi/feature/usuarios-autenticacion
+[31m|[m[32m\[m  
+[31m|[m * [33m21d37d3[m[33m ([m[1;31morigin/feature/usuarios-autenticacion[m[33m, [m[1;32mfeature/usuarios-autenticacion[m[33m)[m Añadido prefijo global /api
+[31m|[m * [33mb042180[m Añadido de soft-delete e interfaces
+[31m|[m * [33mc9c6dac[m Feature: Usuarios, roles y tokens
+[31m|[m[31m/[m  
+* [33mbbe853f[m[33m ([m[1;31morigin/main[m[33m, [m[1;32mmain[m[33m)[m Mensaje de WIP
+* [33mafdd558[m Initial commit
