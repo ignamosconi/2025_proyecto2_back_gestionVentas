@@ -30,15 +30,16 @@ import {
     MARCA_LINEA_REPOSITORY, // ⬅️ AÑADIDO
     MARCA_LINEA_SERVICE,    // ⬅️ AÑADIDO
     // PRODUCTOS_VALIDATOR 
-} from './constants'; 
+} from '../constants'; 
 
 // 4. Interfaces y Módulos de Soporte
 import { AuthModule } from 'src/auth/auth.module';
 import { UsersModule } from 'src/users/users.module';
+import { Producto } from 'src/producto/entities/producto.entity';
 
 @Module({
     imports: [
-        TypeOrmModule.forFeature([Marca, MarcaLinea, Linea]),
+        TypeOrmModule.forFeature([Marca, MarcaLinea, Linea, Producto]),
         AuthModule,
         UsersModule
     ],

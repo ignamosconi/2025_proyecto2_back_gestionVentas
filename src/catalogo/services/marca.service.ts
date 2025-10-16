@@ -9,11 +9,11 @@ import {
 } from '@nestjs/common';
 
 // Interfaz que implementamos
-import { MarcaServiceInterface } from './interfaces/marca.service-interface';
+import { MarcaServiceInterface } from './interfaces/marca.service.interface';
 
 // ⚠️ Rutas de importación importantes:
 import { MarcaRepositoryInterface } from '../repositories/interfaces/marca.repository.interface';
-import { MARCA_REPOSITORY } from '../constants'; // ✅ Asumo que agregaste PRODUCTOS_VALIDATOR a constants
+import { MARCA_REPOSITORY } from '../../constants'; // ✅ Asumo que agregaste PRODUCTOS_VALIDATOR a constants
 //import { ProductosValidatorInterface } from '../../productos/interfaces/productos.validator.interface'; // ✅ Asumo la ruta de la interfaz de validación
 
 import { Marca } from '../entities/marca.entity';
