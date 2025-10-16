@@ -36,6 +36,10 @@ export class UsersService implements IUsersService {
       firstName: user.firstName,
       lastName: user.lastName,
       role: user.role,
+      address: user.address,
+      phone: user.phone,
+      createdAt: user.createdAt,
+      updatedAt: user.updatedAt,
     };
   }
 
