@@ -1,5 +1,3 @@
-// src/catalogo/entities/linea.entity.ts
-
 import {
   Entity,
   PrimaryGeneratedColumn,
@@ -8,13 +6,14 @@ import {
   OneToMany,
   DeleteDateColumn,
 } from 'typeorm';
-import { MarcaLinea } from './marca-linea.entity'; // Asumo que cambiaste el nombre de BrandLine a MarcaLinea
+import { MarcaLinea } from './marca-linea.entity';
+import { Producto } from 'src/producto/entities/producto.entity';
 
 @Entity('linea')
 @Index(['nombre'], { unique: true })
 export class Linea {
   @PrimaryGeneratedColumn()
-  id: number;
+  id: number; //DEUDA TECNICA: Cambiar a idLinea para homogeneizar con Producto
 
   @Column({ length: 100 })
   nombre: string;
@@ -22,11 +21,9 @@ export class Linea {
   @DeleteDateColumn({ name: 'deleted_at', type: 'timestamp', nullable: true })
   deletedAt: Date;
 
-  // --- Relación con Marca (Many-to-Many a través de MarcaLinea) ---
-  
-  // CORRECCIÓN CLAVE:
-  // 1. El objeto de instancia es 'marcaLinea'.
-  // 2. La propiedad que apunta de MarcaLinea a Linea es 'linea' (asumo por tu convención).
   @OneToMany(() => MarcaLinea, (marcaLinea) => marcaLinea.linea)
-  marcaLineas: MarcaLinea[]; // Cambié el nombre de la propiedad a marcaLineas para mayor claridad
+  marcaLineas: MarcaLinea[];
+
+  @OneToMany(() => Producto, (producto) => producto.linea)
+  productos: Producto[];
 }

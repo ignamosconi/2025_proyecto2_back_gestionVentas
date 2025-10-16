@@ -10,15 +10,15 @@ import { CreateMarcaLineaDto } from '../dto/create-marca-linea.dto';
 import { MarcaLinea } from '../entities/marca-linea.entity';
 import { MarcaLineaServiceInterface } from './interfaces/marca-linea.service.interface';
 import { MarcaLineaRepositoryInterface } from '../repositories/interfaces/marca-linea.repository.interface';
-import { LineaServiceInterface } from './interfaces/linea.service-interface';
-import { MarcaServiceInterface } from './interfaces/marca.service-interface';
+import { LineaServiceInterface } from './interfaces/linea.service.interface';
+import { MarcaServiceInterface } from './interfaces/marca.service.interface';
 
 // Asegúrate de que los tokens de inyección sigan siendo válidos
 import { 
     MARCA_LINEA_REPOSITORY, 
     LINEA_SERVICE, 
     MARCA_SERVICE,
-} from '../constants'; 
+} from '../../constants'; 
 
 @Injectable()
 export class MarcaLineaService implements MarcaLineaServiceInterface {

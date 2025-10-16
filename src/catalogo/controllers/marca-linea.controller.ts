@@ -13,7 +13,7 @@ import {
 
 import { MarcaLinea } from '../entities/marca-linea.entity';
 import { MarcaLineaServiceInterface } from '../services/interfaces/marca-linea.service.interface';
-import { MARCA_LINEA_SERVICE } from '../constants';
+import { MARCA_LINEA_SERVICE } from '../../constants';
 import { CreateMarcaLineaDto } from '../dto/create-marca-linea.dto';
 import { UserRole } from '../../users/helpers/enum.roles'; 
 import { AuthGuard } from '../../auth/guards/auth.guard';
