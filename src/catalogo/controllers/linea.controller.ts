@@ -31,7 +31,7 @@ import { Roles } from '../../auth/decorators/roles.decorator';
 
 // 🛡️ Aplicamos los Guards a TODO el controlador por defecto
 @UseGuards(AuthGuard, RolesGuard) 
-@Controller('linea') 
+@Controller('lineas') 
 export class LineaController {
     constructor(
         @Inject(LINEA_SERVICE)
