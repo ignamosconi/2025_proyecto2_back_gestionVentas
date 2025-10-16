@@ -44,6 +44,13 @@ export class Marca {
    * Habilita la 'eliminación suave' (soft delete).
    * TypeORM filtra automáticamente las entidades con esta columna rellenada en las consultas 'find'.
    */
+
+  @Column({ type: 'timestamp',  default: () => 'CURRENT_TIMESTAMP' })
+  createdAt: Date;
+
+  @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP', onUpdate: 'CURRENT_TIMESTAMP' })
+  updatedAt: Date;
+
   @DeleteDateColumn({ name: 'deleted_at', type: 'timestamp', nullable: true })
   deletedAt: Date;
 

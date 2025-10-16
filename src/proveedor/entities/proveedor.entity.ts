@@ -17,6 +17,12 @@ export class Proveedor {
     @Column({ nullable: true })
     telefono: string;
 
+    @Column({ type: 'timestamp',  default: () => 'CURRENT_TIMESTAMP' })
+    createdAt: Date;
+    
+    @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP', onUpdate: 'CURRENT_TIMESTAMP' })
+    updatedAt: Date;
+
     @DeleteDateColumn({ nullable: true })
     deletedAt?: Date; // Marca de soft delete
 

@@ -35,6 +35,12 @@ export class Producto {
     @Column({ type: 'varchar', length: 500, nullable: true })
     foto: string;
 
+    @Column({ type: 'timestamp',  default: () => 'CURRENT_TIMESTAMP' })
+    createdAt: Date;
+
+    @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP', onUpdate: 'CURRENT_TIMESTAMP' })
+    updatedAt: Date;
+
     @DeleteDateColumn({ name: 'deleted_at' })
     deletedAt?: Date;
 
