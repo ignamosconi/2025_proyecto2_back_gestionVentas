@@ -12,7 +12,8 @@ import {
     HttpStatus,
     UseGuards, 
     ParseIntPipe,
-    Inject 
+    Inject, 
+    Put
 } from '@nestjs/common';
 
 // ⚠️ Importación de la enumeración (usando la ruta correcta en tu proyecto)
@@ -29,7 +30,7 @@ import { UpdateMarcaDto } from '../dto/update-marca.dto';
 import { Marca } from '../entities/marca.entity';
 
 
-@Controller('marca') 
+@Controller('marcas') 
 @UseGuards(AuthGuard, RolesGuard)
 export class MarcaController implements MarcaControllerInterface { 
     constructor(
@@ -59,7 +60,7 @@ export class MarcaController implements MarcaControllerInterface {
     }
 
     // PATCH /marcas/:id (Actualización: Permitido solo a OWNER)
-    @Patch(':id')
+    @Put(':id')
     @Roles(UserRole.OWNER) // 🔑 Usando el rol 'OWNER'
     update(
         @Param('id', ParseIntPipe) id: string, 

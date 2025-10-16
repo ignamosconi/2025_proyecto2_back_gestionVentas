@@ -1,6 +1,6 @@
 // src/catalogo/dto/create-marca.dto.ts
 
-import { IsNotEmpty, IsString, MaxLength } from 'class-validator';
+import { IsNotEmpty, IsOptional, IsString, MaxLength } from 'class-validator';
 
 export class CreateMarcaDto {
   
@@ -19,6 +19,6 @@ export class CreateMarcaDto {
    */
   @IsString({ message: 'La descripción debe ser una cadena de texto.' })
   @MaxLength(500, { message: 'La descripción no puede exceder los 500 caracteres.' })
-  // @IsOptional() // Si la descripción es opcional. Si no se incluye esta línea, es implícitamente opcional.
-  descripcion: string;
+  @IsOptional()
+  descripcion?: string;
 }
