@@ -8,9 +8,9 @@ import {
     ConflictException,
 } from '@nestjs/common';
 
-import { LineaServiceInterface } from './interfaces/linea.service-interface';
+import { LineaServiceInterface } from './interfaces/linea.service.interface';
 import { LineaRepositoryInterface } from '../repositories/interfaces/linea.repository.interface';
-import { LINEA_REPOSITORY } from '../constants'; 
+import { LINEA_REPOSITORY } from '../../constants'; 
 import { Linea } from '../entities/linea.entity';
 import { CreateLineaDto } from '../dto/create-linea.dto';
 import { UpdateLineaDto } from '../dto/update-linea.dto';

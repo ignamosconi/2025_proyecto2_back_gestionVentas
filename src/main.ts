@@ -23,8 +23,8 @@ async function bootstrap() {
 
   //Documentación de endpoints con Swagger → http://localhost:3000/docs
   const config = new DocumentBuilder()
-    .setTitle('IMC App API')
-    .setDescription('API para autenticación, usuarios y cálculo de IMC')
+    .setTitle('Ventas App API')
+    .setDescription('API para autenticación, usuarios y gestión de ventas')
     .setVersion('1.0')
     .addBearerAuth() // Si usás JWT
     .build();
