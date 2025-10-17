@@ -1,4 +1,4 @@
-//ARCHIVO: register-owner.dto.ts
+//ARCHIVO: register-employee-owner.dto.ts
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { IsEmail, IsEnum, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 import { UserRole } from '../helpers/enum.roles';

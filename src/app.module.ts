@@ -5,6 +5,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
+import { S3Module } from './s3/s3.module';
 import { CatalogoModule } from './catalogo/catalogo.module';
 import { ProveedorModule } from './proveedor/proveedor.module';
 import { ProductoModule } from './producto/producto.module';
@@ -36,8 +37,9 @@ import { ProductoModule } from './producto/producto.module';
     CatalogoModule,
     UsersModule,
     AuthModule,
+    S3Module,
     ProveedorModule,
-    ProductoModule
+    ProductoModule,
   ],
   controllers: [AppController],
   providers: [AppService],
