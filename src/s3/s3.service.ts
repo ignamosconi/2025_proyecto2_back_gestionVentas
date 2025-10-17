@@ -65,6 +65,25 @@ export class S3Service {
     }
   }
 
+  async fileExists(filename: string): Promise<boolean> {
+  try {
+    await this.s3.send(new HeadObjectCommand({
+      Bucket: this.bucket,
+      Key: filename,
+    }));
+    return true;
+  } catch (error) {
+    if (
+      error.name === 'NotFound' ||
+      error.Code === 'NotFound' ||
+      error.$metadata?.httpStatusCode === 404
+    ) {
+      return false;
+    }
+    throw new InternalServerErrorException('Error al verificar existencia del archivo en S3');
+  }
+}
+
   /*
     FUNCIONAMIENTO UPLOAD:
 
