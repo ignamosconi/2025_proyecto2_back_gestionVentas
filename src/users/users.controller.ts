@@ -67,7 +67,7 @@ export class UsersController implements IUsersController {
   @ApiOperation({ summary: 'Actualiza un usuario' })
   @UseGuards(AuthGuard, RolesGuard)
   @Roles(UserRole.OWNER)
-  @Patch('/:id')
+  @Post('/:id')
   update(@Param('id', ParseIntPipe) id: number, @Body() body: UpdateUserDTO): Promise<UserResponseDto> {
     console.log('Actualizando usuario')
     return this.service.update(id, body);

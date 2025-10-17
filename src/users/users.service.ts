@@ -1,10 +1,15 @@
 //ARCHIVO: users.service.ts
-import { BadRequestException, Inject, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Inject,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { RegisterEmployeeDTO } from './dto/register-employee.dto';
 import { RegisterEmployeeOwnerDTO } from './dto/register-employee-owner.dto';
 
 import { UserEntity } from './entities/user.entity';
-import { hashSync} from 'bcrypt';
+import { hashSync } from 'bcrypt';
 import type { IUserRepository } from './interfaces/users.repository.interface';
 import { UpdateUserDTO } from './dto/update-user.dto';
 import { MessageResponseDTO } from '../auth/dto/message-response.dto';
@@ -15,14 +20,14 @@ import { IUsersService } from './interfaces/users.service.interface';
 import type { IMailerService } from 'src/mailer/interfaces/mailer.service.interface';
 
 @Injectable()
-export class UsersService implements IUsersService{
+export class UsersService implements IUsersService {
   constructor(
     @Inject('IUserRepository')
     private readonly userRepository: IUserRepository,
 
     @Inject('IMailerService')
     private readonly mailerService: IMailerService,
-  ) { }
+  ) {}
 
   private toUserResponse(user: UserEntity): UserResponseDto {
     return {
@@ -31,13 +36,16 @@ export class UsersService implements IUsersService{
       firstName: user.firstName,
       lastName: user.lastName,
       role: user.role,
+      address: user.address,
+      phone: user.phone,
+      createdAt: user.createdAt,
+      updatedAt: user.updatedAt,
     };
   }
 
-
   async findAll(): Promise<UserResponseDto[]> {
-    const users =  await this.userRepository.findAll()
-    return users.map(this.toUserResponse)
+    const users = await this.userRepository.findAll();
+    return users.map(this.toUserResponse);
   }
 
   async findAllDeleted(): Promise<UserResponseDto[]> {
@@ -50,10 +58,16 @@ export class UsersService implements IUsersService{
     return await this.userRepository.findByEmail(email);
   }
 
-
   // Registro público (solo EMPLOYEE)
-  async registerAsEmployee(body: RegisterEmployeeDTO): Promise<UserResponseDto> {
-    validatePasswordStrength(body.password, body.email, body.firstName, body.lastName);
+  async registerAsEmployee(
+    body: RegisterEmployeeDTO,
+  ): Promise<UserResponseDto> {
+    validatePasswordStrength(
+      body.password,
+      body.email,
+      body.firstName,
+      body.lastName,
+    );
 
     if (await this.userRepository.findByEmail(body.email)) {
       throw new BadRequestException('Ya existe un usuario con ese email');
@@ -70,15 +84,22 @@ export class UsersService implements IUsersService{
     await this.mailerService.sendMail(
       savedUser.email,
       '¡Bienvenido a la plataforma!',
-      `<h1>Hola ${savedUser.firstName} 👋</h1><p>Gracias por registrarte como empleado.</p>`
+      `<h1>Hola ${savedUser.firstName} 👋</h1><p>Gracias por registrarte como empleado.</p>`,
     );
 
     return this.toUserResponse(savedUser);
   }
 
   // Registro por OWNER (puede ser OWNER o EMPLOYEE)
-  async registerByOwner(body: RegisterEmployeeOwnerDTO): Promise<UserResponseDto> {
-    validatePasswordStrength(body.password, body.email, body.firstName, body.lastName);
+  async registerByOwner(
+    body: RegisterEmployeeOwnerDTO,
+  ): Promise<UserResponseDto> {
+    validatePasswordStrength(
+      body.password,
+      body.email,
+      body.firstName,
+      body.lastName,
+    );
 
     if (await this.userRepository.findByEmail(body.email)) {
       throw new BadRequestException('Ya existe un usuario con ese email');
@@ -95,52 +116,68 @@ export class UsersService implements IUsersService{
     await this.mailerService.sendMail(
       savedUser.email,
       '¡Bienvenido!',
-      `<h1>Hola ${savedUser.firstName}</h1><p>Tu cuenta fue creada por un OWNER.</p>`
+      `<h1>Hola ${savedUser.firstName}</h1><p>Tu cuenta fue creada por un OWNER.</p>`,
     );
     return this.toUserResponse(savedUser);
   }
 
   async update(id: number, body: UpdateUserDTO): Promise<UserResponseDto> {
-    //Todos los atributos son opcionales al actualizar. 
+    //Todos los atributos son opcionales al actualizar.
     // Si uno de estos atributos es una contraseña nueva, vamos a:
     if (body.password) {
-      
       // Traer el usuario para tener sus datos personales
       const user = await this.userRepository.findById(id);
       if (!user) throw new NotFoundException('Usuario no encontrado');
-      
+
       // Validar la nueva contraseña con datos actuales
-      validatePasswordStrength(body.password, user.email, user.firstName, user.lastName)
+      validatePasswordStrength(
+        body.password,
+        user.email,
+        user.firstName,
+        user.lastName,
+      );
 
       //Si la contraseña es segura, la hasheamos.
       body.password = hashSync(body.password, 10);
     }
 
-    const actualizado = await this.userRepository.update(id, body)
+    const actualizado = await this.userRepository.update(id, body);
 
-    if (!actualizado) throw new NotFoundException('No se pudo actualizar el usuario. Verifica que la ID exista.')
-    return this.toUserResponse(actualizado)  
+    if (!actualizado)
+      throw new NotFoundException(
+        'No se pudo actualizar el usuario. Verifica que la ID exista.',
+      );
+    return this.toUserResponse(actualizado);
   }
 
   async softDelete(id: number): Promise<MessageResponseDTO> {
-    const result = await this.userRepository.softDelete(id)
-    if (!result) throw new NotFoundException('No se pudo eliminar el usuario. Verifica que la ID exista.');
-    
-    return { message: 'Usuario ID N°' + id + ' eliminado.'  }
+    const result = await this.userRepository.softDelete(id);
+    if (!result)
+      throw new NotFoundException(
+        'No se pudo eliminar el usuario. Verifica que la ID exista.',
+      );
+
+    return { message: 'Usuario ID N°' + id + ' eliminado.' };
   }
 
   async restore(id: number): Promise<MessageResponseDTO> {
     const result = await this.userRepository.restore(id);
-    if (!result) throw new NotFoundException('No se pudo restaurar el usuario. Verifica que la ID exista.');
+    if (!result)
+      throw new NotFoundException(
+        'No se pudo restaurar el usuario. Verifica que la ID exista.',
+      );
 
     return { message: `Usuario ID N°${id} restaurado correctamente.` };
   }
 
-  
   /*
     RECUPERACIÓN CONTRASEÑA
   */
-  async setResetPasswordToken(userId: number, token: string, expires: Date): Promise<void> {
+  async setResetPasswordToken(
+    userId: number,
+    token: string,
+    expires: Date,
+  ): Promise<void> {
     await this.userRepository.update(userId, {
       resetPasswordToken: token,
       resetPasswordExpires: expires,
@@ -160,12 +197,15 @@ export class UsersService implements IUsersService{
     });
   }
 
-  async sendPasswordResetEmail(email: string, resetLink: string): Promise<void> {
+  async sendPasswordResetEmail(
+    email: string,
+    resetLink: string,
+  ): Promise<void> {
     await this.mailerService.sendMail(
       email,
       'Recuperación de contraseña',
       `<p>Para restablecer tu contraseña haz clic en el siguiente enlace:</p>
-      <a href="${resetLink}">${resetLink}</a>`
+      <a href="${resetLink}">${resetLink}</a>`,
     );
   }
 }

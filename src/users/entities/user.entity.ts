@@ -32,6 +32,12 @@ export class UserEntity extends BaseEntity {
   })
   role: UserRole; // Nombre de la columna será 'role'
 
+  @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
+  createdAt: Date;
+
+  @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP', onUpdate: 'CURRENT_TIMESTAMP' })
+  updatedAt: Date;
+
   //Columna para soft-delete
   @DeleteDateColumn({ nullable: true })
   deletedAt?: Date;
