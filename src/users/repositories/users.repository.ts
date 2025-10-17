@@ -5,6 +5,7 @@ import { IsNull, Not, Repository } from "typeorm";
 
 import { UserEntity } from "../entities/user.entity";
 import { IUserRepository } from "../interfaces/users.repository.interface";
+import { UserRole } from "../helpers/enum.roles";
 
 @Injectable()
 export class UserRepository implements IUserRepository {
@@ -38,12 +39,16 @@ export class UserRepository implements IUserRepository {
 
     async findByEmail(email: string): Promise<UserEntity | null> {
         try {
-            return await this.repo.findOneBy({ email });
+            return await this.repo.findOne({
+                where: {
+                    email,
+                    deletedAt: IsNull(), // Si está soft-deleted, no lo mostramos
+                },
+            });
         } catch (error) {
             throw new InternalServerErrorException('Error al buscar usuario por email. ' + error);
         }
     }
-
     async findById(id: number): Promise<UserEntity | null> {
         try {
             return await this.repo.findOneBy({ id });
@@ -96,6 +101,7 @@ export class UserRepository implements IUserRepository {
         throw new InternalServerErrorException('Error al restaurar el usuario. ' + error);
     }
   }
+  
   async findByResetToken(token: string): Promise<UserEntity | null> {
     try {
         return await this.repo.findOne({ where: { resetPasswordToken: token } });
@@ -103,4 +109,20 @@ export class UserRepository implements IUserRepository {
         throw new InternalServerErrorException('Error al buscar usuario por token de reseteo. ' + error);
     }
   }
+
+    async findAllOwners(): Promise<UserEntity[]> {
+        try {
+            return this.repo.find({ where: { role: UserRole.OWNER } });
+        } catch (error) {
+            throw new InternalServerErrorException('Error al obtener usuarios DUEÑO. ' + error);
+        }
+    }
+
+    async findAllEmployees(): Promise<UserEntity[]> {
+        try {
+            return this.repo.find({ where: { role: UserRole.EMPLOYEE } });
+        } catch (error) {
+            throw new InternalServerErrorException('Error al obtener usuarios EMPLOYEE. ' + error);
+        }
+    }
 }

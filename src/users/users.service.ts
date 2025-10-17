@@ -53,6 +53,15 @@ export class UsersService implements IUsersService {
     return deletedUsers.map(this.toUserResponse);
   }
 
+  async findAllOwners(): Promise<UserEntity[]> {
+    return this.userRepository.findAllOwners();
+  }
+
+  async findAllEmployees(): Promise<UserEntity[]> {
+    return this.userRepository.findAllEmployees();
+  }
+  
+
   //Usado por auth.service en login()
   async findByEmail(email: string): Promise<UserEntity | null> {
     return await this.userRepository.findByEmail(email);

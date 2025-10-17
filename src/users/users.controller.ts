@@ -1,5 +1,5 @@
 //ARCHIVO: users.controller.ts
-import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Inject, Param, ParseIntPipe, Patch, Post, UseGuards } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { RegisterEmployeeOwnerDTO } from './dto/register-employee-owner.dto';
 import { RegisterEmployeeDTO } from './dto/register-employee.dto';
@@ -12,6 +12,7 @@ import { RolesGuard } from 'src/auth/guards/roles.guard';
 import { UserRole } from './helpers/enum.roles';
 import { Roles } from 'src/auth/decorators/roles.decorator';
 import { IUsersController } from './interfaces/users.controller.interface';
+import { IUsersService } from './interfaces/users.service.interface';
 
 /*
   PROTECCIÓN DE ENDPOINTS:
@@ -22,7 +23,9 @@ import { IUsersController } from './interfaces/users.controller.interface';
 
 @Controller('users')
 export class UsersController implements IUsersController {
-  constructor(private service: UsersService) {}
+  constructor(
+    @Inject('IUsersService') private readonly service: IUsersService
+  ) {}
 
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Lista todos los usuarios' })

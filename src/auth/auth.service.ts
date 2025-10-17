@@ -16,11 +16,12 @@ import { randomBytes } from 'crypto';
 import { addHours, isAfter } from 'date-fns';
 import { validatePasswordStrength } from 'src/users/helpers/validatePasswordStrength';
 import { ConfigService } from '@nestjs/config';
+import { IUsersService } from 'src/users/interfaces/users.service.interface';
 
 @Injectable()
 export class AuthService implements IAuthService {
   constructor(
-    private readonly usersService: UsersService,
+    @Inject('IUsersService') private readonly usersService: IUsersService,
     private readonly configService: ConfigService,
     @Inject('IJwtService') private readonly jwtService: IJwtService,
   ) {}

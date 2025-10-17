@@ -4,6 +4,7 @@ import { JwtService } from "../jwt/jwt.service";
 import { UsersService } from "../../users/users.service";
 import { RequestWithUser } from "../interfaces/request-with-user.interface";
 import type { IJwtService } from "../interfaces/jwt.service.interface";
+import { IUsersService } from "src/users/interfaces/users.service.interface";
 
 /*
   Cuando usemos @UseGuards(AuthGuard), Nest va a ejecutar el método canActivate() antes de entrar
@@ -18,7 +19,7 @@ export class AuthGuard implements CanActivate {
   
   constructor(
     @Inject('IJwtService') private readonly jwtService: IJwtService,
-    private usersService: UsersService
+    @Inject('IUsersService') private usersService: IUsersService
   ) {}
   
   async canActivate(context: ExecutionContext): Promise<boolean> {
