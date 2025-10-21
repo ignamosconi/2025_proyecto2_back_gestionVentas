@@ -23,6 +23,8 @@ import {
     MARCA_LINEA_SERVICE 
 } from '../../constants'; 
 import { UpdateStockDto } from '../dto/update-stock.dto';
+import { IUsersService } from 'src/users/interfaces/users.service.interface';
+import { IMailerService } from 'src/mailer/interfaces/mailer.service.interface';
 
 @Injectable()
 export class ProductoService implements ProductoServiceInterface {
@@ -35,6 +37,10 @@ export class ProductoService implements ProductoServiceInterface {
         private readonly lineaService: LineaServiceInterface, 
         @Inject(MARCA_LINEA_SERVICE) 
         private readonly marcaLineaService: MarcaLineaServiceInterface,
+        @Inject('IUsersService') 
+        private readonly usersService: IUsersService,
+        @Inject('IMailerService') 
+        private readonly mailerService: IMailerService,
     ) {}
     
     // ---------------------------------------------------------------------
@@ -160,13 +166,11 @@ export class ProductoService implements ProductoServiceInterface {
     async updateStock(idProducto: number, updateStockDto: UpdateStockDto): Promise<Producto> {
         const { change } = updateStockDto;
 
-        // 1️⃣ Verificar que el producto exista
         const producto = await this.productoRepository.findOneActive(idProducto);
         if (!producto) {
             throw new NotFoundException(`Producto con ID ${idProducto} no encontrado.`);
         }
 
-        // 2️⃣ Validar negocio (por ejemplo, evitar stock negativo)
         const nuevoStock = producto.stock + change;
         if (nuevoStock < 0) {
             throw new BadRequestException(
@@ -174,8 +178,34 @@ export class ProductoService implements ProductoServiceInterface {
             );
         }
 
-        // 3️⃣ Delegar la actualización real al repositorio
-        return this.productoRepository.updateStock(idProducto, change);
+        // Validar si está por debajo del límite de alerta
+        const stockBajo = nuevoStock <= producto.alertaStock;
+
+        // 1 - Actualizar el stock real
+        const productoActualizado = await this.productoRepository.updateStock(idProducto, change);
+
+        // 2 - Si hay alerta, enviar mail
+        if (stockBajo) {
+            // Obtener usuarios EMPLOYER
+            const employers = await this.usersService.findAllOwners(); // <- Inyectar este servicio
+
+            // Enviar un mail a cada uno
+            for (const user of employers) {
+                await this.mailerService.sendMail(
+                    user.email,
+                    `⚠️ Alerta de Stock Bajo: ${producto.nombre}`,
+                    `
+                    <h2>⚠️ Producto con Stock Crítico</h2>
+                    <p>El producto <strong>${producto.nombre}</strong> tiene un stock actual de <strong>${nuevoStock}</strong>.</p>
+                    <p>El umbral de alerta configurado es <strong>${producto.alertaStock}</strong>.</p>
+                    <hr/>
+                    <p>Revisá el inventario lo antes posible.</p>
+                    `
+                );
+            }
+        }
+
+        return productoActualizado;
     }
 
     async findOneActive(id: number): Promise<Producto> {

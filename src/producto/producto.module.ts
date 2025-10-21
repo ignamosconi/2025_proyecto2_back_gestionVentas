@@ -16,6 +16,9 @@ import { PRODUCTO_REPOSITORY, PRODUCTO_SERVICE } from '../constants';
 import { CatalogoModule } from '../catalogo/catalogo.module'; // Provee Marca, Línea, MarcaLinea Services
 import { AuthModule } from '../auth/auth.module'; // Provee Guards
 import { UsersModule } from '../users/users.module'; // Provee roles/UserRole
+import { UsersService } from 'src/users/users.service';
+import { MailerService } from '@nestjs-modules/mailer';
+import { MailerModule } from 'src/mailer/mailer.module';
 
 @Module({
     imports: [
@@ -26,6 +29,7 @@ import { UsersModule } from '../users/users.module'; // Provee roles/UserRole
         CatalogoModule, // Necesario para la lógica M:M (Marca/Línea)
         AuthModule,     // Necesario para AuthGuard y RolesGuard
         UsersModule,    // Necesario para los Roles
+        MailerModule,   // Usado para envío de correos a owners cuando hay bajo stock
     ],
     controllers: [
         ProductoController

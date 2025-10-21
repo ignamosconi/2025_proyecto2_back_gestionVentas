@@ -43,10 +43,11 @@ export class ProductoController implements ProductoControllerInterface {
     // US 11: Alerta de Bajo Stock (Restringido a OWNER)
     // ----------------------------------------------------
     @Get('alerta-stock')
-    @Roles(UserRole.OWNER) // 🔑 Gestión de inventario
+    @Roles(UserRole.OWNER) // Gestión de inventario
     @ApiOperation({ summary: 'US 11: Obtener productos con stock bajo.', description: 'Retorna productos donde el stock es menor o igual al umbral de alerta. Requiere rol OWNER.' })
     @ApiResponse({ status: 200, description: 'Lista de productos bajo alerta de stock.' })
     findLowStockProducts(): Promise<Producto[]> {
+        console.log('[ProductoController] GET /producto/alerta-stock');
         return this.productoService.findLowStockProducts();
     }
     
@@ -58,6 +59,7 @@ export class ProductoController implements ProductoControllerInterface {
     @ApiOperation({ summary: 'US 7: Obtener todos los productos activos.' })
     findAll(): Promise<Producto[]> {
         // No necesita @Roles si está permitido a todos los autenticados
+        console.log('[ProductoController] GET /producto');
         return this.productoService.findAll();
     }
 
@@ -65,6 +67,7 @@ export class ProductoController implements ProductoControllerInterface {
     @ApiOperation({ summary: 'US 7: Obtener un producto activo por ID.' })
     @ApiParam({ name: 'id', description: 'ID del producto', type: Number })
     findOne(@Param('id', ParseIntPipe) id: number): Promise<Producto> {
+        console.log(`[ProductoController] GET /producto/${id}`);
         return this.productoService.findOne(id);
     }
     
@@ -74,10 +77,11 @@ export class ProductoController implements ProductoControllerInterface {
 
     @Post()
     @HttpCode(HttpStatus.CREATED)
-    @Roles(UserRole.OWNER) // 🔑 Restringido a OWNER
+    @Roles(UserRole.OWNER) // Restringido a OWNER
     @ApiOperation({ summary: 'US 7 & US 10: Crear un nuevo producto.', description: 'Incluye la lógica de creación urgente de Línea (US 10).' })
     @ApiBody({ type: CreateProductoDto })
     create(@Body() data: CreateProductoDto): Promise<Producto> {
+        console.log('[ProductoController] POST /producto -> Body:', data);
         return this.productoService.create(data);
     }
 
@@ -87,17 +91,18 @@ export class ProductoController implements ProductoControllerInterface {
     
     // Usamos Patch o Put, pero Patch es común para actualizaciones parciales
     @Patch(':id') 
-    @Roles(UserRole.OWNER) // 🔑 Restringido a OWNER
+    @Roles(UserRole.OWNER) // Restringido a OWNER
     @ApiOperation({ summary: 'US 7: Actualizar un producto existente.' })
     @ApiParam({ name: 'id', description: 'ID del producto a actualizar', type: Number })
     @ApiBody({ type: UpdateProductoDto })
     update(@Param('id', ParseIntPipe) id: number, @Body() data: UpdateProductoDto): Promise<Producto> {
+        console.log(`[ProductoController] PATCH /producto/${id} -> Body:`, data);
         return this.productoService.update(id, data);
     }
 
     // PATCH /producto/:id/stock
     @Patch(':id/stock')
-    @Roles(UserRole.OWNER) // 🔑 Solo OWNER puede modificar stock
+    @Roles(UserRole.OWNER) // Solo OWNER puede modificar stock
     @ApiOperation({ 
         summary: 'US 11: Actualizar stock de un producto.',
         description: 'Suma o resta stock de un producto. Requiere rol OWNER.'
@@ -108,6 +113,7 @@ export class ProductoController implements ProductoControllerInterface {
         @Param('id', ParseIntPipe) id: number,
         @Body() updateStockDto: UpdateStockDto
     ): Promise<Producto> {
+        console.log(`[ProductoController] PATCH /producto/${id}/stock -> Body:`, updateStockDto);
         return this.productoService.updateStock(id, updateStockDto);
     }
 
@@ -118,19 +124,21 @@ export class ProductoController implements ProductoControllerInterface {
     
     @Delete(':id')
     @HttpCode(HttpStatus.NO_CONTENT) 
-    @Roles(UserRole.OWNER) // 🔑 Restringido a OWNER
+    @Roles(UserRole.OWNER) // Restringido a OWNER
     @ApiOperation({ summary: 'US 7: Eliminar lógicamente un producto (Soft Delete).' })
     @ApiParam({ name: 'id', description: 'ID del producto a eliminar', type: Number })
     softDelete(@Param('id', ParseIntPipe) id: number): Promise<void> {
+        console.log(`[ProductoController] DELETE /producto/${id}`);
         return this.productoService.softDelete(id);
     }
 
     @Patch(':id/restore') // Usamos Patch/Put para la restauración, ya que es una modificación de estado
     @HttpCode(HttpStatus.OK)
-    @Roles(UserRole.OWNER) // 🔑 Restringido a OWNER
+    @Roles(UserRole.OWNER) // Restringido a OWNER
     @ApiOperation({ summary: 'US 7: Restaurar un producto eliminado lógicamente.' })
     @ApiParam({ name: 'id', description: 'ID del producto a restaurar', type: Number })
     restore(@Param('id', ParseIntPipe) id: number): Promise<void> {
+        console.log(`[ProductoController] PATCH /producto/${id}/restore`);
         return this.productoService.restore(id);
     }
 }

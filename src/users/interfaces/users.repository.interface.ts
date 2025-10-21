@@ -6,6 +6,9 @@ export interface IUserRepository {
     findById(id: number): Promise<UserEntity | null>;
     findAll(): Promise<UserEntity[]>;
     findAllDeleted(): Promise<UserEntity[]>;
+    findByResetToken(token: string): Promise<UserEntity | null>;
+    findAllOwners(): Promise<UserEntity[]>
+    findAllEmployees(): Promise<UserEntity[]>
     
     save(user: UserEntity): Promise<UserEntity>;
     update(id: number, user: Partial<UserEntity>): Promise<UserEntity | null>;
@@ -13,5 +16,5 @@ export interface IUserRepository {
     softDelete(id: number): Promise<boolean>;
     restore(id: number): Promise<boolean>;
 
-    findByResetToken(token: string): Promise<UserEntity | null>;
+    
 }

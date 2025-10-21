@@ -33,28 +33,26 @@ export class MarcaLineaService implements MarcaLineaServiceInterface {
     ) {}
 
     async assignLineaToMarca(data: CreateMarcaLineaDto): Promise<MarcaLinea> {
-        
-        // 1. Verificar la existencia de Marca y Línea (se usan los IDs del DTO)
+        // 1. Validar existencia de marca y línea
         await Promise.all([
             this.marcaService.findOneActive(data.marcaId), 
             this.lineaService.findOneActive(data.lineaId),
         ]);
-        
-        // 2. Intentar crear la asignación y manejar el error de Clave Primaria
-        try {
-            // El Repositorio debe usar los mismos nombres (marcaId, lineaId)
-            return await this.marcaLineaRepository.create(data); 
-        } catch (error) {
-            // Manejamos el error de Clave Primaria Duplicada (PK = marcaId + lineaId)
-            if (error.code === '23505' || error.message.includes('duplicate key')) {
-                throw new ConflictException(
-                    `El vínculo (Marca ID ${data.marcaId} - Línea ID ${data.lineaId}) ya existe.`
-                );
-            }
-            throw error;
+
+        // ✅ 2. Verificar si ya existe manualmente (recomendado)
+        const existentes = await this.marcaLineaRepository.findAllByMarcaId(data.marcaId);
+        const yaExiste = existentes.some(e => e.lineaId === data.lineaId);
+        if (yaExiste) {
+            throw new ConflictException(
+                `El vínculo Marca ID ${data.marcaId} - Línea ID ${data.lineaId} ya existe.`
+            );
         }
+
+        // 3. Crear vínculo
+        return await this.marcaLineaRepository.create(data);
     }
 
+    
     async unassignLineaFromMarca(marcaId: number, lineaId: number): Promise<void> {
         // Delegamos al repositorio la eliminación del registro
         await this.marcaLineaRepository.delete(marcaId, lineaId);
