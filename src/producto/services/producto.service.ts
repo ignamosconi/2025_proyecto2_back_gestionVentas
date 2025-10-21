@@ -25,6 +25,9 @@ import {
 import { UpdateStockDto } from '../dto/update-stock.dto';
 import { IUsersService } from 'src/users/interfaces/users.service.interface';
 import { IMailerService } from 'src/mailer/interfaces/mailer.service.interface';
+import { IS3Service } from 'src/s3/interfaces/s3.service.interface';
+import { plainToInstance } from 'class-transformer';
+import { validate } from 'class-validator';
 
 @Injectable()
 export class ProductoService implements ProductoServiceInterface {
@@ -41,8 +44,10 @@ export class ProductoService implements ProductoServiceInterface {
         private readonly usersService: IUsersService,
         @Inject('IMailerService') 
         private readonly mailerService: IMailerService,
+        @Inject('IS3Service')
+        private readonly s3Service: IS3Service,
     ) {}
-    
+
     // ---------------------------------------------------------------------
     // CONSULTAS (US 7)
     // ---------------------------------------------------------------------
@@ -70,12 +75,12 @@ export class ProductoService implements ProductoServiceInterface {
     
     async create(data: CreateProductoDto): Promise<Producto> {
         // 1. Validar Marca (Debe existir)
-        await this.marcaService.findOneActive(data.marcaId);
+        await this.marcaService.findOneActive(data.idMarca);
         
         let finalLineaId: number;
 
         // 2. Lógica de Creación Urgente (US 10)
-        if (data.nombreNuevaLinea && data.lineaId) {
+        if (data.nombreNuevaLinea && data.idLinea) {
             throw new BadRequestException('Solo puede proporcionar un ID de línea existente O un nombre de línea nueva, no ambos.');
         }
 
@@ -85,7 +90,7 @@ export class ProductoService implements ProductoServiceInterface {
             const createLineaDto: CreateLineaDto = {
                 nombre: data.nombreNuevaLinea,
                 // Pasa marcaId para que LineaService cree el vínculo M:M (MarcaLinea)
-                marcaId: data.marcaId, 
+                marcaId: data.idMarca, 
             };
 
             const nuevaLinea = await this.lineaService.create(createLineaDto);
@@ -93,55 +98,193 @@ export class ProductoService implements ProductoServiceInterface {
             // Asigna el ID generado por la base de datos
             finalLineaId = nuevaLinea.id; 
             
-        } else if (data.lineaId) {
+        } else if (data.idLinea) {
             // USAR LÍNEA EXISTENTE
             
             // 2.1. Validar que la Línea exista
-            await this.lineaService.findOneActive(data.lineaId); 
+            await this.lineaService.findOneActive(data.idLinea); 
             
             // 2.2. VALIDACIÓN CRUCIAL DEL VÍNCULO M:M (MarcaLinea)
             // Obtiene todas las líneas vinculadas a la Marca
-            const vinculos = await this.marcaLineaService.findAllByMarcaId(data.marcaId);
+            const vinculos = await this.marcaLineaService.findAllByMarcaId(data.idMarca);
             
             // Chequea si la lineaId propuesta existe dentro de esos vínculos
-            const vinculoExiste = vinculos.some(vinculo => vinculo.lineaId === data.lineaId);
+            const vinculoExiste = vinculos.some(vinculo => vinculo.lineaId === data.idLinea);
 
             if (!vinculoExiste) {
                 throw new BadRequestException(
-                    `La Línea ID ${data.lineaId} no está vinculada a la Marca ID ${data.marcaId}.`
+                    `La Línea ID ${data.idLinea} no está vinculada a la Marca ID ${data.idMarca}.`
                 );
             }
             
-            finalLineaId = data.lineaId;
+            finalLineaId = data.idLinea;
             
         } else {
             throw new BadRequestException('Debe vincular el producto a una línea existente o crear una nueva (US 10).');
         }
 
         // 3. Crear el producto (limpiar DTO y agregar FKs para la persistencia)
-        const productoData: any = {
-            ...data,
-            idLinea: finalLineaId, 
-            idMarca: data.marcaId, 
-            
-            // Excluir el campo de lógica
-            nombreNuevaLinea: undefined,
+        const productoData: Partial<Producto> = {
+            nombre: data.nombre,
+            descripcion: data.descripcion,
+            precio: data.precio,
+            stock: data.stock,
+            alertaStock: data.alertaStock,
+            foto: data.foto,
+            idLinea: finalLineaId,
+            idMarca: data.idMarca,
         };
 
         return this.productoRepository.create(productoData);
     }
-    
-    async update(idProducto: number, data: UpdateProductoDto): Promise<Producto> {
-        // Validación de existencia de IDs si vienen en el DTO de actualización
-        if (data.lineaId) {
-            await this.lineaService.findOneActive(data.lineaId);
+
+    async createWithImage(body: any, file?: Express.Multer.File): Promise<Producto> {
+        // 1. Validar existencia del JSON
+        if (!body || !body.data) {
+            throw new BadRequestException('El campo "data" (JSON del producto) es obligatorio en el multipart/form-data.');
         }
-        if (data.marcaId) {
-            await this.marcaService.findOneActive(data.marcaId);
+
+        let createProductoDto: CreateProductoDto;
+        try {
+            const parsed = JSON.parse(body.data);
+            
+            // 2. Transformar y Validar manualmente
+            const object = plainToInstance(CreateProductoDto, parsed);
+            
+            const errors = await validate(object as object, { 
+                // Usamos las mismas reglas de validación
+                whitelist: true, 
+                forbidNonWhitelisted: true,
+                stopAtFirstError: false 
+            });
+
+            if (errors.length > 0) {
+                const errorMessages = errors.flatMap(error => Object.values(error.constraints || {}));
+                throw new BadRequestException(errorMessages);
+            }
+            
+            // 3. Asignar el DTO validado
+            createProductoDto = object as CreateProductoDto;
+
+        } catch (error) {
+            // Manejar errores de JSON.parse o errores de validación
+            if (error instanceof BadRequestException) {
+                throw error;
+            }
+            throw new BadRequestException('El campo "data" debe ser un string JSON válido.');
+        }
+
+        // 4. Continuar con la lógica del servicio (reutilizando el método 'create')
+        const producto = await this.create(createProductoDto); // Aquí se llama al método create(CreateProductoDto)
+
+        // 5. Si hay imagen, subirla y actualizar el producto con la URL
+        if (file) {
+            const result = await this.s3Service.uploadFile(file.buffer, file.originalname, producto.idProducto);
+            await this.productoRepository.update(producto.idProducto, { foto: result.url });
+
+            producto.foto = result.url;
+        }
+
+        return producto;
+    }
+
+    // ---------------------------------------------------------------------
+    // ACTUALIZACIÓN DE PRODUCTOS
+    // ---------------------------------------------------------------------
+    async update(idProducto: number, data: UpdateProductoDto): Promise<Producto> {
+        // 0. Encontrar el producto existente para obtener sus IDs actuales
+        // Esto es necesario si solo actualizamos una FK (ej. solo idLinea) para validar con la otra FK.
+        const productoExistente = await this.productoRepository.findOneActive(idProducto);
+
+        if (!productoExistente) {
+            throw new NotFoundException(`Producto con ID ${idProducto} no encontrado o inactivo.`);
+        }   
+    
+        // 1. Validar existencia de IDs si vienen en el DTO de actualización
+        const idLineaFinal = data.idLinea || productoExistente.idLinea; // Usar el nuevo ID o el existente
+        const idMarcaFinal = data.idMarca || productoExistente.idMarca; // Usar el nuevo ID o el existente
+
+        if (data.idLinea) {
+            // 1.1. Validar que la Línea exista
+            await this.lineaService.findOneActive(data.idLinea);
+        }
+        if (data.idMarca) {
+            // 1.2. Validar que la Marca exista
+            await this.marcaService.findOneActive(data.idMarca);
         }
         
+        // 2. VALIDACIÓN DEL VÍNCULO M:M (MarcaLinea)
+        // Solo se valida si AL MENOS una de las FKs se envió o si AMBAS son requeridas para la persistencia.
+        // En el PATCH, se debe verificar la nueva combinación: idMarcaFinal y idLineaFinal
+        
+        // 2.1. Obtener los vínculos de la Marca FINAL
+        const vinculos = await this.marcaLineaService.findAllByMarcaId(idMarcaFinal);
+        
+        // 2.2. Chequea si la Línea FINAL existe dentro de esos vínculos
+        const vinculoExiste = vinculos.some(vinculo => vinculo.lineaId === idLineaFinal);
+
+        if (!vinculoExiste) {
+            throw new BadRequestException(
+                `La Línea ID ${idLineaFinal} no está vinculada a la Marca ID ${idMarcaFinal}.`
+            );
+        }
+
+        // 3. Persistencia
+        // Si no se envió idMarca o idLinea, el DTO de PATCH es suficiente.
+        // Si se enviaron, ya validamos su consistencia y existencia.
         return this.productoRepository.update(idProducto, data);
     }
+
+    async updateWithImage(idProducto: number, body: any, file?: Express.Multer.File): Promise<Producto> {
+        // 1. Validar existencia del JSON
+        if (!body || !body.data) {
+            // En un PATCH, data podría ser opcional, pero aquí lo requerimos si se usa multipart
+            throw new BadRequestException('El campo "data" (JSON del producto) es obligatorio en el multipart/form-data para actualizar.');
+        }
+
+        let updateProductoDto: UpdateProductoDto;
+        try {
+            const parsed = JSON.parse(body.data);
+            
+            // 2. Transformar y Validar manualmente. Usamos UpdateProductoDto aquí
+            const object = plainToInstance(UpdateProductoDto, parsed); 
+            
+            const errors = await validate(object as object, { 
+                whitelist: true, 
+                forbidNonWhitelisted: true,
+                skipMissingProperties: true, // Ignoramos los campos no enviados
+                stopAtFirstError: false 
+            });
+
+            if (errors.length > 0) {
+                const errorMessages = errors.flatMap(error => Object.values(error.constraints || {}));
+                throw new BadRequestException(errorMessages);
+            }
+            
+            // 3. Asignar el DTO validado
+            updateProductoDto = object as UpdateProductoDto;
+
+        } catch (error) {
+            if (error instanceof BadRequestException) {
+                throw error;
+            }
+            throw new BadRequestException('El campo "data" debe ser un string JSON válido.');
+        }
+
+        // 4. Actualizar el producto (reutilizamos el método 'update')
+        const productoActualizado = await this.update(idProducto, updateProductoDto); 
+
+        // 5. Si hay imagen, subirla y actualizar la URL
+        if (file) {
+            const result = await this.s3Service.uploadFile(file.buffer, file.originalname, idProducto);
+            await this.productoRepository.update(idProducto, { foto: result.url });
+
+            productoActualizado.foto = result.url;
+        }
+
+        return productoActualizado;
+    }
+
 
     // ---------------------------------------------------------------------
     // SOFT DELETE (US 7)

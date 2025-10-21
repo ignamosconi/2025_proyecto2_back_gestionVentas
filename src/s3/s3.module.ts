@@ -4,7 +4,12 @@ import { ConfigModule } from '@nestjs/config';
 
 @Module({
   imports: [ConfigModule],
-  providers: [S3Service],
-  exports: [S3Service], //nos permite usar s3 en otros servicios
+  providers: [
+    {
+      provide: 'IS3Service',
+      useClass: S3Service,
+    }
+  ],
+  exports: ['IS3Service'], //nos permite usar s3 en otros servicios
 })
 export class S3Module {}

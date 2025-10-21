@@ -11,9 +11,10 @@ import {
 import { v4 as uuid } from 'uuid';
 import { extname } from 'path';
 import { UploadedFileDTO } from './dto/uploaded-file.dto';
+import { IS3Service } from './interfaces/s3.service.interface';
 
 @Injectable()
-export class S3Service {
+export class S3Service implements IS3Service{
   private readonly s3: S3Client;
   private readonly bucket: string;
 

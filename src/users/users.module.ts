@@ -28,7 +28,7 @@ import { MailerModule } from 'src/mailer/mailer.module';
     },
   ],
 
-  exports: ['IUsersService'],
+  exports: ['IUsersService', 'IUserRepository'],
   controllers: [UsersController],
 })
 export class UsersModule {}
