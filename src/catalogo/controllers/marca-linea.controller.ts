@@ -48,6 +48,7 @@ export class MarcaLineaController {
     async findAllByMarca(
         @Param('marcaId', ParseIntPipe) marcaId: number,
     ): Promise<MarcaLinea[]> {
+        console.log(`[MarcaLineaController] GET /marca/${marcaId}/linea - Listando líneas asignadas a marca.`);
         return this.marcaLineaService.findAllByMarcaId(marcaId);
     }
     
@@ -71,6 +72,7 @@ export class MarcaLineaController {
         @Param('marcaId', ParseIntPipe) marcaId: number,
         @Param('lineaId', ParseIntPipe) lineaId: number,
     ): Promise<MarcaLinea> {
+        console.log(`[MarcaLineaController] POST /marca/${marcaId}/linea/${lineaId} - Asignando línea a marca.`);
         // Creamos el DTO con los IDs de la URL
         const data: CreateMarcaLineaDto = { marcaId, lineaId };
         return this.marcaLineaService.assignLineaToMarca(data);
@@ -96,6 +98,7 @@ export class MarcaLineaController {
         @Param('marcaId', ParseIntPipe) marcaId: number,
         @Param('lineaId', ParseIntPipe) lineaId: number,
     ): Promise<void> {
+        console.log(`[MarcaLineaController] DELETE /marca/${marcaId}/linea/${lineaId} - Desasignando línea de marca.`);
         return this.marcaLineaService.unassignLineaFromMarca(marcaId, lineaId);
     }
 }

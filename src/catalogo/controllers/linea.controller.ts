@@ -48,6 +48,7 @@ export class LineaController {
      */
     @Get()
     findAll(): Promise<Linea[]> {
+        console.log(`[LineaController] GET /lineas - Obteniendo todas las líneas activas.`);
         return this.lineaService.findAll();
     }
 
@@ -57,6 +58,7 @@ export class LineaController {
      */
     @Get(':id')
     findOne(@Param('id', ParseIntPipe) id: number): Promise<Linea> {
+        console.log(`[LineaController] GET /lineas/${id} - Obteniendo línea activa por ID.`);
         return this.lineaService.findOneActive(id);
     }
 
@@ -69,9 +71,10 @@ export class LineaController {
      * Crea una nueva línea.
      */
     @Post()
-    @Roles(UserRole.OWNER) // 🔒 Restringido a OWNER
+    @Roles(UserRole.OWNER) // Restringido a OWNER
     @HttpCode(HttpStatus.CREATED) 
     async create(@Body() data: CreateLineaDto): Promise<Linea> {
+        console.log(`[LineaController] POST /lineas - Creando nueva línea con datos:`, data);
         return this.lineaService.create(data);
     }
 
@@ -80,11 +83,12 @@ export class LineaController {
      * Actualiza una línea existente.
      */
     @Put(':id')
-    @Roles(UserRole.OWNER) // 🔒 Restringido a OWNER
+    @Roles(UserRole.OWNER) // Restringido a OWNER
     async update(
         @Param('id', ParseIntPipe) id: number,
         @Body() data: UpdateLineaDto,
     ): Promise<Linea> {
+        console.log(`[LineaController] PUT /lineas/${id} - Actualizando línea con datos:`, data);
         return this.lineaService.update(id, data);
     }
 
@@ -93,9 +97,10 @@ export class LineaController {
      * Realiza un borrado lógico (soft-delete).
      */
     @Delete(':id')
-    @Roles(UserRole.OWNER) // 🔒 Restringido a OWNER
+    @Roles(UserRole.OWNER) // Restringido a OWNER
     @HttpCode(HttpStatus.NO_CONTENT) 
     async softDelete(@Param('id', ParseIntPipe) id: number): Promise<void> {
+        console.log(`[LineaController] DELETE /lineas/${id} - Eliminando línea lógicamente.`);
         return this.lineaService.softDelete(id);
     }
 
@@ -104,9 +109,10 @@ export class LineaController {
      * Restaura una línea eliminada suavemente.
      */
     @Patch('restore/:id')
-    @Roles(UserRole.OWNER) // 🔒 Restringido a OWNER
+    @Roles(UserRole.OWNER) // Restringido a OWNER
     @HttpCode(HttpStatus.OK) // Cambié a OK (200) o NO_CONTENT (204) es aceptable
     async restore(@Param('id', ParseIntPipe) id: number): Promise<void> {
+        console.log(`[LineaController] PATCH /lineas/restore/${id} - Restaurando línea eliminada.`);
         return this.lineaService.restore(id);
     }
 }

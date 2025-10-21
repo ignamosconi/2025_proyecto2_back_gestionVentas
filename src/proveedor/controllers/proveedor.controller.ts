@@ -23,6 +23,7 @@ export class ProveedorController implements ProveedorControllerInterface {
     @Get()
     @ApiOperation({ summary: 'Obtener todos los proveedores' })
     findAll(): Promise<Proveedor[]> {
+        console.log(`[ProveedorController] GET /proveedor - Obteniendo todos los proveedores.`);
         return this.proveedorService.findAll();
     }
 
@@ -30,6 +31,7 @@ export class ProveedorController implements ProveedorControllerInterface {
     @ApiParam({ name: 'id', type: Number })
     @ApiOperation({ summary: 'Obtener un proveedor por ID' })
     findOne(@Param('id', ParseIntPipe) id: number): Promise<Proveedor> {
+        console.log(`[ProveedorController] GET /proveedor/${id} - Obteniendo proveedor por ID.`);
         return this.proveedorService.findOne(id);
     }
 
@@ -39,6 +41,7 @@ export class ProveedorController implements ProveedorControllerInterface {
     @ApiBody({ type: CreateProveedorDto })
     @ApiOperation({ summary: 'Crear un proveedor (solo OWNER)' })
     create(@Body() data: CreateProveedorDto): Promise<Proveedor> {
+        console.log(`[ProveedorController] POST /proveedor - Creando proveedor con datos:`, data);
         return this.proveedorService.create(data);
     }
 
@@ -48,6 +51,7 @@ export class ProveedorController implements ProveedorControllerInterface {
     @ApiBody({ type: UpdateProveedorDto })
     @ApiOperation({ summary: 'Actualizar un proveedor existente (solo OWNER)' })
     update(@Param('id', ParseIntPipe) id: number, @Body() data: UpdateProveedorDto): Promise<Proveedor> {
+        console.log(`[ProveedorController] PATCH /proveedor/${id} - Actualizando proveedor con datos:`, data);
         return this.proveedorService.update(id, data);
     }
 
@@ -57,6 +61,7 @@ export class ProveedorController implements ProveedorControllerInterface {
     @ApiParam({ name: 'id', type: Number })
     @ApiOperation({ summary: 'Eliminar lógicamente un proveedor (soft delete, solo OWNER)' })
     softDelete(@Param('id', ParseIntPipe) id: number): Promise<void> {
+        console.log(`[ProveedorController] DELETE /proveedor/${id} - Eliminando proveedor lógicamente.`);
         return this.proveedorService.softDelete(id);
     }
 
@@ -66,6 +71,7 @@ export class ProveedorController implements ProveedorControllerInterface {
     @ApiParam({ name: 'id', type: Number })
     @ApiOperation({ summary: 'Restaurar un proveedor eliminado lógicamente (solo OWNER)' })
     restore(@Param('id', ParseIntPipe) id: number): Promise<void> {
+        console.log(`[ProveedorController] PATCH /proveedor/${id}/restore - Restaurando proveedor eliminado.`);
         return this.proveedorService.restore(id);
     }
 }

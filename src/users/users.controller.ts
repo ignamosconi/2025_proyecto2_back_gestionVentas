@@ -1,6 +1,5 @@
 //ARCHIVO: users.controller.ts
 import { Body, Controller, Delete, Get, Inject, Param, ParseIntPipe, Patch, Post, UseGuards } from '@nestjs/common';
-import { UsersService } from './users.service';
 import { RegisterEmployeeOwnerDTO } from './dto/register-employee-owner.dto';
 import { RegisterEmployeeDTO } from './dto/register-employee.dto';
 import { AuthGuard } from '../auth/guards/auth.guard';
@@ -33,7 +32,7 @@ export class UsersController implements IUsersController {
   @Roles(UserRole.OWNER)
   @Get()
   findAll(): Promise<UserResponseDto[]> {
-    console.log("Obteniendo todos los ususarios")
+    console.log(`[UsersController] GET /users - Obteniendo todos los usuarios activos.`);
     return this.service.findAll();
   }
 
@@ -43,7 +42,7 @@ export class UsersController implements IUsersController {
   @Roles(UserRole.OWNER)
   @Get('/deleted')
   findAllDeleted(): Promise<UserResponseDto[]> {
-    console.log("Obteniendo todos los ususarios soft-deleted")
+    console.log(`[UsersController] GET /users/deleted - Obteniendo usuarios eliminados lógicamente.`);
     return this.service.findAllDeleted();
   }
 
@@ -51,7 +50,7 @@ export class UsersController implements IUsersController {
   @ApiOperation({ summary: 'Registro público de usuario EMPLOYEE' })
   @Post('register')
   registerPublic(@Body() body: RegisterEmployeeDTO): Promise<UserResponseDto> {
-    console.log("Registrando al usuario" + body.email + " con rol EMPLOYEE")
+    console.log(`[UsersController] POST /users/register - Registrando EMPLOYEE: ${body.email}`);
     return this.service.registerAsEmployee(body);
   }
 
@@ -62,7 +61,7 @@ export class UsersController implements IUsersController {
   @Roles(UserRole.OWNER)
   @Post('register-owner')
   createUserByOwner(@Body() body: RegisterEmployeeOwnerDTO): Promise<UserResponseDto> {
-    console.log("OWNER registrando al usuario " + body.email +" con rol "+ body.role)
+    console.log(`[UsersController] POST /users/register-owner - OWNER creando usuario ${body.email} con rol ${body.role}`);
     return this.service.registerByOwner(body);
   }
 
@@ -72,7 +71,7 @@ export class UsersController implements IUsersController {
   @Roles(UserRole.OWNER)
   @Post('/:id')
   update(@Param('id', ParseIntPipe) id: number, @Body() body: UpdateUserDTO): Promise<UserResponseDto> {
-    console.log('Actualizando usuario')
+    console.log(`[UsersController] POST /users/${id} - Actualizando usuario con datos:`, body);
     return this.service.update(id, body);
   }
 
@@ -82,7 +81,7 @@ export class UsersController implements IUsersController {
   @Roles(UserRole.OWNER)
   @Delete('/:id')
   delete(@Param('id', ParseIntPipe) id: number): Promise<MessageResponseDTO> {
-    console.log('Soft-deleting al usuario')
+    console.log(`[UsersController] DELETE /users/${id} - Eliminando (soft-delete) al usuario.`);
     return this.service.softDelete(id);
   }
 
@@ -92,7 +91,7 @@ export class UsersController implements IUsersController {
   @Roles(UserRole.OWNER)
   @Patch('/:id/restore')
   restore(@Param('id', ParseIntPipe) id: number): Promise<MessageResponseDTO> {
-    console.log('Restaurando usuario')
+    console.log(`[UsersController] PATCH /users/${id}/restore - Restaurando usuario eliminado.`);
     return this.service.restore(id);
   }
 }

@@ -22,24 +22,28 @@ export class ProductoProveedorController implements ProductoProveedorControllerI
 
     @Get()
     findAll(): Promise<ProductoProveedor[]> {
+        console.log(`[ProductoProveedorController] GET /producto-proveedor - Obteniendo todos los vínculos Producto-Proveedor.`);
         return this.productoProveedorService.findAll();
     }
 
     @Get(':id')
     @ApiParam({ name: 'id', type: Number })
     findOne(@Param('id', ParseIntPipe) id: number): Promise<ProductoProveedor> {
+        console.log(`[ProductoProveedorController] GET /producto-proveedor/${id} - Obteniendo vínculo por ID.`);
         return this.productoProveedorService.findOne(id);
     }
 
     @Get('producto/:idProducto')
     @ApiParam({ name: 'idProducto', type: Number })
     findByProducto(@Param('idProducto', ParseIntPipe) idProducto: number): Promise<ProductoProveedor[]> {
+        console.log(`[ProductoProveedorController] GET /producto-proveedor/producto/${idProducto} - Obteniendo vínculos por Producto.`);
         return this.productoProveedorService.findByProducto(idProducto);
     }
 
     @Get('proveedor/:idProveedor')
     @ApiParam({ name: 'idProveedor', type: Number })
     findByProveedor(@Param('idProveedor', ParseIntPipe) idProveedor: number): Promise<ProductoProveedor[]> {
+        console.log(`[ProductoProveedorController] GET /producto-proveedor/proveedor/${idProveedor} - Obteniendo vínculos por Proveedor.`);
         return this.productoProveedorService.findByProveedor(idProveedor);
     }
 
@@ -47,7 +51,9 @@ export class ProductoProveedorController implements ProductoProveedorControllerI
     @Roles(UserRole.OWNER)
     @HttpCode(HttpStatus.CREATED)
     @ApiBody({ type: CreateProductoProveedorDto })
-    create(@Body() data: CreateProductoProveedorDto): Promise<ProductoProveedor> {
+    create(@Body() data: CreateProductoProveedorDto): Promise<ProductoProveedor> 
+    {
+        console.log(`[ProductoProveedorController] POST /producto-proveedor - Creando vínculo con datos:`, data);
         return this.productoProveedorService.create(data);
     }
 
@@ -56,6 +62,7 @@ export class ProductoProveedorController implements ProductoProveedorControllerI
     @ApiParam({ name: 'id', type: Number })
     @ApiBody({ type: UpdateProductoProveedorDto })
     update(@Param('id', ParseIntPipe) id: number, @Body() data: UpdateProductoProveedorDto): Promise<ProductoProveedor> {
+        console.log(`[ProductoProveedorController] PATCH /producto-proveedor/${id} - Actualizando vínculo con datos:`, data);
         return this.productoProveedorService.update(id, data);
     }
 
@@ -64,6 +71,7 @@ export class ProductoProveedorController implements ProductoProveedorControllerI
     @HttpCode(HttpStatus.NO_CONTENT)
     @ApiParam({ name: 'id', type: Number })
     delete(@Param('id', ParseIntPipe) id: number): Promise<void> {
+        console.log(`[ProductoProveedorController] DELETE /producto-proveedor/${id} - Eliminando vínculo lógicamente.`);
         return this.productoProveedorService.softDelete(id);
     }
 
@@ -72,6 +80,7 @@ export class ProductoProveedorController implements ProductoProveedorControllerI
     @HttpCode(HttpStatus.OK)
     @ApiParam({ name: 'id', type: Number })
     restore(@Param('id', ParseIntPipe) id: number): Promise<void> {
+        console.log(`[ProductoProveedorController] PATCH /producto-proveedor/${id}/restore - Restaurando vínculo eliminado.`);
         return this.productoProveedorService.restore(id);
     }
 }
