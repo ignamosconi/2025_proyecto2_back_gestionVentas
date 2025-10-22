@@ -1,6 +1,6 @@
 // src/proveedores/repositories/proveedor.repository.ts
 import { Injectable } from '@nestjs/common';
-import { DataSource, Repository } from 'typeorm';
+import { DataSource, IsNull, Not, Repository } from 'typeorm';
 import { Proveedor } from '../entities/proveedor.entity';
 import { ProveedorRepositoryInterface } from './interfaces/proveedor.repository.interface';
 import { CreateProveedorDto } from '../dto/create-proveedor.dto';
@@ -14,8 +14,12 @@ export class ProveedorRepository implements ProveedorRepositoryInterface {
         this.repo = dataSource.getRepository(Proveedor);
     }
 
-    findAll(): Promise<Proveedor[]> {
-        return this.repo.find();
+    async findAll(): Promise<Proveedor[]> {
+        return this.repo.find({ where: { deletedAt: IsNull() } });
+    }
+
+    async findAllSoftDeleted(): Promise<Proveedor[]> {
+        return this.repo.find({ withDeleted: true, where: { deletedAt: Not(IsNull()) } });
     }
 
     async findOne(id: number): Promise<Proveedor> {
@@ -27,12 +31,12 @@ export class ProveedorRepository implements ProveedorRepositoryInterface {
     }
 
 
-    create(data: CreateProveedorDto): Promise<Proveedor> {
+    async create(data: CreateProveedorDto): Promise<Proveedor> {
         const entity = this.repo.create(data);
         return this.repo.save(entity);
     }
 
-    update(id: number, data: UpdateProveedorDto): Promise<Proveedor> {
+    async update(id: number, data: UpdateProveedorDto): Promise<Proveedor> {
         return this.repo.save({ idProveedor: id, ...data });
     }
 

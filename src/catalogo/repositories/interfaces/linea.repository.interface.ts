@@ -39,4 +39,7 @@ export interface LineaRepositoryInterface {
      * Busca una línea activa por su nombre.
      */
     findByName(nombre: string): Promise<Linea | null>;
+
+    //Get a las eliminadas
+    findAllSoftDeleted(): Promise<Linea[]>;
 }

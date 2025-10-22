@@ -9,11 +9,18 @@ export interface MarcaLineaServiceInterface {
      * @param data DTO con marcaId y lineaId.
      */
     assignLineaToMarca(data: CreateMarcaLineaDto): Promise<MarcaLinea>;
+    findAllByMarcaId(marcaId: number): Promise<MarcaLinea[]>;
 
-    findAllByMarcaId(marcaId: number): Promise<MarcaLinea[]>
-
+    //Buscar global
+    findAll(): Promise<MarcaLinea[]>;
+    findAllDeleted(): Promise<MarcaLinea[]>;
+    
     /**
      * Desasigna una línea de una marca (Elimina el vínculo M:M).
      */
     unassignLineaFromMarca(marcaId: number, lineaId: number): Promise<void>;
+
+    
+
+
 }

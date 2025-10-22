@@ -27,6 +27,14 @@ export class ProveedorController implements ProveedorControllerInterface {
         return this.proveedorService.findAll();
     }
 
+    @Get('eliminados')
+    @Roles(UserRole.OWNER)
+    @ApiOperation({ summary: 'Obtener proveedores eliminados lógicamente (solo OWNER)' })
+    findAllSoftDeleted(): Promise<Proveedor[]> {
+        console.log(`[ProveedorController] GET /proveedor/eliminados - Obteniendo proveedores eliminados lógicamente.`);
+        return this.proveedorService.findAllSoftDeleted();
+    }
+
     @Get(':id')
     @ApiParam({ name: 'id', type: Number })
     @ApiOperation({ summary: 'Obtener un proveedor por ID' })

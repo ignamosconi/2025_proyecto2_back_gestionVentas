@@ -25,6 +25,10 @@ export class ProveedorService implements ProveedorServiceInterface {
         return proveedor;
     }
 
+    findAllSoftDeleted(): Promise<Proveedor[]> {
+        return this.proveedorRepository.findAllSoftDeleted();
+    }
+
     create(data: CreateProveedorDto): Promise<Proveedor> {
         return this.proveedorRepository.create(data);
     }

@@ -2,7 +2,7 @@
 
 import { Injectable, BadRequestException, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { IsNull, Not, Repository } from 'typeorm';
 import { Marca } from '../entities/marca.entity';
 import { MarcaRepositoryInterface } from './interfaces/marca.repository.interface';
 import { CreateMarcaDto } from '../dto/create-marca.dto';
@@ -89,6 +89,15 @@ export class MarcaRepository implements MarcaRepositoryInterface {
   async findAllActive(): Promise<Marca[]> {
     // Gracias a @DeleteDateColumn, 'find()' de TypeORM solo trae las marcas donde deletedAt IS NULL.
     return this.marcaOrmRepository.find();
+  }
+
+  async findAllDeleted(): Promise<Marca[]> {
+    return this.marcaOrmRepository.find({
+      withDeleted: true,
+      where: {
+        deletedAt: Not(IsNull()),
+      },
+    });
   }
   
   async findOneActive(id: number): Promise<Marca | null> {

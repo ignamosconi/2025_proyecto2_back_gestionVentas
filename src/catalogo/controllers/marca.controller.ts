@@ -46,6 +46,13 @@ export class MarcaController implements MarcaControllerInterface {
         return this.marcaService.findAll();
     }
 
+    @Get('eliminadas')
+    @Roles(UserRole.OWNER) // Sólo el owner puede ver los eliminados
+    findAllDeleted(): Promise<Marca[]> {
+    console.log(`[MarcaController] GET /marcas/eliminadas - Obteniendo marcas eliminadas.`);
+    return this.marcaService.findAllDeleted();
+    }
+
     // GET /marcas/:id
     @Get(':id')
     findOne(@Param('id', ParseIntPipe) id: string): Promise<Marca> {

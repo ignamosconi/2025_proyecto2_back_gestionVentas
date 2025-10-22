@@ -5,7 +5,6 @@ import {
     Inject, 
     BadRequestException, 
     NotFoundException, 
-    ConflictException,
 } from '@nestjs/common';
 
 import { LineaServiceInterface } from './interfaces/linea.service.interface';
@@ -41,6 +40,11 @@ export class LineaService implements LineaServiceInterface {
         }
         return linea;
     }
+
+    async findAllSoftDeleted(): Promise<Linea[]> {
+        return this.lineaRepository.findAllSoftDeleted();
+    }
+
 
 // ---------------------------------------------------------------------
 // MÉTODOS DE ESCRITURA (CREATE, UPDATE, DELETE, RESTORE)

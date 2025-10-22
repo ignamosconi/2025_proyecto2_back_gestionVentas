@@ -8,6 +8,7 @@ export interface MarcaServiceInterface {
     // Lectura
     findAll(): Promise<Marca[]>;
     findOneActive(id: number): Promise<Marca>;
+    findAllDeleted(): Promise<Marca[]>;
 
     // Escritura
     create(data: CreateMarcaDto): Promise<Marca>;

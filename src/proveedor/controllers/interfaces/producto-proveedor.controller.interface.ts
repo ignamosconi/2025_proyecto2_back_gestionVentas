@@ -4,6 +4,7 @@ import { ProductoProveedor } from "src/proveedor/entities/producto-proveedor.ent
 
 export interface ProductoProveedorControllerInterface {
     findAll(): Promise<ProductoProveedor[]>;
+    findAllSoftDeleted(): Promise<ProductoProveedor[]>;
     findOne(id: number): Promise<ProductoProveedor>;
     findByProducto(idProducto: number): Promise<ProductoProveedor[]>;
     findByProveedor(idProveedor: number): Promise<ProductoProveedor[]>;
