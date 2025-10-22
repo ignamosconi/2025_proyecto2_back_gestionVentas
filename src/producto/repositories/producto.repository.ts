@@ -97,27 +97,27 @@ export class ProductoRepository implements ProductoRepositoryInterface {
     }
 
     async updateStock(idProducto: number, change: number): Promise<Producto> {
-        // 1️⃣ Buscar el producto activo (no eliminado)
+        // Buscar el producto activo (no eliminado)
         const producto = await this.findOneActive(idProducto);
         if (!producto) {
             throw new NotFoundException(`Producto con ID ${idProducto} no encontrado o eliminado.`);
         }
 
-        // 2️⃣ Calcular el nuevo stock
+        // Calcular el nuevo stock
         const nuevoStock = producto.stock + change;
 
-        // 3️⃣ Actualizar el valor en el producto
+        // Actualizar el valor en el producto
         producto.stock = nuevoStock;
 
-        // 4️⃣ Guardar en la base de datos
+        // Guardar en la base de datos
         await this.repository.save(producto);
 
-        // 5️⃣ Registrar advertencia si queda en negativo (opcional)
+        // Registrar advertencia si queda en negativo (opcional)
         if (nuevoStock < 0) {
-            console.warn(`⚠️ El producto ID ${idProducto} quedó con stock negativo (${nuevoStock}).`);
+            console.warn(`(!) El producto ID ${idProducto} quedó con stock negativo (${nuevoStock}).`);
         }
 
-        // 6️⃣ Devolver el producto actualizado
+        // Devolver el producto actualizado
         return producto;
     }
 

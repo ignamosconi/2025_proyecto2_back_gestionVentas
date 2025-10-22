@@ -39,7 +39,7 @@ export class MarcaLineaService implements MarcaLineaServiceInterface {
             this.lineaService.findOneActive(data.lineaId),
         ]);
 
-        // ✅ 2. Verificar si ya existe manualmente (recomendado)
+        // 2. Verificar si ya existe manualmente (recomendado)
         const existentes = await this.marcaLineaRepository.findAllByMarcaId(data.marcaId);
         const yaExiste = existentes.some(e => e.lineaId === data.lineaId);
         if (yaExiste) {

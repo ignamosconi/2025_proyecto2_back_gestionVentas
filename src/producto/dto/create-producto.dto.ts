@@ -37,20 +37,19 @@ export class CreateProductoDto {
 
     // --- Relaciones (FKs y Lógica US 10) ---
 
-    // 🚀 FK Directa a Marca (Reemplaza el campo de lógica)
-    // El Producto ahora tiene directamente la FK idMarca.
+    // FK Directa a Marca
     @ApiProperty({ description: 'ID de la Marca. Es la FK directa del Producto.' })
     @IsNotEmpty({ message: 'El ID de la marca es obligatorio.' })
     @IsNumber({}, { message: 'El ID de la marca debe ser un número.' })
     @IsPositive({ message: 'El ID de la marca debe ser positivo.' })
-    marcaId: number; 
+    idMarca: number; 
 
     // US 10: Opción A - Vínculo a Línea existente.
     @ApiProperty({ description: 'ID de la Línea existente. Se usará si no se proporciona nombreNuevaLinea.' })
     @IsNumber({}, { message: 'El ID de la línea debe ser un número.' })
     @IsPositive({ message: 'El ID de la línea debe ser positivo.' })
     @IsOptional()
-    lineaId?: number; 
+    idLinea?: number; 
 
     // US 10: Opción B - Nombre de la Línea a crear "urgentemente" (Lógica)
     @ApiProperty({ description: 'Nombre de una nueva Línea para crear urgentemente si no se proporciona lineaId (US 10).' })

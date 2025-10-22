@@ -44,7 +44,7 @@ export class Producto {
     @DeleteDateColumn({ name: 'deleted_at' })
     deletedAt?: Date;
 
-    // 🔹 FK a Linea
+    // FK a Linea
     @Column({ type: 'int', name: 'id_linea' })
     idLinea: number;
 
@@ -52,7 +52,7 @@ export class Producto {
     @JoinColumn({ name: 'id_linea', referencedColumnName: 'id' })
     linea: Linea;
 
-    // 🔹 FK a Marca
+    // FK a Marca
     @Column({ type: 'int', name: 'id_marca' })
     idMarca: number;
 

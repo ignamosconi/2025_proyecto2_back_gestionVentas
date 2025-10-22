@@ -12,8 +12,9 @@ export interface ProductoControllerInterface {
     findOne(id: number): Promise<Producto>;
     
     // US 7 & US 10: Creación/Actualización (Requiere OWNER)
-    create(data: CreateProductoDto): Promise<Producto>; 
-    update(id: number, data: UpdateProductoDto): Promise<Producto>;
+    create(data: any, file: Express.Multer.File): Promise<Producto>;
+    update(id: number, body: any, file: Express.Multer.File): Promise<Producto>;
+
     
     // US 7: Eliminación Lógica (Requiere OWNER)
     softDelete(id: number): Promise<void>; 

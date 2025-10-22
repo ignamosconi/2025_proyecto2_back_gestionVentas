@@ -3,8 +3,7 @@
 import { 
     Controller, 
     Get, 
-    Post, 
-    Put, 
+    Post,  
     Delete, 
     Param, 
     Body, 
@@ -13,21 +12,24 @@ import {
     HttpStatus,
     UseGuards,
     Inject,
-    Patch 
+    Patch, 
+    UseInterceptors,
+    UploadedFile,
 } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse, ApiBody, ApiParam } from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiResponse, ApiBody, ApiParam, ApiConsumes } from '@nestjs/swagger';
 import { UserRole } from '../../users/helpers/enum.roles'; 
 import { AuthGuard } from '../../auth/guards/auth.guard';
 import { RolesGuard } from '../../auth/guards/roles.guard';
 import { Roles } from '../../auth/decorators/roles.decorator';
 
 import { Producto } from '../entities/producto.entity';
-import { CreateProductoDto } from '../dto/create-producto.dto';
-import { UpdateProductoDto } from '../dto/update-producto.dto';
 import { ProductoControllerInterface } from './interfaces/producto.controller.interace';
 import { ProductoServiceInterface } from '../services/interfaces/producto.service.interface';
 import { PRODUCTO_SERVICE } from '../../constants';
 import { UpdateStockDto } from '../dto/update-stock.dto';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { createProductoWithImageSwagger } from '../docs/create-producto-with-image.doc';
+import { updateProductoWithImageSwagger } from '../docs/update-producto-with-image.doc';
 
 @ApiTags('Producto')
 @Controller('producto')
@@ -73,16 +75,22 @@ export class ProductoController implements ProductoControllerInterface {
     
     // ----------------------------------------------------
     // US 7 & US 10: Creación (Restringido a OWNER)
+    // Deberán hacer un POST con un FORM-DATA, que tenga
+    // los campos 'file' (donde se adjuntará la imagen), y
+    // 'data', donde se adjuntará un JSON del tipo create-producto.dto.ts
     // ----------------------------------------------------
-
     @Post()
     @HttpCode(HttpStatus.CREATED)
     @Roles(UserRole.OWNER) // Restringido a OWNER
-    @ApiOperation({ summary: 'US 7 & US 10: Crear un nuevo producto.', description: 'Incluye la lógica de creación urgente de Línea (US 10).' })
-    @ApiBody({ type: CreateProductoDto })
-    create(@Body() data: CreateProductoDto): Promise<Producto> {
-        console.log('[ProductoController] POST /producto -> Body:', data);
-        return this.productoService.create(data);
+    @UseInterceptors(FileInterceptor('file')) //campo "file" en form-data
+    @ApiConsumes('multipart/form-data') 
+    @ApiBody(createProductoWithImageSwagger)
+    async create(
+        @Body() body: any,      //Chequeamos el datatype en el service. No anda con pipes.
+        @UploadedFile() file: Express.Multer.File,
+    ): Promise<Producto> {
+        console.log('[ProductoController] POST /producto -> body:', body);
+        return this.productoService.create(body, file);
     }
 
     // ----------------------------------------------------
@@ -92,13 +100,20 @@ export class ProductoController implements ProductoControllerInterface {
     // Usamos Patch o Put, pero Patch es común para actualizaciones parciales
     @Patch(':id') 
     @Roles(UserRole.OWNER) // Restringido a OWNER
+    @UseInterceptors(FileInterceptor('file'))
     @ApiOperation({ summary: 'US 7: Actualizar un producto existente.' })
+    @ApiConsumes('multipart/form-data') 
     @ApiParam({ name: 'id', description: 'ID del producto a actualizar', type: Number })
-    @ApiBody({ type: UpdateProductoDto })
-    update(@Param('id', ParseIntPipe) id: number, @Body() data: UpdateProductoDto): Promise<Producto> {
-        console.log(`[ProductoController] PATCH /producto/${id} -> Body:`, data);
-        return this.productoService.update(id, data);
+    @ApiBody(updateProductoWithImageSwagger)
+    async update(
+        @Param('id', ParseIntPipe) id: number, 
+        @Body() body: any,             //Chequeamos el datatype en el service. No anda con pipes.
+        @UploadedFile() file: Express.Multer.File,
+    ): Promise<Producto> {
+        console.log(`[ProductoController] PATCH /producto/${id} -> body:`, body);
+        return this.productoService.update(id, body, file);
     }
+    
 
     // PATCH /producto/:id/stock
     @Patch(':id/stock')
