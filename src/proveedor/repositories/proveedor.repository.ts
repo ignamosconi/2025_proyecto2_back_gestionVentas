@@ -1,5 +1,5 @@
 // src/proveedores/repositories/proveedor.repository.ts
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { DataSource, IsNull, Not, Repository } from 'typeorm';
 import { Proveedor } from '../entities/proveedor.entity';
 import { ProveedorRepositoryInterface } from './interfaces/proveedor.repository.interface';
@@ -25,7 +25,7 @@ export class ProveedorRepository implements ProveedorRepositoryInterface {
     async findOne(id: number): Promise<Proveedor> {
         const proveedor = await this.repo.findOne({ where: { idProveedor: id } });
         if (!proveedor) {
-            throw new Error(`Proveedor con id ${id} no encontrado`);
+            throw new NotFoundException(`Proveedor con id ${id} no encontrado`);
         }
         return proveedor;
     }
@@ -37,14 +37,30 @@ export class ProveedorRepository implements ProveedorRepositoryInterface {
     }
 
     async update(id: number, data: UpdateProveedorDto): Promise<Proveedor> {
-        return this.repo.save({ idProveedor: id, ...data });
+        const proveedor = await this.repo.findOne({ where: { idProveedor: id } });
+        if (!proveedor) {
+            throw new NotFoundException(`Proveedor con id ${id} no encontrado para actualizar`);
+        }
+
+        const entityToUpdate = this.repo.merge(proveedor, data);
+        return this.repo.save(entityToUpdate);
     }
 
     async softDelete(id: number): Promise<void> {
+        const proveedor = await this.repo.findOne({ where: { idProveedor: id } });
+        if (!proveedor) {
+            throw new NotFoundException(`Proveedor con id ${id} no encontrado para eliminar`);
+        }
+
         await this.repo.softDelete(id);
     }
 
     async restore(id: number): Promise<void> {
+        const proveedor = await this.repo.findOne({ where: { idProveedor: id }, withDeleted: true });
+        if (!proveedor) {
+            throw new NotFoundException(`Proveedor con id ${id} no encontrado para restaurar`);
+        }
+
         await this.repo.restore(id);
     }
 }
