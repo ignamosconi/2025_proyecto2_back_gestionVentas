@@ -1,7 +1,7 @@
 // src/catalogo/repositories/linea.repository.ts
 
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { Repository, DataSource, IsNull } from 'typeorm';
+import { Repository, DataSource, IsNull, Not } from 'typeorm';
 
 import { Linea } from '../entities/linea.entity';
 import { CreateLineaDto } from '../dto/create-linea.dto';
@@ -51,6 +51,13 @@ export class LineaRepository implements LineaRepositoryInterface {
         if (result.affected === 0) {
             throw new NotFoundException(`Línea con ID ${id} para restaurar no encontrada.`);
         }
+    }
+
+    async findAllSoftDeleted(): Promise<Linea[]> {
+        return this.repository.find({
+            where: { deletedAt: Not(IsNull()) },
+            withDeleted: true, // Necesario para incluir soft-deleted en el query
+        });
     }
 
     async findAllActive(): Promise<Linea[]> {

@@ -54,8 +54,15 @@ export class MarcaLineaService implements MarcaLineaServiceInterface {
 
     
     async unassignLineaFromMarca(marcaId: number, lineaId: number): Promise<void> {
-        // Delegamos al repositorio la eliminación del registro
-        await this.marcaLineaRepository.delete(marcaId, lineaId);
+        await this.marcaLineaRepository.softDelete(marcaId, lineaId);
+    }
+
+    async findAll(): Promise<MarcaLinea[]> {
+        return this.marcaLineaRepository.findAllActive();
+    }
+
+    async findAllDeleted(): Promise<MarcaLinea[]> {
+        return this.marcaLineaRepository.findAllDeleted();
     }
 
     async findAllByMarcaId(marcaId: number): Promise<MarcaLinea[]> {

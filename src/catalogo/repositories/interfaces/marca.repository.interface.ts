@@ -9,7 +9,8 @@ import { UpdateMarcaDto } from '../../dto/update-marca.dto';
  * La capa de Servicio dependerá solo de esta interfaz.
  */
 export interface MarcaRepositoryInterface {
-  
+
+  findAllDeleted(): Promise<Marca[]>;
   // --- Métodos Requeridos por la US 8 ---
 
   /**
@@ -71,4 +72,6 @@ export interface MarcaRepositoryInterface {
    * @param lineId ID de la línea a buscar.
    */
   findByLineId(lineId: number): Promise<Marca[]>;
+
+
 }

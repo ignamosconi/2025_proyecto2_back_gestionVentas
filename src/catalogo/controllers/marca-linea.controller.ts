@@ -26,6 +26,7 @@ import {
     ApiBearerAuth,
     ApiParam
 } from '@nestjs/swagger';
+import { MarcaLineaControllerInterface } from './interfaces/marca-linea.controller.interface';
 
 
 //  Aplicamos seguridad: Solo usuarios autenticados y con rol OWNER para escribir
@@ -33,7 +34,7 @@ import {
 @ApiTags('Marca-Linea Asignaciones') // Etiqueta para agrupar en Swagger
 @ApiBearerAuth('access-token') 
 @Controller('marca/:marcaId/linea') // Ruta enfocada en la Marca
-export class MarcaLineaController {
+export class MarcaLineaController implements MarcaLineaControllerInterface {
     constructor(
         @Inject(MARCA_LINEA_SERVICE)
         private readonly marcaLineaService: MarcaLineaServiceInterface,
@@ -50,6 +51,24 @@ export class MarcaLineaController {
     ): Promise<MarcaLinea[]> {
         console.log(`[MarcaLineaController] GET /marca/${marcaId}/linea - Listando líneas asignadas a marca.`);
         return this.marcaLineaService.findAllByMarcaId(marcaId);
+    }
+
+    // GET /marca-linea → buscamos todas las relaciones activos
+    @Get('/all')
+    @Roles(UserRole.OWNER)
+    @ApiOperation({ summary: 'Listado general de todos los vínculos Marca-Línea activos.' })
+    @ApiResponse({ status: 200, description: 'Listado completo.', type: [MarcaLinea] })
+    async findAll(): Promise<MarcaLinea[]> {
+        return this.marcaLineaService.findAll();
+    }
+
+    // GET /marca-linea/deleted → buscamos las relaciones soft-deleted
+    @Get('/deleted')
+    @Roles(UserRole.OWNER)
+    @ApiOperation({ summary: 'Listado de vínculos Marca-Línea eliminados (soft-deleted).' })
+    @ApiResponse({ status: 200, description: 'Vínculos eliminados.', type: [MarcaLinea] })
+    async findAllDeleted(): Promise<MarcaLinea[]> {
+        return this.marcaLineaService.findAllDeleted();
     }
     
     // ---------------------------------------------------------------------

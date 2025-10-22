@@ -1,6 +1,4 @@
 import { Producto } from '../../entities/producto.entity';
-import { CreateProductoDto } from '../../dto/create-producto.dto';
-import { UpdateProductoDto } from '../../dto/update-producto.dto';
 import { UpdateStockDto } from 'src/producto/dto/update-stock.dto';
 
 export interface ProductoServiceInterface {
@@ -8,6 +6,7 @@ export interface ProductoServiceInterface {
     findAll(): Promise<Producto[]>; 
     findOne(id: number): Promise<Producto>;
     findOneActive(id: number): Promise<Producto>;
+    findAllSoftDeleted(): Promise<Producto[]>;
 
     // La firma recibe 'any' para el cuerpo (el objeto Multer del form) y la imagen.
     create(data: any, file?: Express.Multer.File): Promise<Producto>;

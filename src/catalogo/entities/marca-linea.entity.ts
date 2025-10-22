@@ -1,6 +1,6 @@
 // src/catalogo/entities/marca-linea.entity.ts
 
-import { Entity, PrimaryColumn, ManyToOne, Unique, JoinColumn, Column } from 'typeorm';
+import { Entity, PrimaryColumn, ManyToOne, Unique, JoinColumn, Column, DeleteDateColumn } from 'typeorm';
 import { Marca } from './marca.entity'; // Ajusta la ruta si es necesario
 import { Linea } from './linea.entity'; // Ajusta la ruta si es necesario
 
@@ -21,7 +21,7 @@ export class MarcaLinea {
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP', onUpdate: 'CURRENT_TIMESTAMP' })
   updatedAt: Date;
 
-  @Column({ type: 'timestamp', name: 'deleted_at', nullable: true })
+  @DeleteDateColumn({ name: 'deleted_at', type: 'timestamp', nullable: true })
   deletedAt: Date;
   
   // 2. ELIMINA la opción `{ primary: true }` de aquí.

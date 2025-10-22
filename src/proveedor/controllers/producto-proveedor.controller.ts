@@ -26,6 +26,14 @@ export class ProductoProveedorController implements ProductoProveedorControllerI
         return this.productoProveedorService.findAll();
     }
 
+    @ApiOperation({ summary: 'Obtiene los vínculos Producto-Proveedor eliminados lógicamente' })
+    @Get('deleted')
+    @Roles(UserRole.OWNER)  // Solo el dueño puede ver los eliminados
+    findAllSoftDeleted(): Promise<ProductoProveedor[]> {
+        console.log(`[ProductoProveedorController] GET /producto-proveedor/deleted - Obteniendo vínculos eliminados lógicamente.`);
+        return this.productoProveedorService.findAllSoftDeleted();
+    }
+
     @Get(':id')
     @ApiParam({ name: 'id', type: Number })
     findOne(@Param('id', ParseIntPipe) id: number): Promise<ProductoProveedor> {
@@ -84,3 +92,5 @@ export class ProductoProveedorController implements ProductoProveedorControllerI
         return this.productoProveedorService.restore(id);
     }
 }
+
+

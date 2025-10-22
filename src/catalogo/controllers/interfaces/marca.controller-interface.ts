@@ -5,7 +5,7 @@ import { UpdateMarcaDto } from '../../dto/update-marca.dto';
 export interface MarcaControllerInterface {
   
   findAll(): Promise<Marca[]>;
-  
+  findAllDeleted(): Promise<Marca[]>;
   findOne(id: string): Promise<Marca>;
   
   create(createMarcaDto: CreateMarcaDto): Promise<Marca>;

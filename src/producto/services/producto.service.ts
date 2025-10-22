@@ -190,6 +190,10 @@ export class ProductoService implements ProductoServiceInterface {
         return this.productoRepository.findAllActive();
     }
 
+    async findAllSoftDeleted(): Promise<Producto[]> {
+        return this.productoRepository.findAllSoftDeleted();
+    }
+    
     async findOne(idProducto: number): Promise<Producto> {
         const producto = await this.productoRepository.findOneActive(idProducto);
         if (!producto) {
