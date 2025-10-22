@@ -3,8 +3,7 @@
 import { 
     Controller, 
     Get, 
-    Post, 
-    Put, 
+    Post,  
     Delete, 
     Param, 
     Body, 
@@ -16,8 +15,6 @@ import {
     Patch, 
     UseInterceptors,
     UploadedFile,
-    UsePipes,
-    ValidationPipe
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiBody, ApiParam, ApiConsumes } from '@nestjs/swagger';
 import { UserRole } from '../../users/helpers/enum.roles'; 
@@ -26,8 +23,6 @@ import { RolesGuard } from '../../auth/guards/roles.guard';
 import { Roles } from '../../auth/decorators/roles.decorator';
 
 import { Producto } from '../entities/producto.entity';
-import { CreateProductoDto } from '../dto/create-producto.dto';
-import { UpdateProductoDto } from '../dto/update-producto.dto';
 import { ProductoControllerInterface } from './interfaces/producto.controller.interace';
 import { ProductoServiceInterface } from '../services/interfaces/producto.service.interface';
 import { PRODUCTO_SERVICE } from '../../constants';
@@ -35,7 +30,6 @@ import { UpdateStockDto } from '../dto/update-stock.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { createProductoWithImageSwagger } from '../docs/create-producto-with-image.doc';
 import { updateProductoWithImageSwagger } from '../docs/update-producto-with-image.doc';
-import { ParseJsonBodyPipe } from '../pipes/parse-json-body.pipe';
 
 @ApiTags('Producto')
 @Controller('producto')
@@ -92,11 +86,11 @@ export class ProductoController implements ProductoControllerInterface {
     @ApiConsumes('multipart/form-data') 
     @ApiBody(createProductoWithImageSwagger)
     async create(
-        @Body() body: any,
+        @Body() body: any,      //Chequeamos el datatype en el service. No anda con pipes.
         @UploadedFile() file: Express.Multer.File,
     ): Promise<Producto> {
         console.log('[ProductoController] POST /producto -> body:', body);
-        return this.productoService.createWithImage(body, file);
+        return this.productoService.create(body, file);
     }
 
     // ----------------------------------------------------
@@ -113,11 +107,11 @@ export class ProductoController implements ProductoControllerInterface {
     @ApiBody(updateProductoWithImageSwagger)
     async update(
         @Param('id', ParseIntPipe) id: number, 
-        @Body() body: any,
+        @Body() body: any,             //Chequeamos el datatype en el service. No anda con pipes.
         @UploadedFile() file: Express.Multer.File,
     ): Promise<Producto> {
         console.log(`[ProductoController] PATCH /producto/${id} -> body:`, body);
-        return this.productoService.updateWithImage(id, body, file);
+        return this.productoService.update(id, body, file);
     }
     
 
