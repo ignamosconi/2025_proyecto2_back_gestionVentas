@@ -14,7 +14,7 @@ export class ProveedorRepository implements ProveedorRepositoryInterface {
         this.repo = dataSource.getRepository(Proveedor);
     }
 
-    findAll(): Promise<Proveedor[]> {
+    async findAll(): Promise<Proveedor[]> {
         return this.repo.find();
     }
 
@@ -27,7 +27,7 @@ export class ProveedorRepository implements ProveedorRepositoryInterface {
     }
 
 
-    create(data: CreateProveedorDto): Promise<Proveedor> {
+    async create(data: CreateProveedorDto): Promise<Proveedor> {
         const entity = this.repo.create(data);
         return this.repo.save(entity);
     }

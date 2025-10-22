@@ -1,5 +1,6 @@
-import { BaseEntity, Column, DeleteDateColumn, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { BaseEntity, Column, DeleteDateColumn, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { UserRole } from '../helpers/enum.roles';
+import { Venta } from 'src/venta/entities/venta.entity';
 
 @Entity('users')
 export class UserEntity extends BaseEntity {
@@ -48,4 +49,9 @@ export class UserEntity extends BaseEntity {
 
   @Column({ type: 'timestamp', nullable: true })
   resetPasswordExpires?: Date | null;
+
+  //relación con ventas
+  @OneToMany(() => Venta, (venta) => venta.usuario) 
+  ventas: Venta[]; 
+
 }
