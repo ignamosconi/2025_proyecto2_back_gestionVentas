@@ -36,9 +36,11 @@ export interface LineaRepositoryInterface {
     findOneActive(id: number): Promise<Linea | null>;
     
     /**
-     * Busca una línea activa por su nombre.
+     * Busca una línea por su nombre.
+     * @param nombre El nombre de la línea a buscar
+     * @param includeDeleted Si es true, incluye también las líneas eliminadas en la búsqueda
      */
-    findByName(nombre: string): Promise<Linea | null>;
+    findByName(nombre: string, includeDeleted?: boolean): Promise<Linea | null>;
 
     //Get a las eliminadas
     findAllSoftDeleted(): Promise<Linea[]>;
