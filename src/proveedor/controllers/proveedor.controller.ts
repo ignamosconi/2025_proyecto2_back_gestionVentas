@@ -1,5 +1,5 @@
-import { Controller, Get, Post, Patch, Delete, Param, Body, ParseIntPipe, HttpCode, HttpStatus, Inject, UseGuards } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse, ApiBody, ApiParam } from '@nestjs/swagger';
+import { Controller, Get, Post, Patch, Delete, Param, Body, ParseIntPipe, HttpCode, HttpStatus, Inject, UseGuards, Put } from '@nestjs/common';
+import { ApiTags, ApiOperation, ApiBody, ApiParam } from '@nestjs/swagger';
 import { Roles } from '../../auth/decorators/roles.decorator';
 import { AuthGuard } from '../../auth/guards/auth.guard';
 import { RolesGuard } from '../../auth/guards/roles.guard';
@@ -27,6 +27,14 @@ export class ProveedorController implements ProveedorControllerInterface {
         return this.proveedorService.findAll();
     }
 
+    @Get('eliminados')
+    @Roles(UserRole.OWNER)
+    @ApiOperation({ summary: 'Obtener proveedores eliminados lógicamente (solo OWNER)' })
+    findAllSoftDeleted(): Promise<Proveedor[]> {
+        console.log(`[ProveedorController] GET /proveedor/eliminados - Obteniendo proveedores eliminados lógicamente.`);
+        return this.proveedorService.findAllSoftDeleted();
+    }
+
     @Get(':id')
     @ApiParam({ name: 'id', type: Number })
     @ApiOperation({ summary: 'Obtener un proveedor por ID' })
@@ -45,13 +53,13 @@ export class ProveedorController implements ProveedorControllerInterface {
         return this.proveedorService.create(data);
     }
 
-    @Patch(':id')
+    @Put(':id')
     @Roles(UserRole.OWNER)
     @ApiParam({ name: 'id', type: Number })
     @ApiBody({ type: UpdateProveedorDto })
     @ApiOperation({ summary: 'Actualizar un proveedor existente (solo OWNER)' })
     update(@Param('id', ParseIntPipe) id: number, @Body() data: UpdateProveedorDto): Promise<Proveedor> {
-        console.log(`[ProveedorController] PATCH /proveedor/${id} - Actualizando proveedor con datos:`, data);
+        console.log(`[ProveedorController] PUT /proveedor/${id} - Actualizando proveedor con datos:`, data);
         return this.proveedorService.update(id, data);
     }
 

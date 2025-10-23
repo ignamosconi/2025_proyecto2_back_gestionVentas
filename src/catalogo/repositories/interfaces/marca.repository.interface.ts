@@ -9,15 +9,17 @@ import { UpdateMarcaDto } from '../../dto/update-marca.dto';
  * La capa de Servicio dependerá solo de esta interfaz.
  */
 export interface MarcaRepositoryInterface {
-  
+
+  findAllDeleted(): Promise<Marca[]>;
   // --- Métodos Requeridos por la US 8 ---
 
   /**
    * Criterio: "No puede haber dos nombres de marcas iguales en el sistema."
    * Verifica la existencia de una marca por su nombre (para validación de unicidad).
    * @param name Nombre de la marca a buscar.
+   * @param includeDeleted Si es true, incluye también las marcas eliminadas en la búsqueda.
    */
-  findByName(name: string): Promise<Marca | null>;
+  findByName(name: string, includeDeleted?: boolean): Promise<Marca | null>;
 
   /**
    * Criterio: "El formulario de creación de marcas debe permitir ingresar: nombre, descripción."
@@ -71,4 +73,6 @@ export interface MarcaRepositoryInterface {
    * @param lineId ID de la línea a buscar.
    */
   findByLineId(lineId: number): Promise<Marca[]>;
+
+
 }

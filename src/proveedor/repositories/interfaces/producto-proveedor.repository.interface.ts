@@ -4,6 +4,7 @@ import { UpdateProductoProveedorDto } from '../../dto/update-producto-proveedor.
 
 export interface ProductoProveedorRepositoryInterface {
     findAll(): Promise<ProductoProveedor[]>;
+    findAllSoftDeleted(): Promise<ProductoProveedor[]>;
     findOne(id: number): Promise<ProductoProveedor | null>;
     findByProducto(idProducto: number): Promise<ProductoProveedor[]>;
     findByProveedor(idProveedor: number): Promise<ProductoProveedor[]>;

@@ -25,6 +25,10 @@ export class ProductoProveedorService implements ProductoProveedorServiceInterfa
         return this.productoProveedorRepo.findAll();
     }
 
+    async findAllSoftDeleted(): Promise<ProductoProveedor[]> {
+        return this.productoProveedorRepo.findAllSoftDeleted();
+    }
+
     async findOne(id: number): Promise<ProductoProveedor> {
         const entity = await this.productoProveedorRepo.findOne(id);
         if (!entity) throw new NotFoundException(`ProductoProveedor con id ${id} no encontrado`);

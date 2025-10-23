@@ -2,19 +2,12 @@ import { MarcaLinea } from '../../entities/marca-linea.entity';
 import { CreateMarcaLineaDto } from '../../dto/create-marca-linea.dto';
 
 export interface MarcaLineaRepositoryInterface {
-    /**
-     * Crea un nuevo vínculo Marca-Línea.
-     */
+
     create(data: CreateMarcaLineaDto): Promise<MarcaLinea>;
-    
-    /**
-     * Elimina un vínculo Marca-Línea existente.
-     */
-    delete(idMarca: number, idLinea: number): Promise<void>;
-    
-    /**
-     * Busca un vínculo por nombre de Línea dentro de una Marca específica. 
-     * Usado para la restricción de negocio (ej. "solo una línea 'Zapatillas' por Marca").
-     */
+    softDelete(idMarca: number, idLinea: number): Promise<void>;
+    restore(idMarca: number, idLinea: number): Promise<void>;
+    findOneByIds(marcaId: number, lineaId: number, includeDeleted?: boolean): Promise<MarcaLinea | null>;
     findAllByMarcaId(marcaId: number): Promise<MarcaLinea[]>;
+    findAllActive(): Promise<MarcaLinea[]>;
+    findAllDeleted(): Promise<MarcaLinea[]>;
 }

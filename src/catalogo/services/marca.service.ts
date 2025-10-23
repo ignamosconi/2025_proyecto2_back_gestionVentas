@@ -5,31 +5,22 @@ import {
     Inject, 
     BadRequestException, 
     NotFoundException, 
-    ConflictException, // ✅ Reemplazamos Forbidden por Conflict, más apropiado para dependencias
 } from '@nestjs/common';
 
-// Interfaz que implementamos
 import { MarcaServiceInterface } from './interfaces/marca.service.interface';
-
-// ⚠️ Rutas de importación importantes:
 import { MarcaRepositoryInterface } from '../repositories/interfaces/marca.repository.interface';
-import { MARCA_REPOSITORY } from '../../constants'; // ✅ Asumo que agregaste PRODUCTOS_VALIDATOR a constants
-//import { ProductosValidatorInterface } from '../../productos/interfaces/productos.validator.interface'; // ✅ Asumo la ruta de la interfaz de validación
+import { MARCA_REPOSITORY } from '../../constants';
 
 import { Marca } from '../entities/marca.entity';
 import { CreateMarcaDto } from '../dto/create-marca.dto';
 import { UpdateMarcaDto } from '../dto/update-marca.dto';
 
 @Injectable()
-export class MarcaService implements MarcaServiceInterface { // ✅ Aseguramos la implementación
+export class MarcaService implements MarcaServiceInterface {
     constructor(
         // Inyección del token del repositorio (DIP)
         @Inject(MARCA_REPOSITORY)
         private readonly marcaRepository: MarcaRepositoryInterface,
-
-        // ✅ NUEVO: Inyección del validador de productos (DIP)
-       // @Inject(PRODUCTOS_VALIDATOR)
-       // private readonly productosValidator: ProductosValidatorInterface,
     ) {}
 
 // ---------------------------------------------------------------------
@@ -41,6 +32,10 @@ export class MarcaService implements MarcaServiceInterface { // ✅ Aseguramos l
      */
     async findAll(): Promise<Marca[]> {
         return this.marcaRepository.findAllActive();
+    }
+
+    async findAllDeleted(): Promise<Marca[]> {
+        return this.marcaRepository.findAllDeleted();
     }
     
     /**
@@ -54,21 +49,31 @@ export class MarcaService implements MarcaServiceInterface { // ✅ Aseguramos l
         return marca;
     }
 
-// ---------------------------------------------------------------------
-// MÉTODOS DE ESCRITURA (CREATE, UPDATE, DELETE, RESTORE) (Lógica de softDelete modificada)
-// ---------------------------------------------------------------------
+    // ---------------------------------------------------------------------
+    // MÉTODOS DE ESCRITURA (CREATE, UPDATE, DELETE, RESTORE) (Lógica de softDelete modificada)
+    // ---------------------------------------------------------------------
 
     /**
      * Crea una nueva marca.
+     * Si existe una marca eliminada con el mismo nombre, primero la restaura.
      */
     async create(data: CreateMarcaDto): Promise<Marca> {
-        // Lógica de Negocio: 1. Validación de unicidad
-        const existingMarca = await this.marcaRepository.findByName(data.nombre);
-        if (existingMarca) {
+        // Lógica de Negocio: 1. Validación de unicidad entre marcas activas
+        const existingActiveMarca = await this.marcaRepository.findByName(data.nombre);
+        if (existingActiveMarca) {
             throw new BadRequestException(`El nombre de marca '${data.nombre}' ya existe en el sistema.`);
         }
         
-        // 2. Delegación de la creación al repositorio
+        // 2. Verificar si existe una marca eliminada con el mismo nombre
+        const existingDeletedMarca = await this.marcaRepository.findByName(data.nombre, true);
+        if (existingDeletedMarca && existingDeletedMarca.deletedAt) {
+            // Si existe una marca eliminada con el mismo nombre, la restauramos
+            await this.marcaRepository.restore(existingDeletedMarca.id);
+            // Y la actualizamos con los nuevos datos si hay cambios adicionales
+            return this.marcaRepository.update(existingDeletedMarca.id, data);
+        }
+        
+        // 3. Delegación de la creación al repositorio
         return this.marcaRepository.create(data);
     }
 
@@ -91,17 +96,17 @@ export class MarcaService implements MarcaServiceInterface { // ✅ Aseguramos l
     
     /**
      * Realiza la eliminación suave de la marca.
-     * ✅ RESTRICCIÓN: IMPEDIR ELIMINACIÓN si hay productos asociados.
+     * ESTRICCIÓN: IMPEDIR ELIMINACIÓN si hay productos asociados.
      */
     async softDelete(id: number): Promise<void> {
         // 1. Validar que la marca exista y esté activa antes de verificar productos
         await this.findOneActive(id); 
 
-        // 2. ✅ Lógica de Negocio: Verificar dependencia de productos
+        // 2. Lógica de Negocio: Verificar dependencia de productos
         //const hasProducts = await this.productosValidator.checkIfMarcaHasProducts(id);
 
         //if (hasProducts) {
-            // 🛑 Lanza 409 Conflict si la marca tiene dependencias activas
+            // Lanza 409 Conflict si la marca tiene dependencias activas
            // throw new ConflictException(
             //    `No se puede eliminar la marca con ID ${id} porque tiene productos asociados. Debe desvincular los productos primero.`
             //);

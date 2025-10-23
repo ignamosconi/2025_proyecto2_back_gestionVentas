@@ -10,6 +10,7 @@ export interface ProductoControllerInterface {
     // US 7: Lectura
     findAll(): Promise<Producto[]>; 
     findOne(id: number): Promise<Producto>;
+    findAllSoftDeleted(): Promise<Producto[]>;
     
     // US 7 & US 10: Creación/Actualización (Requiere OWNER)
     create(data: any, file: Express.Multer.File): Promise<Producto>;

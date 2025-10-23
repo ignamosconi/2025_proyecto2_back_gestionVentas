@@ -65,6 +65,14 @@ export class ProductoController implements ProductoControllerInterface {
         return this.productoService.findAll();
     }
 
+    @Get('eliminados')
+    @Roles(UserRole.OWNER) // Solo los OWNER pueden ver productos eliminados
+    @ApiOperation({ summary: 'Listar productos eliminados lógicamente.' })
+    @ApiResponse({ status: 200, description: 'Lista de productos soft-deleted.' })
+    findAllSoftDeleted(): Promise<Producto[]> {
+        return this.productoService.findAllSoftDeleted();
+    }
+
     @Get(':id')
     @ApiOperation({ summary: 'US 7: Obtener un producto activo por ID.' })
     @ApiParam({ name: 'id', description: 'ID del producto', type: Number })

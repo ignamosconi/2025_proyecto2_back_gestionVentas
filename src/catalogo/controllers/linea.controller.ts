@@ -27,12 +27,13 @@ import { UserRole } from '../../users/helpers/enum.roles';
 import { AuthGuard } from '../../auth/guards/auth.guard';
 import { RolesGuard } from '../../auth/guards/roles.guard';
 import { Roles } from '../../auth/decorators/roles.decorator';
+import { LineaControllerInterface } from './interfaces/linea.controller-interface';
 
 
 // 🛡️ Aplicamos los Guards a TODO el controlador por defecto
 @UseGuards(AuthGuard, RolesGuard) 
 @Controller('lineas') 
-export class LineaController {
+export class LineaController implements LineaControllerInterface {
     constructor(
         @Inject(LINEA_SERVICE)
         private readonly lineaService: LineaServiceInterface,
@@ -50,6 +51,12 @@ export class LineaController {
     findAll(): Promise<Linea[]> {
         console.log(`[LineaController] GET /lineas - Obteniendo todas las líneas activas.`);
         return this.lineaService.findAll();
+    }
+
+    @Get('/deleted')
+    findAllSoftDeleted(): Promise<Linea[]> {
+        console.log(`[LineaController] GET /lineas/deleted - Obteniendo todas las líneas eliminadas.`);
+        return this.lineaService.findAllSoftDeleted();
     }
 
     /**

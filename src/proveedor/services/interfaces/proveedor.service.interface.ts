@@ -4,6 +4,7 @@ import { UpdateProveedorDto } from '../../dto/update-proveedor.dto';
 
 export interface ProveedorServiceInterface {
     findAll(): Promise<Proveedor[]>;
+    findAllSoftDeleted(): Promise<Proveedor[]>;
     findOne(idProveedor: number): Promise<Proveedor>;
     findOneActive(id: number): Promise<Proveedor>;
     create(dto: CreateProveedorDto): Promise<Proveedor>;

@@ -1,5 +1,5 @@
 // src/proveedores/services/proveedor.service.ts
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, ConflictException } from '@nestjs/common';
 import { ProveedorServiceInterface } from './interfaces/proveedor.service.interface';
 import { ProveedorRepositoryInterface } from '../repositories/interfaces/proveedor.repository.interface';
 import { Proveedor } from '../entities/proveedor.entity';
@@ -25,13 +25,46 @@ export class ProveedorService implements ProveedorServiceInterface {
         return proveedor;
     }
 
-    create(data: CreateProveedorDto): Promise<Proveedor> {
-        return this.proveedorRepository.create(data);
+    findAllSoftDeleted(): Promise<Proveedor[]> {
+        return this.proveedorRepository.findAllSoftDeleted();
+    }
+
+    async create(data: CreateProveedorDto): Promise<Proveedor> {
+        // Verificar si ya existe un proveedor activo con ese nombre
+        const existingProveedor = await this.proveedorRepository.findByNombreActive(data.nombre);
+        if (existingProveedor) {
+            throw new ConflictException('Ya existe un proveedor con ese nombre');
+        }
+
+        try {
+            return await this.proveedorRepository.create(data);
+        } catch (error) {
+            if (error.code === '23505' || error.detail?.includes('already exists')) {
+                throw new ConflictException('Ya existe un proveedor con ese nombre');
+            }
+            throw error;
+        }
     }
 
     async update(id: number, data: UpdateProveedorDto): Promise<Proveedor> {
         const proveedor = await this.findOne(id);
-        return this.proveedorRepository.update(id, data);
+        
+        // Si se está actualizando el nombre, verificar que no exista otro proveedor activo con ese nombre
+        if (data.nombre && data.nombre !== proveedor.nombre) {
+            const existingProveedor = await this.proveedorRepository.findByNombreActive(data.nombre);
+            if (existingProveedor && existingProveedor.idProveedor !== id) {
+                throw new ConflictException('Ya existe un proveedor con ese nombre');
+            }
+        }
+
+        try {
+            return await this.proveedorRepository.update(id, data);
+        } catch (error) {
+            if (error.code === '23505' || error.detail?.includes('already exists')) {
+                throw new ConflictException('Ya existe un proveedor con ese nombre');
+            }
+            throw error;
+        }
     }
 
     async softDelete(id: number): Promise<void> {

@@ -1,7 +1,7 @@
 // src/catalogo/repositories/linea.repository.ts
 
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { Repository, DataSource, IsNull } from 'typeorm';
+import { Repository, DataSource, IsNull, Not } from 'typeorm';
 
 import { Linea } from '../entities/linea.entity';
 import { CreateLineaDto } from '../dto/create-linea.dto';
@@ -53,6 +53,13 @@ export class LineaRepository implements LineaRepositoryInterface {
         }
     }
 
+    async findAllSoftDeleted(): Promise<Linea[]> {
+        return this.repository.find({
+            where: { deletedAt: Not(IsNull()) },
+            withDeleted: true, // Necesario para incluir soft-deleted en el query
+        });
+    }
+
     async findAllActive(): Promise<Linea[]> {
         // TypeORM excluye automáticamente las eliminadas si se usa el decorador @DeleteDateColumn
         return this.repository.find();
@@ -63,8 +70,11 @@ export class LineaRepository implements LineaRepositoryInterface {
         return this.repository.findOne({ where: { id } });
     }
 
-    async findByName(nombre: string): Promise<Linea | null> {
-        // Busca una línea por nombre y que no esté eliminada
-        return this.repository.findOne({ where: { nombre } });
+    async findByName(nombre: string, includeDeleted: boolean = false): Promise<Linea | null> {
+        // Si includeDeleted es true, busca la línea por nombre incluyendo las eliminadas
+        return this.repository.findOne({ 
+            where: { nombre },
+            withDeleted: includeDeleted // Incluir registros eliminados si se solicita
+        });
     }
 }

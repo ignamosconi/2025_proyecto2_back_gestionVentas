@@ -8,7 +8,8 @@ export interface LineaServiceInterface {
     // Lectura
     findAll(): Promise<Linea[]>;
     findOneActive(id: number): Promise<Linea>;
-
+    findAllSoftDeleted(): Promise<Linea[]>
+    
     // Escritura
     create(data: CreateLineaDto): Promise<Linea>;
     update(id: number, data: UpdateLineaDto): Promise<Linea>;

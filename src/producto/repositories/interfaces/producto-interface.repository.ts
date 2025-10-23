@@ -8,6 +8,8 @@ export interface ProductoRepositoryInterface {
     findAllActive(): Promise<Producto[]>; // US 7: Excluye eliminados
     findOneActive(idProducto: number): Promise<Producto | null>; // US 7: Excluye eliminados
     findOneInactive(idProducto: number): Promise<Producto | null>;
+    findAllSoftDeleted(): Promise<Producto[]>;
+
     create(data: CreateProductoDto | DeepPartial<Producto>): Promise<Producto>;
     update(idProducto: number, data: UpdateProductoDto): Promise<Producto>;
     softDelete(idProducto: number): Promise<void>; // US 7: Eliminación Lógica

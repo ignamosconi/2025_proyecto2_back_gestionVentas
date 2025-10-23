@@ -1,7 +1,7 @@
 // src/catalogo/repositories/marca-linea.repository.ts
 
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { DataSource, Repository } from 'typeorm';
+import { DataSource, IsNull, Not, Repository } from 'typeorm';
 
 import { MarcaLinea } from '../entities/marca-linea.entity';
 import { Linea } from '../entities/linea.entity'; // Necesario para la unión
@@ -24,17 +24,46 @@ export class MarcaLineaRepository implements MarcaLineaRepositoryInterface {
         return this.repository.save(marcaLinea);
     }
 
-    async delete(marcaId: number, lineaId: number): Promise<void> {
-        // TypeORM usa el objeto de clave primaria para la eliminación
-        const result = await this.repository.delete({ 
-            marcaId, 
-            lineaId 
-        });
+    async softDelete(marcaId: number, lineaId: number): Promise<void> {
+        const entity = await this.repository.findOneBy({ marcaId, lineaId });
 
-        // Si no se eliminó ninguna fila, significa que el vínculo no existía
-        if (result.affected === 0) {
+        if (!entity) {
             throw new NotFoundException(`Vínculo Marca ID ${marcaId} - Línea ID ${lineaId} no encontrado.`);
         }
+
+        await this.repository.softRemove(entity);
+    }
+    
+    async restore(marcaId: number, lineaId: number): Promise<void> {
+        const result = await this.repository.restore({ marcaId, lineaId });
+        
+        if (result.affected === 0) {
+            throw new NotFoundException(`Vínculo Marca ID ${marcaId} - Línea ID ${lineaId} no encontrado para restaurar.`);
+        }
+    }
+    
+    async findOneByIds(marcaId: number, lineaId: number, includeDeleted: boolean = false): Promise<MarcaLinea | null> {
+        return this.repository.findOne({
+            where: { marcaId, lineaId },
+            withDeleted: includeDeleted
+        });
+    }
+
+    async findAllActive(): Promise<MarcaLinea[]> {
+        return this.repository.find({
+            where: {},
+            relations: ['marca', 'linea'],
+        });
+    }
+
+    async findAllDeleted(): Promise<MarcaLinea[]> {
+        return this.repository.find({
+            withDeleted: true,
+            where: {
+                deletedAt: Not(IsNull()),
+            },
+            relations: ['marca', 'linea'],
+        });
     }
 
     async findLineaByNameForMarca(marcaId: number, nombreLinea: string): Promise<MarcaLinea | null> {

@@ -22,6 +22,16 @@ export class ProductoProveedorRepository implements ProductoProveedorRepositoryI
             .getMany();
     }
 
+    async findAllSoftDeleted(): Promise<ProductoProveedor[]> {
+        return this.repository
+            .createQueryBuilder('pp')
+            .withDeleted()  // Incluir registros eliminados lógicamente
+            .where('pp.deletedAt IS NOT NULL') // Solo los eliminados
+            .leftJoinAndSelect('pp.producto', 'producto')
+            .leftJoinAndSelect('pp.proveedor', 'proveedor')
+            .getMany();
+    }
+
     async findOne(id: number): Promise<ProductoProveedor | null> {
         return this.repository
             .createQueryBuilder('pp')

@@ -39,23 +39,43 @@ export class MarcaLineaService implements MarcaLineaServiceInterface {
             this.lineaService.findOneActive(data.lineaId),
         ]);
 
-        // 2. Verificar si ya existe manualmente (recomendado)
+        // 2. Verificar si ya existe manualmente (solo registros activos)
         const existentes = await this.marcaLineaRepository.findAllByMarcaId(data.marcaId);
         const yaExiste = existentes.some(e => e.lineaId === data.lineaId);
         if (yaExiste) {
             throw new ConflictException(
-                `El vínculo Marca ID ${data.marcaId} - Línea ID ${data.lineaId} ya existe.`
+                `El vínculo de esa línea con esa marca ya existe.`
             );
         }
+        
+        // 3. Verificar si existe un registro eliminado con los mismos IDs
+        const existingDeletedRecord = await this.marcaLineaRepository.findOneByIds(
+            data.marcaId, 
+            data.lineaId, 
+            true // incluir eliminados
+        );
+        
+        // 4. Si existe un registro eliminado, restaurarlo en lugar de crear uno nuevo
+        if (existingDeletedRecord && existingDeletedRecord.deletedAt) {
+            await this.marcaLineaRepository.restore(data.marcaId, data.lineaId);
+            return existingDeletedRecord;
+        }
 
-        // 3. Crear vínculo
+        // 5. Crear vínculo (solo si no existe uno eliminado)
         return await this.marcaLineaRepository.create(data);
     }
 
     
     async unassignLineaFromMarca(marcaId: number, lineaId: number): Promise<void> {
-        // Delegamos al repositorio la eliminación del registro
-        await this.marcaLineaRepository.delete(marcaId, lineaId);
+        await this.marcaLineaRepository.softDelete(marcaId, lineaId);
+    }
+
+    async findAll(): Promise<MarcaLinea[]> {
+        return this.marcaLineaRepository.findAllActive();
+    }
+
+    async findAllDeleted(): Promise<MarcaLinea[]> {
+        return this.marcaLineaRepository.findAllDeleted();
     }
 
     async findAllByMarcaId(marcaId: number): Promise<MarcaLinea[]> {

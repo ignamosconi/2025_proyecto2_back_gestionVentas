@@ -52,6 +52,14 @@ export class ProductoRepository implements ProductoRepositoryInterface {
             .andWhere(this.ALERTA_STOCK_QUERY) 
             .getMany();
     }
+
+    async findAllSoftDeleted(): Promise<Producto[]> {
+        return this.repository.find({
+            where: { deletedAt: Not(IsNull()) },
+            withDeleted: true,
+            relations: ['linea', 'marca'],
+        });
+    }
     
     // ---------------------------------------------------------------------
     // ESCRITURA (US 7)

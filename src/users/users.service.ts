@@ -18,6 +18,8 @@ import { validatePasswordStrength } from './helpers/validatePasswordStrength';
 import { UserRole } from './helpers/enum.roles';
 import { IUsersService } from './interfaces/users.service.interface';
 import type { IMailerService } from 'src/mailer/interfaces/mailer.service.interface';
+import { IAuditoriaService } from 'src/auditoria/interfaces/auditoria.service.interface';
+import { EventosAuditoria } from 'src/auditoria/helpers/enum.eventos';
 
 @Injectable()
 export class UsersService implements IUsersService {
@@ -27,6 +29,9 @@ export class UsersService implements IUsersService {
 
     @Inject('IMailerService')
     private readonly mailerService: IMailerService,
+
+    @Inject('IAuditoriaService')
+    private readonly auditoriaService: IAuditoriaService, 
   ) {}
 
   private toUserResponse(user: UserEntity): UserResponseDto {
@@ -96,6 +101,14 @@ export class UsersService implements IUsersService {
       `<h1>Hola ${savedUser.firstName} 👋</h1><p>Gracias por registrarte como empleado.</p>`,
     );
 
+    //Auditar el proceso
+    await this.auditoriaService.registrarEvento(
+      savedUser.id, // usuario que fue creado
+      EventosAuditoria.CREAR_USUARIO_EMPLOYEE,
+      `Usuario EMPLEADO creado con email ${savedUser.email}`,
+    );
+
+
     return this.toUserResponse(savedUser);
   }
 
@@ -127,6 +140,14 @@ export class UsersService implements IUsersService {
       '¡Bienvenido!',
       `<h1>Hola ${savedUser.firstName}</h1><p>Tu cuenta fue creada por un OWNER.</p>`,
     );
+
+    //Auditar el proceso
+    await this.auditoriaService.registrarEvento(
+      savedUser.id, // usuario que fue creado
+      EventosAuditoria.CREAR_USUARIO_OWNER,
+      `Usuario DUEÑO creado con email ${savedUser.email}`,
+    );
+    
     return this.toUserResponse(savedUser);
   }
 
