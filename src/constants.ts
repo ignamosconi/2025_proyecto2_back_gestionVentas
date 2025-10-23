@@ -14,3 +14,6 @@ export const PRODUCTO_PROVEEDOR_REPOSITORY = 'ProductoProveedorRepositoryInterfa
 export const PRODUCTO_PROVEEDOR_SERVICE = 'ProductoProveedorServiceInterface';
 export const PROVEEDOR_REPOSITORY = 'ProveedorRepositoryInterface';
 export const PROVEEDOR_SERVICE = 'ProveedorServiceInterface';
+export const COMPRA_REPOSITORY = 'CompraRepositoryInterface';
+export const COMPRA_SERVICE = 'CompraServiceInterface';
+export const USUARIO_REPOSITORY = 'UsuarioRepositoryInterface';
