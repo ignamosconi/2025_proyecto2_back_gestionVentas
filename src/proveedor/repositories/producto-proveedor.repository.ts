@@ -59,6 +59,17 @@ export class ProductoProveedorRepository implements ProductoProveedorRepositoryI
             .getMany();
     }
 
+    async findExistingRelation(idProducto: number, idProveedor: number): Promise<ProductoProveedor | null> {
+        return this.repository
+            .createQueryBuilder('pp')
+            .withDeleted() // Incluir registros soft-deleted
+            .leftJoinAndSelect('pp.producto', 'producto')
+            .leftJoinAndSelect('pp.proveedor', 'proveedor')
+            .where('pp.idProducto = :idProducto', { idProducto })
+            .andWhere('pp.idProveedor = :idProveedor', { idProveedor })
+            .getOne();
+    }
+
     async create(data: CreateProductoProveedorDto): Promise<ProductoProveedor> {
         const entity = this.repository.create(data);
         return this.repository.save(entity);

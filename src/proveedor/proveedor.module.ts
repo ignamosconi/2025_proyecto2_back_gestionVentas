@@ -1,5 +1,5 @@
 // src/proveedores/proveedor.module.ts
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
 import { Proveedor } from './entities/proveedor.entity';
@@ -30,7 +30,7 @@ import {
         TypeOrmModule.forFeature([Proveedor, ProductoProveedor]),
         AuthModule,       // Para AuthGuard y RolesGuard
         UsersModule,      // Para la verificación de roles
-        ProductoModule,   // Para inyectar ProductoService y validar existencia
+        forwardRef(() => ProductoModule),   // Para inyectar ProductoService y validar existencia
     ],
     controllers: [ProveedorController, ProductoProveedorController],
     providers: [
@@ -51,6 +51,6 @@ import {
             useClass: ProductoProveedorService,
         },
     ],
-    exports: [PROVEEDOR_SERVICE, PRODUCTO_PROVEEDOR_SERVICE],
+    exports: [PROVEEDOR_SERVICE, PRODUCTO_PROVEEDOR_SERVICE, PRODUCTO_PROVEEDOR_REPOSITORY],
 })
 export class ProveedorModule {}

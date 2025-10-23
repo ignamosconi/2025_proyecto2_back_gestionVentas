@@ -20,6 +20,7 @@ import { UsersService } from 'src/users/users.service';
 import { MailerService } from '@nestjs-modules/mailer';
 import { MailerModule } from 'src/mailer/mailer.module';
 import { S3Module } from 'src/s3/s3.module';
+import { ProveedorModule } from '../proveedor/proveedor.module';
 
 @Module({
     imports: [
@@ -32,6 +33,7 @@ import { S3Module } from 'src/s3/s3.module';
         UsersModule,    // Necesario para los Roles
         MailerModule,   // Usado para envío de correos a owners cuando hay bajo stock
         S3Module,       //Usado para subir imágenes de productos
+        forwardRef(() => ProveedorModule), // Para validar proveedores asociados
     ],
     controllers: [
         ProductoController
