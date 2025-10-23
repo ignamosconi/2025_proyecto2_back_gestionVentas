@@ -9,6 +9,7 @@ import { S3Module } from './s3/s3.module';
 import { CatalogoModule } from './catalogo/catalogo.module';
 import { ProveedorModule } from './proveedor/proveedor.module';
 import { ProductoModule } from './producto/producto.module';
+import { AuditoriaModule } from './auditoria/auditoria.module';
 
 @Module({
   imports: [
@@ -28,10 +29,8 @@ import { ProductoModule } from './producto/producto.module';
         username: configService.get<string>('DB_USERNAME'),
         password: configService.get<string>('DB_PASSWORD'),
         database: configService.get<string>('DB_NAME'), 
-        
-        autoLoadEntities: true, //cambiar a entities: [UserEntity, RolEntity, ...]
-    
-        synchronize: true, // Deuda técnica
+        autoLoadEntities: true,
+        synchronize: false
       }),
     }),
     CatalogoModule,
@@ -40,6 +39,7 @@ import { ProductoModule } from './producto/producto.module';
     S3Module,
     ProveedorModule,
     ProductoModule,
+    AuditoriaModule,
   ],
   controllers: [AppController],
   providers: [AppService],

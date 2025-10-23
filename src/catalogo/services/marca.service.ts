@@ -55,15 +55,25 @@ export class MarcaService implements MarcaServiceInterface {
 
     /**
      * Crea una nueva marca.
+     * Si existe una marca eliminada con el mismo nombre, primero la restaura.
      */
     async create(data: CreateMarcaDto): Promise<Marca> {
-        // Lógica de Negocio: 1. Validación de unicidad
-        const existingMarca = await this.marcaRepository.findByName(data.nombre);
-        if (existingMarca) {
+        // Lógica de Negocio: 1. Validación de unicidad entre marcas activas
+        const existingActiveMarca = await this.marcaRepository.findByName(data.nombre);
+        if (existingActiveMarca) {
             throw new BadRequestException(`El nombre de marca '${data.nombre}' ya existe en el sistema.`);
         }
         
-        // 2. Delegación de la creación al repositorio
+        // 2. Verificar si existe una marca eliminada con el mismo nombre
+        const existingDeletedMarca = await this.marcaRepository.findByName(data.nombre, true);
+        if (existingDeletedMarca && existingDeletedMarca.deletedAt) {
+            // Si existe una marca eliminada con el mismo nombre, la restauramos
+            await this.marcaRepository.restore(existingDeletedMarca.id);
+            // Y la actualizamos con los nuevos datos si hay cambios adicionales
+            return this.marcaRepository.update(existingDeletedMarca.id, data);
+        }
+        
+        // 3. Delegación de la creación al repositorio
         return this.marcaRepository.create(data);
     }
 

@@ -8,11 +8,13 @@ import { UsersModule } from '../users/users.module';
 import { AuthGuard } from './guards/auth.guard';
 import { JwtService } from '@nestjs/jwt';
 import { RolesGuard } from './guards/roles.guard';
+import { AuditoriaModule } from 'src/auditoria/auditoria.module';
 
 @Module({
   imports: [
     JwtModule,
     forwardRef(() => UsersModule), // Necesario para usar UsersService en AuthService
+    forwardRef(() => AuditoriaModule),
   ],
   controllers: [AuthController],
   providers: [AuthService, AuthGuard, JwtService, RolesGuard],

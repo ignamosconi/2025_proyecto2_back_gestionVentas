@@ -33,6 +33,21 @@ export class MarcaLineaRepository implements MarcaLineaRepositoryInterface {
 
         await this.repository.softRemove(entity);
     }
+    
+    async restore(marcaId: number, lineaId: number): Promise<void> {
+        const result = await this.repository.restore({ marcaId, lineaId });
+        
+        if (result.affected === 0) {
+            throw new NotFoundException(`Vínculo Marca ID ${marcaId} - Línea ID ${lineaId} no encontrado para restaurar.`);
+        }
+    }
+    
+    async findOneByIds(marcaId: number, lineaId: number, includeDeleted: boolean = false): Promise<MarcaLinea | null> {
+        return this.repository.findOne({
+            where: { marcaId, lineaId },
+            withDeleted: includeDeleted
+        });
+    }
 
     async findAllActive(): Promise<MarcaLinea[]> {
         return this.repository.find({

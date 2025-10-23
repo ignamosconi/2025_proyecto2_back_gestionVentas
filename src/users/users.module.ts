@@ -9,6 +9,7 @@ import { UserRepository } from './repositories/users.repository';
 import { JwtModule } from '../auth/jwt/jwt.module';
 import { AuthModule } from 'src/auth/auth.module';
 import { MailerModule } from 'src/mailer/mailer.module';
+import { AuditoriaModule } from 'src/auditoria/auditoria.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { MailerModule } from 'src/mailer/mailer.module';
     JwtModule, //Usado para AuthGuard
     forwardRef(() => AuthModule),
     MailerModule,
+    AuditoriaModule,
   ],
   providers: [
     {

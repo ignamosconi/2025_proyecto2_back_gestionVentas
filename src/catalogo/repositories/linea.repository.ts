@@ -70,8 +70,11 @@ export class LineaRepository implements LineaRepositoryInterface {
         return this.repository.findOne({ where: { id } });
     }
 
-    async findByName(nombre: string): Promise<Linea | null> {
-        // Busca una línea por nombre y que no esté eliminada
-        return this.repository.findOne({ where: { nombre } });
+    async findByName(nombre: string, includeDeleted: boolean = false): Promise<Linea | null> {
+        // Si includeDeleted es true, busca la línea por nombre incluyendo las eliminadas
+        return this.repository.findOne({ 
+            where: { nombre },
+            withDeleted: includeDeleted // Incluir registros eliminados si se solicita
+        });
     }
 }

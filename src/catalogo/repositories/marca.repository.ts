@@ -25,10 +25,13 @@ export class MarcaRepository implements MarcaRepositoryInterface {
   // --- Métodos Requeridos por la US 8 ---
   // =================================================================
 
-  async findByName(name: string): Promise<Marca | null> {
-    // Buscamos una marca que coincida con el nombre y que NO haya sido eliminada suavemente (deletedAt IS NULL).
-    // TypeORM maneja el filtro deletedAt automáticamente en .findOneBy() si la entidad tiene @DeleteDateColumn.
-    return this.marcaOrmRepository.findOneBy({ nombre: name });
+  async findByName(name: string, includeDeleted: boolean = false): Promise<Marca | null> {
+    // Buscamos una marca que coincida con el nombre.
+    // Si includeDeleted es true, incluimos también las marcas eliminadas en la búsqueda
+    return this.marcaOrmRepository.findOne({ 
+      where: { nombre: name },
+      withDeleted: includeDeleted // Incluir registros eliminados si se solicita
+    });
   }
 
   async create(data: CreateMarcaDto): Promise<Marca> {

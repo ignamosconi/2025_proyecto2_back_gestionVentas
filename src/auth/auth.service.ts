@@ -16,14 +16,20 @@ import { randomBytes } from 'crypto';
 import { addHours, isAfter } from 'date-fns';
 import { validatePasswordStrength } from '../users/helpers/validatePasswordStrength';
 import { ConfigService } from '@nestjs/config';
-import { IUsersService } from '../users/interfaces/users.service.interface';
+import { IUsersService } from 'src/users/interfaces/users.service.interface';
+import { IAuditoriaService } from 'src/auditoria/interfaces/auditoria.service.interface';
+import { EventosAuditoria } from 'src/auditoria/helpers/enum.eventos';
 
 @Injectable()
 export class AuthService implements IAuthService {
   constructor(
-    @Inject('IUsersService') private readonly usersService: IUsersService,
     private readonly configService: ConfigService,
-    @Inject('IJwtService') private readonly jwtService: IJwtService,
+    @Inject('IUsersService')
+    private readonly usersService: IUsersService,
+    @Inject('IJwtService')
+    private readonly jwtService: IJwtService,
+    @Inject('IAuditoriaService')
+    private readonly auditoriaService: IAuditoriaService,
   ) {}
 
   async tokens(token: string) {
@@ -44,18 +50,26 @@ export class AuthService implements IAuthService {
         'No se pudo loguear. Contraseña incorrecta.',
       );
 
+    //Auditamos un login exitoso
+    await this.auditoriaService.registrarEvento(
+      user.id,
+      EventosAuditoria.LOGIN,
+      'Login exitoso del usuario ' + body.email,
+    );
+
     //Si el usuario pasó el logueo, le damos los tokens
     return {
       //En generateToken() se especifica que si no pasás nada, type = 'access' → usa config.access
-      accessToken: this.jwtService.generateToken({ email: user.email, role: user.role }),
+      accessToken: this.jwtService.generateToken({
+        email: user.email,
+        role: user.role,
+      }),
       refreshToken: this.jwtService.generateToken(
         { email: user.email, role: user.role },
         'refresh',
       ),
     };
   }
-
-
 
   /*
     OLVIDÉ MI CONTRASEÑA
@@ -83,16 +97,27 @@ export class AuthService implements IAuthService {
     return { message: 'Email para restablecer contraseña enviado.' };
   }
 
-  async resetPassword(token: string, newPassword: string): Promise<{ message: string }> {
+  async resetPassword(
+    token: string,
+    newPassword: string,
+  ): Promise<{ message: string }> {
     const user = await this.usersService.findByResetToken(token);
     if (!user) throw new UnauthorizedException('Token inválido o expirado.');
 
-    if (!user.resetPasswordExpires || isAfter(new Date(), user.resetPasswordExpires)) {
+    if (
+      !user.resetPasswordExpires ||
+      isAfter(new Date(), user.resetPasswordExpires)
+    ) {
       throw new UnauthorizedException('Token expirado.');
     }
 
     // Validar nuevo password
-    validatePasswordStrength(newPassword, user.email, user.firstName, user.lastName);
+    validatePasswordStrength(
+      newPassword,
+      user.email,
+      user.firstName,
+      user.lastName,
+    );
 
     // Cambiar contraseña y limpiar token
     await this.usersService.updatePassword(user.id, newPassword);
