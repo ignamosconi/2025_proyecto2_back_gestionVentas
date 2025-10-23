@@ -7,6 +7,8 @@ import { MarcaLinea } from '../catalogo/entities/marca-linea.entity';
 import { Producto } from '../producto/entities/producto.entity';
 import { Proveedor } from '../proveedor/entities/proveedor.entity';
 import { ProductoProveedor } from '../proveedor/entities/producto-proveedor.entity';
+import { AuditLogEntity } from '../auditoria/entities/registro-auditoria.entity';
+
 
 // Load environment variables from .env file
 dotenv.config();
@@ -26,6 +28,7 @@ export const AppDataSource = new DataSource({
     Producto,
     Proveedor,
     ProductoProveedor,
+    AuditLogEntity,
   ],
   migrations: ['src/database/migrations/*.ts'],
   synchronize: false, // Set to false for production
