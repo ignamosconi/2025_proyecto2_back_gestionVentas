@@ -52,6 +52,7 @@ import { S3Module } from 'src/s3/s3.module';
     // Exportamos el servicio y su token por si otros módulos necesitan inyectar el ProductoService
     exports: [
         PRODUCTO_SERVICE,
+        PRODUCTO_REPOSITORY
     ]
 })
 export class ProductoModule {}
