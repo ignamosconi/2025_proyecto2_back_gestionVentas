@@ -32,7 +32,7 @@ import { VentaModule } from './venta/venta.module';
         
         autoLoadEntities: true, //cambiar a entities: [UserEntity, RolEntity, ...]
     
-        synchronize: true, // Deuda técnica
+        synchronize: false, // Deuda técnica
       }),
     }),
     CatalogoModule,
