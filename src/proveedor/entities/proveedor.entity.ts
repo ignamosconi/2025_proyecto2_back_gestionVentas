@@ -1,14 +1,18 @@
 // src/proveedores/entities/proveedor.entity.ts
-import { Entity, PrimaryGeneratedColumn, Column, OneToMany, DeleteDateColumn } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany, DeleteDateColumn, Index } from 'typeorm';
 import { ProductoProveedor } from './producto-proveedor.entity';
 
 
 @Entity()
+@Index('IDX_PROVEEDOR_NOMBRE_ACTIVE', ['nombre'], { 
+    unique: true,
+    where: '"deletedAt" IS NULL'
+})
 export class Proveedor {
     @PrimaryGeneratedColumn()
     idProveedor: number;
 
-    @Column({ unique: true })
+    @Column()
     nombre: string;
 
     @Column({ nullable: true })

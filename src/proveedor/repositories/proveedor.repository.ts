@@ -30,6 +30,15 @@ export class ProveedorRepository implements ProveedorRepositoryInterface {
         return proveedor;
     }
 
+    async findByNombreActive(nombre: string): Promise<Proveedor | null> {
+        return this.repo.findOne({ 
+            where: { 
+                nombre, 
+                deletedAt: IsNull() 
+            } 
+        });
+    }
+
 
     async create(data: CreateProveedorDto): Promise<Proveedor> {
         const entity = this.repo.create(data);
