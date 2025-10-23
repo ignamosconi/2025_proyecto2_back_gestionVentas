@@ -15,4 +15,16 @@ export class UserResponseDto {
 
   @ApiProperty()
   role: string;
+
+  @ApiProperty()
+  address?: string;
+
+  @ApiProperty()
+  phone?: string;
+
+  @ApiProperty()
+  createdAt: Date;
+
+  @ApiProperty()
+  updatedAt: Date;
 }

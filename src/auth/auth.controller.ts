@@ -20,7 +20,7 @@ export class AuthController implements IAuthController {
   @ApiResponse({ status: 201, description: 'Access y Refresh tokens generados correctamente' })
   @Post('login')
   login(@Body() body: LoginDTO): Promise<TokenPairDTO> {
-    console.log('Logueando al usuario ' + body.email)
+    console.log(`[AuthController] POST /auth/login - Iniciando sesión para usuario: ${body.email}`);
     return this.service.login(body);
   }
 
@@ -33,7 +33,7 @@ export class AuthController implements IAuthController {
   @ApiResponse({ status: 200, description: 'Tokens renovados' })
   @Post('tokens') 
   tokens(@RefreshToken() token: string){ 
-    console.log('Generando nuevos tokens')
+    console.log(`[AuthController] POST /auth/tokens - Renovando tokens con refresh token.`);
     return this.service.tokens(token);
   }
 
@@ -48,6 +48,7 @@ export class AuthController implements IAuthController {
   @UseGuards(AuthGuard)
   @Get('me')
   async me(@Req() req: RequestWithUser) {   //No tiene DTO porque es de práctica.
+    console.log(`[AuthController] GET /auth/me - Devolviendo datos del usuario autenticado: ${req.user.email}`);
     return {
       id: req.user.id,
       email: req.user.email,
@@ -68,12 +69,14 @@ export class AuthController implements IAuthController {
   // Endpoint para solicitar recuperación de contraseña
   @Post('forgot-password')
   async forgotPassword(@Body() body: ForgotPasswordDTO) {
+    console.log(`[AuthController] POST /auth/forgot-password - Solicitando recuperación para: ${body.email}`);
     return this.service.forgotPassword(body.email);
   }
 
   // Endpoint para resetear contraseña usando token
   @Post('reset-password')
   async resetPassword(@Body() body: ResetPasswordDTO) {
+    console.log(`[AuthController] POST /auth/reset-password - Reseteando contraseña con token.`);
     return this.service.resetPassword(body.token, body.password);
   }
 }

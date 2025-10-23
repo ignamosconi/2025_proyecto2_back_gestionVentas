@@ -2,6 +2,7 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { ValidationPipe } from '@nestjs/common';
+import { json } from 'express';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -23,13 +24,16 @@ async function bootstrap() {
 
   //Documentación de endpoints con Swagger → http://localhost:3000/docs
   const config = new DocumentBuilder()
-    .setTitle('IMC App API')
-    .setDescription('API para autenticación, usuarios y cálculo de IMC')
+    .setTitle('Ventas App API')
+    .setDescription('API para autenticación, usuarios y gestión de ventas')
     .setVersion('1.0')
     .addBearerAuth() // Si usás JWT
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('docs', app, document);
+
+  //Multer
+  app.use(json({ limit: '10mb' }));
 
   await app.listen(process.env.PORT ?? 3000);
 }

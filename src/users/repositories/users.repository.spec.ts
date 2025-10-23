@@ -9,7 +9,7 @@ describe('UserRepository', () => {
   let userRepository: UserRepository;
   let mockTypeOrmRepo: jest.Mocked<Repository<UserEntity>>;
 
-  const mockUser: UserEntity = {
+  const mockUser = {
     id: 1,
     email: 'test@example.com',
     password: 'hashedPassword',
@@ -18,10 +18,12 @@ describe('UserRepository', () => {
     phone: '+54 9 11 1234-5678',
     address: 'Calle Falsa 123',
     role: UserRole.EMPLOYEE,
-    deletedAt: null,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    deletedAt: undefined,
     resetPasswordToken: null,
     resetPasswordExpires: null,
-  };
+  } as UserEntity;
 
   beforeEach(async () => {
     mockTypeOrmRepo = {
@@ -53,7 +55,7 @@ describe('UserRepository', () => {
 
   describe('findByEmail', () => {
     it('debería retornar usuario cuando existe', async () => {
-      mockTypeOrmRepo.findOneBy.mockResolvedValue(mockUser);
+      mockTypeOrmRepo.findOne.mockResolvedValue(mockUser);
 
       const result = await userRepository.findByEmail('test@example.com');
 
@@ -61,7 +63,7 @@ describe('UserRepository', () => {
     });
 
     it('debería retornar null cuando no existe', async () => {
-      mockTypeOrmRepo.findOneBy.mockResolvedValue(null);
+      mockTypeOrmRepo.findOne.mockResolvedValue(null);
 
       const result = await userRepository.findByEmail('nonexistent@example.com');
 
@@ -99,7 +101,7 @@ describe('UserRepository', () => {
 
   describe('update', () => {
     it('debería actualizar y retornar usuario', async () => {
-      const updatedUser = { ...mockUser, firstName: 'Jane' };
+      const updatedUser = { ...mockUser, firstName: 'Jane' } as UserEntity;
       mockTypeOrmRepo.update.mockResolvedValue({ affected: 1 } as any);
       mockTypeOrmRepo.findOneBy.mockResolvedValue(updatedUser);
 

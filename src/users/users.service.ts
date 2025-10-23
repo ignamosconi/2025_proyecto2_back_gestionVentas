@@ -36,6 +36,10 @@ export class UsersService implements IUsersService {
       firstName: user.firstName,
       lastName: user.lastName,
       role: user.role,
+      address: user.address,
+      phone: user.phone,
+      createdAt: user.createdAt,
+      updatedAt: user.updatedAt,
     };
   }
 
@@ -48,6 +52,15 @@ export class UsersService implements IUsersService {
     const deletedUsers = await this.userRepository.findAllDeleted();
     return deletedUsers.map(this.toUserResponse);
   }
+
+  async findAllOwners(): Promise<UserEntity[]> {
+    return this.userRepository.findAllOwners();
+  }
+
+  async findAllEmployees(): Promise<UserEntity[]> {
+    return this.userRepository.findAllEmployees();
+  }
+  
 
   //Usado por auth.service en login()
   async findByEmail(email: string): Promise<UserEntity | null> {

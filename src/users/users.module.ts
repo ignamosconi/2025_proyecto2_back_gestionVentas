@@ -18,14 +18,17 @@ import { MailerModule } from 'src/mailer/mailer.module';
     MailerModule,
   ],
   providers: [
-    UsersService,
+    {
+      provide: 'IUsersService',
+      useClass: UsersService,
+    },
     {
       provide: 'IUserRepository',
       useClass: UserRepository,
     },
   ],
 
-  exports: [UsersService],
+  exports: ['IUsersService', 'IUserRepository'],
   controllers: [UsersController],
 })
 export class UsersModule {}

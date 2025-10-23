@@ -5,6 +5,10 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
+import { S3Module } from './s3/s3.module';
+import { CatalogoModule } from './catalogo/catalogo.module';
+import { ProveedorModule } from './proveedor/proveedor.module';
+import { ProductoModule } from './producto/producto.module';
 
 @Module({
   imports: [
@@ -30,9 +34,12 @@ import { AuthModule } from './auth/auth.module';
         synchronize: true, // Deuda técnica
       }),
     }),
-    
+    CatalogoModule,
     UsersModule,
-    AuthModule
+    AuthModule,
+    S3Module,
+    ProveedorModule,
+    ProductoModule,
   ],
   controllers: [AppController],
   providers: [AppService],
