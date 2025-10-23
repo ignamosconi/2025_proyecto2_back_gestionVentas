@@ -9,6 +9,7 @@ import { S3Module } from './s3/s3.module';
 import { CatalogoModule } from './catalogo/catalogo.module';
 import { ProveedorModule } from './proveedor/proveedor.module';
 import { ProductoModule } from './producto/producto.module';
+import { AuditoriaModule } from './auditoria/auditoria.module';
 
 @Module({
   imports: [
@@ -40,6 +41,7 @@ import { ProductoModule } from './producto/producto.module';
     S3Module,
     ProveedorModule,
     ProductoModule,
+    AuditoriaModule,
   ],
   controllers: [AppController],
   providers: [AppService],

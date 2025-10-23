@@ -17,13 +17,19 @@ import { addHours, isAfter } from 'date-fns';
 import { validatePasswordStrength } from 'src/users/helpers/validatePasswordStrength';
 import { ConfigService } from '@nestjs/config';
 import { IUsersService } from 'src/users/interfaces/users.service.interface';
+import { IAuditoriaService } from 'src/auditoria/interfaces/auditoria.service.interface';
+import { EventosAuditoria } from 'src/auditoria/helpers/enum.eventos';
 
 @Injectable()
 export class AuthService implements IAuthService {
   constructor(
-    @Inject('IUsersService') private readonly usersService: IUsersService,
     private readonly configService: ConfigService,
-    @Inject('IJwtService') private readonly jwtService: IJwtService,
+    @Inject('IUsersService') 
+    private readonly usersService: IUsersService,
+    @Inject('IJwtService')
+    private readonly jwtService: IJwtService,
+    @Inject('IAuditoriaService')
+    private readonly auditoriaService: IAuditoriaService,
   ) {}
 
   async tokens(token: string) {
@@ -43,6 +49,9 @@ export class AuthService implements IAuthService {
       throw new UnauthorizedException(
         'No se pudo loguear. Contraseña incorrecta.',
       );
+
+    //Auditamos un login exitoso
+    await this.auditoriaService.registrarEvento(user.id, EventosAuditoria.LOGIN, 'Login exitoso del usuario '+body.email);
 
     //Si el usuario pasó el logueo, le damos los tokens
     return {
