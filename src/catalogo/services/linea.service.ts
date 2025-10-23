@@ -52,16 +52,26 @@ export class LineaService implements LineaServiceInterface {
 
     /**
      * Crea una nueva línea.
-     * Criterio: Valida que el nombre de la línea no exista globalmente.
+     * Criterio: Valida que el nombre de la línea no exista entre las líneas activas.
+     * Si existe una línea eliminada con el mismo nombre, primero la restaura.
      */
     async create(data: CreateLineaDto): Promise<Linea> {
-        // 1. Lógica de Negocio: Validación de unicidad
-        const existingLinea = await this.lineaRepository.findByName(data.nombre);
-        if (existingLinea) {
+        // 1. Lógica de Negocio: Validación de unicidad entre líneas activas
+        const existingActiveLinea = await this.lineaRepository.findByName(data.nombre);
+        if (existingActiveLinea) {
             throw new BadRequestException(`El nombre de línea '${data.nombre}' ya existe en el sistema.`);
         }
         
-        // 2. Delegación al repositorio
+        // 2. Verificar si existe una línea eliminada con el mismo nombre
+        const existingDeletedLinea = await this.lineaRepository.findByName(data.nombre, true);
+        if (existingDeletedLinea && existingDeletedLinea.deletedAt) {
+            // Si existe una línea eliminada con el mismo nombre, la restauramos
+            await this.lineaRepository.restore(existingDeletedLinea.id);
+            // Y la actualizamos con los nuevos datos si hay cambios adicionales
+            return this.lineaRepository.update(existingDeletedLinea.id, data);
+        }
+        
+        // 3. Delegación al repositorio para crear una nueva línea
         return this.lineaRepository.create(data);
     }
 
