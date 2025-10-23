@@ -29,10 +29,8 @@ import { AuditoriaModule } from './auditoria/auditoria.module';
         username: configService.get<string>('DB_USERNAME'),
         password: configService.get<string>('DB_PASSWORD'),
         database: configService.get<string>('DB_NAME'), 
-        
-        autoLoadEntities: true, //cambiar a entities: [UserEntity, RolEntity, ...]
-    
-        synchronize: true, // Deuda técnica
+        autoLoadEntities: true,
+        synchronize: false
       }),
     }),
     CatalogoModule,

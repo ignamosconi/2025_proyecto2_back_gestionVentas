@@ -4,12 +4,6 @@ import { BaseEntity, Column, Entity, PrimaryGeneratedColumn, ManyToOne, JoinColu
 import { UserEntity } from 'src/users/entities/user.entity';
 import { EventosAuditoria } from '../helpers/enum.eventos';
 
-export enum AuditEventType {
-  LOGIN = 'LOGIN',
-  LOGOUT = 'LOGOUT',
-  VENTA_CREACION = 'VENTA_CREACION',
-  COMPRA_CREACION = 'COMPRA_CREACION',
-}
 
 @Entity('registro_auditoria')
 export class AuditLogEntity extends BaseEntity {
