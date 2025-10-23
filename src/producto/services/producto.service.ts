@@ -231,12 +231,16 @@ export class ProductoService implements ProductoServiceInterface {
         const producto = await this.productoRepository.create(productoData);
 
         // 4. Subir imagen
-        const fotoUrl = await this.handleImageUpload(producto.idProducto, file);
-        if (fotoUrl) {
-            producto.foto = fotoUrl; 
+        await this.handleImageUpload(producto.idProducto, file);
+
+        // 5. Obtener el producto creado con la imagen
+        const productoCreado = await this.productoRepository.findOneActive(producto.idProducto);
+        
+        if (!productoCreado) {
+            throw new NotFoundException(`Producto con ID ${producto.idProducto} no encontrado después de crear.`);
         }
 
-        return producto;
+        return productoCreado;
     }
 
     // ---------------------------------------------------------------------
@@ -253,14 +257,18 @@ export class ProductoService implements ProductoServiceInterface {
         await this.validateLineAndMarkForUpdate(idProducto, data);
 
         // 3. Persistencia de los datos
-        let productoActualizado = await this.productoRepository.update(idProducto, data);
+        await this.productoRepository.update(idProducto, data);
 
         // 4. Subir imagen
-        const fotoUrl = await this.handleImageUpload(idProducto, file);
-        if (fotoUrl) {
-            productoActualizado.foto = fotoUrl; 
-        }
+        await this.handleImageUpload(idProducto, file);
 
+        // 5. Obtener el producto actualizado con la nueva imagen
+        const productoActualizado = await this.productoRepository.findOneActive(idProducto);
+        
+        if (!productoActualizado) {
+            throw new NotFoundException(`Producto con ID ${idProducto} no encontrado después de actualizar.`);
+        }
+        
         return productoActualizado;
     }
 

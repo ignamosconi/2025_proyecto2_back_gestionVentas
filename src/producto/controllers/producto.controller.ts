@@ -15,6 +15,7 @@ import {
     Patch, 
     UseInterceptors,
     UploadedFile,
+    Put,
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiBody, ApiParam, ApiConsumes } from '@nestjs/swagger';
 import { UserRole } from '../../users/helpers/enum.roles'; 
@@ -106,7 +107,7 @@ export class ProductoController implements ProductoControllerInterface {
     // ----------------------------------------------------
     
     // Usamos Patch o Put, pero Patch es común para actualizaciones parciales
-    @Patch(':id') 
+    @Put(':id') 
     @Roles(UserRole.OWNER) // Restringido a OWNER
     @UseInterceptors(FileInterceptor('file'))
     @ApiOperation({ summary: 'US 7: Actualizar un producto existente.' })
