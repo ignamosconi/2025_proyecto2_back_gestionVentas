@@ -129,6 +129,22 @@ export class ProductoRepository implements ProductoRepositoryInterface {
         return producto;
     }
 
-    
+    // ---------------------------------------------------------------------
+    // VALIDACIONES DE INTEGRIDAD REFERENCIAL
+    // ---------------------------------------------------------------------
+
+    async hasProductsByMarcaId(marcaId: number): Promise<boolean> {
+        const count = await this.repository.count({
+            where: { idMarca: marcaId }
+        });
+        return count > 0;
+    }
+
+    async hasProductsByLineaId(lineaId: number): Promise<boolean> {
+        const count = await this.repository.count({
+            where: { idLinea: lineaId }
+        });
+        return count > 0;
+    }
     
 }

@@ -1,6 +1,6 @@
 // src/productos/producto.module.ts
 
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
 // --- Entidades ---
@@ -27,7 +27,7 @@ import { S3Module } from 'src/s3/s3.module';
         TypeOrmModule.forFeature([Producto]),
         
         // 2. Módulos de Dependencia
-        CatalogoModule, // Necesario para la lógica M:M (Marca/Línea)
+        forwardRef(() => CatalogoModule), // ⬅️ Usamos forwardRef para evitar dependencia circular
         AuthModule,     // Necesario para AuthGuard y RolesGuard
         UsersModule,    // Necesario para los Roles
         MailerModule,   // Usado para envío de correos a owners cuando hay bajo stock

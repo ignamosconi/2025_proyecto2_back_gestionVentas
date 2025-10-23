@@ -33,6 +33,30 @@ export class MarcaLineaRepository implements MarcaLineaRepositoryInterface {
 
         await this.repository.softRemove(entity);
     }
+
+    async softDeleteAllByMarcaId(marcaId: number): Promise<void> {
+        // Obtener todas las relaciones activas de la marca
+        const entities = await this.repository.find({
+            where: { marcaId },
+        });
+
+        // Si hay relaciones, hacer soft delete de todas
+        if (entities.length > 0) {
+            await this.repository.softRemove(entities);
+        }
+    }
+
+    async softDeleteAllByLineaId(lineaId: number): Promise<void> {
+        // Obtener todas las relaciones activas de la línea
+        const entities = await this.repository.find({
+            where: { lineaId },
+        });
+
+        // Si hay relaciones, hacer soft delete de todas
+        if (entities.length > 0) {
+            await this.repository.softRemove(entities);
+        }
+    }
     
     async restore(marcaId: number, lineaId: number): Promise<void> {
         const result = await this.repository.restore({ marcaId, lineaId });
@@ -93,5 +117,22 @@ export class MarcaLineaRepository implements MarcaLineaRepositoryInterface {
             // Opcional: Carga las entidades de relación si quieres ver los nombres de las líneas
             relations: ['linea'], 
         });
+    }
+
+    async findAllByLineaId(lineaId: number): Promise<MarcaLinea[]> {
+        return this.repository.find({
+            where: {
+                lineaId: lineaId,
+            },
+            // Opcional: Carga las entidades de relación si quieres ver los nombres de las marcas
+            relations: ['marca'], 
+        });
+    }
+
+    async hasMarcasByLineaId(lineaId: number): Promise<boolean> {
+        const count = await this.repository.count({
+            where: { lineaId }
+        });
+        return count > 0;
     }
 }
