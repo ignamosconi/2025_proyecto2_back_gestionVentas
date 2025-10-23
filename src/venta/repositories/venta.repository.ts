@@ -41,8 +41,17 @@ export class VentaRepository implements VentaRepositoryInterface {
   }
 
   // Crear una venta (recibe la entidad lista, calculada en el service)
-  async create(venta: Venta): Promise<Venta> {
+  async save(venta: Venta): Promise<Venta> {
     const entity = this.repository.create(venta);
     return this.repository.save(entity);
   }
+
+  async updateVenta(id: number, venta: Venta): Promise<Venta | null> {
+    await this.repository.update(id, venta);
+    return this.repository.findOne({
+      where: { idVenta: id },
+      relations: ['usuario', 'detalles', 'detalles.producto'],
+    });
+  }
+
 }

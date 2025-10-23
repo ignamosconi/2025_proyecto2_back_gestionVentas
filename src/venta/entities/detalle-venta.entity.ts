@@ -7,6 +7,7 @@ import {
 } from 'typeorm';
 import { Venta } from './venta.entity';
 import { Producto } from 'src/producto/entities/producto.entity';
+import { Exclude } from 'class-transformer';
 
 @Entity('detalle_venta')
 export class DetalleVenta {
@@ -15,6 +16,7 @@ export class DetalleVenta {
 
   @ManyToOne(() => Venta, (venta) => venta.detalles, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'idVenta' })
+  @Exclude()
   venta: Venta;
 
   @ManyToOne(() => Producto, { eager: true })
@@ -29,4 +31,7 @@ export class DetalleVenta {
 
   @Column({ type: 'numeric', precision: 10, scale: 2 })
   subtotal: number;
+  
+  @Column() 
+  idProducto: number; // Propiedad que el DTO intentará leer
 }

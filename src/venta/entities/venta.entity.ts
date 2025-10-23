@@ -30,6 +30,6 @@ export class Venta {
   @JoinColumn({ name: 'id_usuario' })
   usuario: UserEntity;
 
-  @OneToMany(() => DetalleVenta, (detalle) => detalle.venta, { cascade: true })
+  @OneToMany(() => DetalleVenta, (detalle) => detalle.venta, { cascade: ['insert', 'update'], eager: true })
   detalles: DetalleVenta[];
 }
