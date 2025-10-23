@@ -13,6 +13,7 @@ describe('AuthService', () => {
   let mockUsersService: any;
   let mockJwtService: any;
   let mockConfigService: any;
+  let mockAuditoriaService: any;
 
   const mockUser = {
     id: 1,
@@ -43,12 +44,17 @@ describe('AuthService', () => {
       get: jest.fn().mockReturnValue('http://localhost:3000'),
     };
 
+    mockAuditoriaService = {
+      registrarEvento: jest.fn().mockResolvedValue(undefined),
+    };
+
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         AuthService,
         { provide: 'IUsersService', useValue: mockUsersService },
         { provide: 'IJwtService', useValue: mockJwtService },
         { provide: ConfigService, useValue: mockConfigService },
+        { provide: 'IAuditoriaService', useValue: mockAuditoriaService },
       ],
     }).compile();
 

@@ -14,6 +14,7 @@ describe('UsersService', () => {
   let service: UsersService;
   let mockUserRepository: any;
   let mockMailerService: any;
+  let mockAuditoriaService: any;
 
   // Datos de prueba reutilizables
   const validEmployeeData = {
@@ -60,6 +61,11 @@ describe('UsersService', () => {
       sendMail: jest.fn().mockResolvedValue(undefined),
     };
 
+    // Mock del servicio de auditoría
+    mockAuditoriaService = {
+      registrarEvento: jest.fn().mockResolvedValue(undefined),
+    };
+
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         UsersService,
@@ -70,6 +76,10 @@ describe('UsersService', () => {
         {
           provide: 'IMailerService',
           useValue: mockMailerService,
+        },
+        {
+          provide: 'IAuditoriaService',
+          useValue: mockAuditoriaService,
         },
       ],
     }).compile();

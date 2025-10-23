@@ -27,6 +27,7 @@ describe('ProveedorService', () => {
       findAll: jest.fn(),
       findOne: jest.fn(),
       findAllSoftDeleted: jest.fn(),
+      findByNombreActive: jest.fn(),
       create: jest.fn(),
       update: jest.fn(),
       softDelete: jest.fn(),

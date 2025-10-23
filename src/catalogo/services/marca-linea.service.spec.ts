@@ -33,6 +33,7 @@ describe('MarcaLineaService', () => {
       findAllActive: jest.fn(),
       findAllDeleted: jest.fn(),
       findAllByMarcaId: jest.fn(),
+      findOneByIds: jest.fn(),
       create: jest.fn(),
       softDelete: jest.fn(),
     } as any;
@@ -84,6 +85,7 @@ describe('MarcaLineaService', () => {
       mockMarcaService.findOneActive.mockResolvedValue({} as any);
       mockLineaService.findOneActive.mockResolvedValue({} as any);
       mockRepository.findAllByMarcaId.mockResolvedValue([]);
+      mockRepository.findOneByIds.mockResolvedValue(null);
       mockRepository.create.mockResolvedValue(marcaLineaMock);
 
       const result = await service.assignLineaToMarca(createDto);
@@ -129,7 +131,7 @@ describe('MarcaLineaService', () => {
         ConflictException,
       );
       await expect(service.assignLineaToMarca(createDto)).rejects.toThrow(
-        'El vínculo Marca ID 1 - Línea ID 1 ya existe.',
+        'El vínculo de esa línea con esa marca ya existe.',
       );
       expect(mockRepository.create).not.toHaveBeenCalled();
     });

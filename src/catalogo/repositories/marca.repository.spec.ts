@@ -26,14 +26,14 @@ describe('MarcaRepository', () => {
 
   beforeEach(async () => {
     mockMarcaOrmRepo = {
-      create: jest.fn(),
-      save: jest.fn(),
-      find: jest.fn(),
-      findOne: jest.fn(),
+      create: jest.fn().mockReturnValue(marcaMock),
+      save: jest.fn().mockResolvedValue(marcaMock),
+      find: jest.fn().mockResolvedValue([marcaMock]),
+      findOne: jest.fn().mockResolvedValue(marcaMock),
       findOneBy: jest.fn(),
-      merge: jest.fn(),
-      softDelete: jest.fn(),
-      restore: jest.fn(),
+      merge: jest.fn().mockReturnValue(marcaMock),
+      softDelete: jest.fn().mockResolvedValue({ affected: 1, raw: {}, generatedMaps: [] }),
+      restore: jest.fn().mockResolvedValue({ affected: 1, raw: {}, generatedMaps: [] }),
       createQueryBuilder: jest.fn(),
     } as any;
 
@@ -59,16 +59,19 @@ describe('MarcaRepository', () => {
 
   describe('findByName - Partición de Equivalencia', () => {
     it('debería retornar marca cuando existe', async () => {
-      mockMarcaOrmRepo.findOneBy.mockResolvedValue(marcaMock);
+      mockMarcaOrmRepo.findOne.mockResolvedValue(marcaMock as any);
 
       const result = await repository.findByName('Nike');
 
       expect(result).toEqual(marcaMock);
-      expect(mockMarcaOrmRepo.findOneBy).toHaveBeenCalledWith({ nombre: 'Nike' });
+      expect(mockMarcaOrmRepo.findOne).toHaveBeenCalledWith({
+        where: { nombre: 'Nike' },
+        withDeleted: false
+      });
     });
 
     it('debería retornar null cuando no existe', async () => {
-      mockMarcaOrmRepo.findOneBy.mockResolvedValue(null);
+      mockMarcaOrmRepo.findOne.mockResolvedValue(null as any);
 
       const result = await repository.findByName('Inexistente');
 
