@@ -12,6 +12,8 @@ import { VentaResponseDto } from '../dto/venta-response.dto';
 import { VENTA_REPOSITORY, PRODUCTO_REPOSITORY, USUARIO_REPOSITORY } from 'src/constants';
 import { UpdateVentaDto } from '../dto/update-venta.dto';
 import { VentaServiceInterface } from './interfaces/venta.service.interface';
+import { IAuditoriaService } from 'src/auditoria/interfaces/auditoria.service.interface';
+import { EventosAuditoria } from 'src/auditoria/helpers/enum.eventos';
 
 @Injectable()
 export class VentaService implements VentaServiceInterface {
@@ -24,6 +26,9 @@ export class VentaService implements VentaServiceInterface {
 
     @Inject(USUARIO_REPOSITORY)
     private readonly usuarioRepository: IUserRepository,
+
+    @Inject('IAuditoriaService')
+    private readonly auditoriaService: IAuditoriaService,
 
     private readonly dataSource: DataSource,
   ) {}
@@ -99,6 +104,13 @@ async create(createVentaDto: CreateVentaDto, userId: number): Promise<VentaRespo
     // 6️⃣ Recargar venta con relaciones completas
     const ventaRecargada = await this.ventaRepository.findOne(ventaCreada.idVenta);
 
+    //Auditar el proceso
+    await this.auditoriaService.registrarEvento(
+      usuario.id,
+      EventosAuditoria.CREAR_USUARIO_EMPLOYEE,
+      `El usuario ${usuario.email} creó una venta con id ${ventaCreada.idVenta}`,
+    );
+
     // 7️Transformar a DTO de respuesta
     return plainToInstance(VentaResponseDto, ventaRecargada, { excludeExtraneousValues: true });
   }
@@ -119,137 +131,137 @@ async create(createVentaDto: CreateVentaDto, userId: number): Promise<VentaRespo
     return plainToInstance(VentaResponseDto, ventas, { excludeExtraneousValues: true });
   }
 
-    async update(idVenta: number, updateVentaDto: UpdateVentaDto): Promise<VentaResponseDto> {
-        const { metodoPago, detalles: nuevosDetallesDto } = updateVentaDto;
+  async update(idVenta: number, updateVentaDto: UpdateVentaDto): Promise<VentaResponseDto> {
+    const { metodoPago, detalles: nuevosDetallesDto } = updateVentaDto;
 
-        // 1️⃣ Iniciar transacción
-        const queryRunner = this.dataSource.createQueryRunner();
-        await queryRunner.connect();
-        await queryRunner.startTransaction();
+    // 1️⃣ Iniciar transacción
+    const queryRunner = this.dataSource.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
 
-        try {
-            // 2️⃣ Obtener venta existente con detalles y usuario
-            const ventaExistente = await queryRunner.manager.findOne(Venta, {
-            where: { idVenta } as any,
-            relations: ['detalles', 'detalles.producto', 'usuario'],
-            });
+    try {
+        // 2️⃣ Obtener venta existente con detalles y usuario
+        const ventaExistente = await queryRunner.manager.findOne(Venta, {
+        where: { idVenta } as any,
+        relations: ['detalles', 'detalles.producto', 'usuario'],
+        });
 
-            if (!ventaExistente) {
-            throw new NotFoundException(`Venta con ID ${idVenta} no encontrada.`);
+        if (!ventaExistente) {
+        throw new NotFoundException(`Venta con ID ${idVenta} no encontrada.`);
+        }
+
+        const detallesActuales: DetalleVenta[] = ventaExistente.detalles || [];
+        const productosAActualizar: { idProducto: number; cambioStock: number }[] = [];
+        const detallesAProcesar: DetalleVenta[] = [];
+        const detallesAEliminar: DetalleVenta[] = [];
+        let nuevoTotal = 0;
+
+        // 3️⃣ Procesar detalles solo si envían nuevos
+        if (nuevosDetallesDto?.length) {
+        for (const nuevoDetalleDto of nuevosDetallesDto) {
+            const idProducto = nuevoDetalleDto.idProducto;
+            const cantidadNueva = nuevoDetalleDto.cantidad;
+
+            if (idProducto === undefined) {
+            throw new BadRequestException('El idProducto es obligatorio para cada detalle de venta.');
+            }
+            if (cantidadNueva === undefined) {
+            throw new BadRequestException(`La cantidad es requerida para el detalle del producto con ID ${idProducto}.`);
             }
 
-            const detallesActuales: DetalleVenta[] = ventaExistente.detalles || [];
-            const productosAActualizar: { idProducto: number; cambioStock: number }[] = [];
-            const detallesAProcesar: DetalleVenta[] = [];
-            const detallesAEliminar: DetalleVenta[] = [];
-            let nuevoTotal = 0;
+            const detalleExistente = detallesActuales.find(d => (d as any).idProducto === idProducto);
+            const producto = await this.productoRepository.findOneActive(idProducto);
+            if (!producto) throw new NotFoundException(`Producto con ID ${idProducto} no encontrado.`);
 
-            // 3️⃣ Procesar detalles solo si envían nuevos
-            if (nuevosDetallesDto?.length) {
-            for (const nuevoDetalleDto of nuevosDetallesDto) {
-                const idProducto = nuevoDetalleDto.idProducto;
-                const cantidadNueva = nuevoDetalleDto.cantidad;
+            const precioUnitario = producto.precio;
+            const subtotal = precioUnitario * cantidadNueva;
+            nuevoTotal += subtotal;
 
-                if (idProducto === undefined) {
-                throw new BadRequestException('El idProducto es obligatorio para cada detalle de venta.');
-                }
-                if (cantidadNueva === undefined) {
-                throw new BadRequestException(`La cantidad es requerida para el detalle del producto con ID ${idProducto}.`);
-                }
+            let cambioStock = 0;
 
-                const detalleExistente = detallesActuales.find(d => (d as any).idProducto === idProducto);
-                const producto = await this.productoRepository.findOneActive(idProducto);
-                if (!producto) throw new NotFoundException(`Producto con ID ${idProducto} no encontrado.`);
-
-                const precioUnitario = producto.precio;
-                const subtotal = precioUnitario * cantidadNueva;
-                nuevoTotal += subtotal;
-
-                let cambioStock = 0;
-
-                if (detalleExistente) {
-                // MODIFICACIÓN
-                cambioStock = detalleExistente.cantidad - cantidadNueva;
-                if (cambioStock < 0 && producto.stock < Math.abs(cambioStock)) {
-                    throw new BadRequestException(
-                    `Stock insuficiente para aumentar la cantidad del producto "${producto.nombre}". Disponible: ${producto.stock}`
-                    );
-                }
-
-                detalleExistente.cantidad = cantidadNueva;
-                detalleExistente.precioUnitario = precioUnitario;
-                detalleExistente.subtotal = subtotal;
-                detallesAProcesar.push(detalleExistente);
-                } else {
-                // NUEVO DETALLE
-                cambioStock = -cantidadNueva;
-                if (producto.stock < cantidadNueva) {
-                    throw new BadRequestException(
-                    `Stock insuficiente para agregar el producto "${producto.nombre}". Disponible: ${producto.stock}`
-                    );
-                }
-
-                const nuevoDetalle = new DetalleVenta();
-                (nuevoDetalle as any).idProducto = idProducto;
-                nuevoDetalle.producto = producto;
-                nuevoDetalle.cantidad = cantidadNueva;
-                nuevoDetalle.precioUnitario = precioUnitario;
-                nuevoDetalle.subtotal = subtotal;
-                nuevoDetalle.venta = ventaExistente;
-                detallesAProcesar.push(nuevoDetalle);
-                }
-
-                if (cambioStock !== 0) {
-                productosAActualizar.push({ idProducto, cambioStock });
-                }
+            if (detalleExistente) {
+            // MODIFICACIÓN
+            cambioStock = detalleExistente.cantidad - cantidadNueva;
+            if (cambioStock < 0 && producto.stock < Math.abs(cambioStock)) {
+                throw new BadRequestException(
+                `Stock insuficiente para aumentar la cantidad del producto "${producto.nombre}". Disponible: ${producto.stock}`
+                );
             }
 
-            // 4️⃣ Detectar detalles eliminados
-            const idsNuevos = nuevosDetallesDto.map(d => d.idProducto);
-            const eliminados = detallesActuales.filter(d => !idsNuevos.includes((d as any).idProducto));
-            for (const detalle of eliminados) {
-                productosAActualizar.push({ idProducto: (detalle as any).idProducto, cambioStock: detalle.cantidad });
-                detallesAEliminar.push(detalle);
-            }
-
-            ventaExistente.detalles = detallesAProcesar;
-            ventaExistente.total = nuevoTotal;
+            detalleExistente.cantidad = cantidadNueva;
+            detalleExistente.precioUnitario = precioUnitario;
+            detalleExistente.subtotal = subtotal;
+            detallesAProcesar.push(detalleExistente);
             } else {
-            // 5️⃣ Si no hay nuevos detalles, mantener los existentes
-            ventaExistente.total = detallesActuales.reduce((sum, d) => sum + d.subtotal, 0);
+            // NUEVO DETALLE
+            cambioStock = -cantidadNueva;
+            if (producto.stock < cantidadNueva) {
+                throw new BadRequestException(
+                `Stock insuficiente para agregar el producto "${producto.nombre}". Disponible: ${producto.stock}`
+                );
             }
 
-            // 6️⃣ Actualizar metodoPago si viene
-            if (metodoPago !== undefined) {
-            ventaExistente.metodoPago = metodoPago;
+            const nuevoDetalle = new DetalleVenta();
+            (nuevoDetalle as any).idProducto = idProducto;
+            nuevoDetalle.producto = producto;
+            nuevoDetalle.cantidad = cantidadNueva;
+            nuevoDetalle.precioUnitario = precioUnitario;
+            nuevoDetalle.subtotal = subtotal;
+            nuevoDetalle.venta = ventaExistente;
+            detallesAProcesar.push(nuevoDetalle);
             }
 
-            // 7️⃣ Guardar venta
-            await queryRunner.manager.save(ventaExistente);
-
-            // 8️⃣ Eliminar detalles si los hay
-            if (detallesAEliminar.length > 0) {
-            await queryRunner.manager.remove(detallesAEliminar);
+            if (cambioStock !== 0) {
+            productosAActualizar.push({ idProducto, cambioStock });
             }
-
-            // 9️⃣ Actualizar stock
-            for (const { idProducto, cambioStock } of productosAActualizar) {
-            await this.productoRepository.updateStock(idProducto, cambioStock);
-            }
-
-            // 🔟 Commit
-            await queryRunner.commitTransaction();
-
-            // 1️⃣1️⃣ Recargar venta
-            const ventaActualizada = await this.ventaRepository.findOne(idVenta);
-            return plainToInstance(VentaResponseDto, ventaActualizada, { excludeExtraneousValues: true });
-        } catch (error) {
-            await queryRunner.rollbackTransaction();
-            if (error instanceof NotFoundException || error instanceof BadRequestException) throw error;
-            throw new BadRequestException('Error al actualizar la venta y el inventario: ' + error.message);
-        } finally {
-            await queryRunner.release();
         }
+
+        // 4️⃣ Detectar detalles eliminados
+        const idsNuevos = nuevosDetallesDto.map(d => d.idProducto);
+        const eliminados = detallesActuales.filter(d => !idsNuevos.includes((d as any).idProducto));
+        for (const detalle of eliminados) {
+            productosAActualizar.push({ idProducto: (detalle as any).idProducto, cambioStock: detalle.cantidad });
+            detallesAEliminar.push(detalle);
         }
+
+        ventaExistente.detalles = detallesAProcesar;
+        ventaExistente.total = nuevoTotal;
+        } else {
+        // 5️⃣ Si no hay nuevos detalles, mantener los existentes
+        ventaExistente.total = detallesActuales.reduce((sum, d) => sum + d.subtotal, 0);
+        }
+
+        // 6️⃣ Actualizar metodoPago si viene
+        if (metodoPago !== undefined) {
+        ventaExistente.metodoPago = metodoPago;
+        }
+
+        // 7️⃣ Guardar venta
+        await queryRunner.manager.save(ventaExistente);
+
+        // 8️⃣ Eliminar detalles si los hay
+        if (detallesAEliminar.length > 0) {
+        await queryRunner.manager.remove(detallesAEliminar);
+        }
+
+        // 9️⃣ Actualizar stock
+        for (const { idProducto, cambioStock } of productosAActualizar) {
+        await this.productoRepository.updateStock(idProducto, cambioStock);
+        }
+
+        // 🔟 Commit
+        await queryRunner.commitTransaction();
+
+        // 1️⃣1️⃣ Recargar venta
+        const ventaActualizada = await this.ventaRepository.findOne(idVenta);
+        return plainToInstance(VentaResponseDto, ventaActualizada, { excludeExtraneousValues: true });
+    } catch (error) {
+        await queryRunner.rollbackTransaction();
+        if (error instanceof NotFoundException || error instanceof BadRequestException) throw error;
+        throw new BadRequestException('Error al actualizar la venta y el inventario: ' + error.message);
+    } finally {
+        await queryRunner.release();
+    }
+  }
 
 }

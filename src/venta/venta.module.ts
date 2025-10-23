@@ -10,13 +10,15 @@ import { Producto } from 'src/producto/entities/producto.entity';
 import { ProductoModule } from 'src/producto/producto.module';
 import { AuthModule } from 'src/auth/auth.module';
 import { UsersModule } from 'src/users/users.module';
+import { AuditoriaModule } from 'src/auditoria/auditoria.module';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([Venta, DetalleVenta, Producto]), 
     AuthModule, 
     UsersModule, 
-    ProductoModule
+    ProductoModule,
+    AuditoriaModule,
   ],
   controllers: [VentaController],
   providers: [
