@@ -10,7 +10,7 @@ import {
 
 import { DetalleVenta } from './detalle-venta.entity';
 import { UserEntity } from 'src/users/entities/user.entity';
-import { MetodoPago } from 'src/enums/metodo-pago.enum';
+import { MetodoPago} from 'src/venta/enums/metodo-pago.enum';
 
 @Entity('venta')
 export class Venta {

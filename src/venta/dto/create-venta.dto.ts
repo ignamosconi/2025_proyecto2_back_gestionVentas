@@ -6,11 +6,12 @@ import {
   ValidateNested,
   IsArray,
   IsEnum,
+  ArrayMinSize,
 } from 'class-validator';
 import { Type } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
 import { CreateDetalleVentaDto } from './create-detalle-venta.dto';
-import { MetodoPago } from 'src/enums/metodo-pago.enum';
+import { MetodoPago } from 'src/venta/enums/metodo-pago.enum';
 
 export class CreateVentaDto {
   @ApiProperty({
@@ -30,6 +31,7 @@ export class CreateVentaDto {
     type: [CreateDetalleVentaDto],
   })
   @IsArray()
+  @ArrayMinSize(1, { message: 'Debe incluir al menos un producto en la venta.' })
   @ValidateNested({ each: true })
   @Type(() => CreateDetalleVentaDto)
   detalles: CreateDetalleVentaDto[];
