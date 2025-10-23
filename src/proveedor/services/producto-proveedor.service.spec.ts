@@ -5,7 +5,7 @@ import {
 } from '@nestjs/common';
 import { ProductoProveedorService } from './producto-proveedor.service';
 import { ProductoProveedorRepositoryInterface } from '../repositories/interfaces/producto-proveedor.repository.interface';
-import { ProductoServiceInterface } from 'src/producto/services/interfaces/producto.service.interface';
+import { ProductoServiceInterface } from '../../producto/services/interfaces/producto.service.interface';
 import { ProveedorServiceInterface } from './interfaces/proveedor.service.interface';
 import {
   PRODUCTO_PROVEEDOR_REPOSITORY,

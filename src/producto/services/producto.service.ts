@@ -14,17 +14,17 @@ import { ProductoRepositoryInterface } from '../repositories/interfaces/producto
 import { LineaServiceInterface } from '../../catalogo/services/interfaces/linea.service.interface';
 import { MarcaServiceInterface } from '../../catalogo/services/interfaces/marca.service.interface';
 import { MarcaLineaServiceInterface } from '../../catalogo/services/interfaces/marca-linea.service.interface'; 
-import { CreateLineaDto } from 'src/catalogo/dto/create-linea.dto';
-import { 
-    PRODUCTO_REPOSITORY, 
-    LINEA_SERVICE,  
+import { CreateLineaDto } from '../../catalogo/dto/create-linea.dto';
+import {
+    PRODUCTO_REPOSITORY,
+    LINEA_SERVICE,
     MARCA_SERVICE,
-    MARCA_LINEA_SERVICE 
-} from '../../constants'; 
+    MARCA_LINEA_SERVICE
+} from '../../constants';
 import { UpdateStockDto } from '../dto/update-stock.dto';
-import { IUsersService } from 'src/users/interfaces/users.service.interface';
-import { IMailerService } from 'src/mailer/interfaces/mailer.service.interface';
-import { IS3Service } from 'src/s3/interfaces/s3.service.interface';
+import { IUsersService } from '../../users/interfaces/users.service.interface';
+import { IMailerService } from '../../mailer/interfaces/mailer.service.interface';
+import { IS3Service } from '../../s3/interfaces/s3.service.interface';
 import { plainToInstance } from 'class-transformer';
 import { validate } from 'class-validator';
 

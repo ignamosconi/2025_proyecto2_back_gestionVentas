@@ -3,7 +3,7 @@ import { JwtService } from './jwt.service';
 import { ConfigService } from '@nestjs/config';
 import { UnauthorizedException } from '@nestjs/common';
 import * as jwt from 'jsonwebtoken';
-import { UserRole } from 'src/users/helpers/enum.roles';
+import { UserRole } from '../../users/helpers/enum.roles';
 
 jest.mock('jsonwebtoken');
 

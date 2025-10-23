@@ -2,7 +2,6 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { AuthGuard } from './auth.guard';
 import { UnauthorizedException } from '@nestjs/common';
 import { ExecutionContext } from '@nestjs/common';
-import { UsersService } from '../../users/users.service';
 import { UserRole } from '../../users/helpers/enum.roles';
 
 describe('AuthGuard', () => {

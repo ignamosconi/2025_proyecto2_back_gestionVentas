@@ -7,7 +7,7 @@ import {
   DeleteDateColumn,
 } from 'typeorm';
 import { MarcaLinea } from './marca-linea.entity';
-import { Producto } from 'src/producto/entities/producto.entity';
+import { Producto } from '../../producto/entities/producto.entity';
 
 @Entity('linea')
 @Index(['nombre'], { unique: true })
