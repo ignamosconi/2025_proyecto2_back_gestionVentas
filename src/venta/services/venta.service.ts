@@ -104,10 +104,10 @@ async create(createVentaDto: CreateVentaDto, userId: number): Promise<VentaRespo
     // 6️⃣ Recargar venta con relaciones completas
     const ventaRecargada = await this.ventaRepository.findOne(ventaCreada.idVenta);
 
-    //Auditar el proceso
+    //Auditar el registro de ventas
     await this.auditoriaService.registrarEvento(
       usuario.id,
-      EventosAuditoria.CREAR_USUARIO_EMPLOYEE,
+      EventosAuditoria.REGISTRO_VENTA,
       `El usuario ${usuario.email} creó una venta con id ${ventaCreada.idVenta}`,
     );
 
@@ -254,7 +254,17 @@ async create(createVentaDto: CreateVentaDto, userId: number): Promise<VentaRespo
 
         // 1️⃣1️⃣ Recargar venta
         const ventaActualizada = await this.ventaRepository.findOne(idVenta);
+
+        //Auditar la actualización de ventas
+        await this.auditoriaService.registrarEvento(
+          ventaExistente.usuario.id,
+          EventosAuditoria.REGISTRO_VENTA,
+          `El usuario ${ventaExistente.usuario.email} ACTUALIZÓ una venta con id ${ventaExistente.idVenta}`,
+        );
+
         return plainToInstance(VentaResponseDto, ventaActualizada, { excludeExtraneousValues: true });
+
+
     } catch (error) {
         await queryRunner.rollbackTransaction();
         if (error instanceof NotFoundException || error instanceof BadRequestException) throw error;
