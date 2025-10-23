@@ -9,6 +9,7 @@ import { UserRepository } from './repositories/users.repository';
 import { JwtModule } from '../auth/jwt/jwt.module';
 import { AuthModule } from 'src/auth/auth.module';
 import { MailerModule } from 'src/mailer/mailer.module';
+import { USUARIO_REPOSITORY } from 'src/constants';
 import { AuditoriaModule } from 'src/auditoria/auditoria.module';
 
 @Module({
@@ -30,7 +31,7 @@ import { AuditoriaModule } from 'src/auditoria/auditoria.module';
     },
   ],
 
-  exports: ['IUsersService', 'IUserRepository'],
+  exports: ['IUsersService', 'IUserRepository', USUARIO_REPOSITORY, TypeOrmModule],
   controllers: [UsersController],
 })
 export class UsersModule {}
