@@ -37,7 +37,7 @@ describe('AuthGuard', () => {
       providers: [
         AuthGuard,
         { provide: 'IJwtService', useValue: mockJwtService },
-        { provide: UsersService, useValue: mockUsersService },
+        { provide: 'IUsersService', useValue: mockUsersService },
       ],
     }).compile();
 

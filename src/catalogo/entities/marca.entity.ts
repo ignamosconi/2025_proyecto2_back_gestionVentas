@@ -52,7 +52,7 @@ export class Marca {
   updatedAt: Date;
 
   @DeleteDateColumn({ name: 'deleted_at', type: 'timestamp', nullable: true })
-  deletedAt: Date;
+  deletedAt?: Date;
 
   // --- Relaciones ---
 

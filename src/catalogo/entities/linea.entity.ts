@@ -25,7 +25,7 @@ export class Linea {
   updatedAt: Date;
 
   @DeleteDateColumn({ name: 'deleted_at', type: 'timestamp', nullable: true })
-  deletedAt: Date;
+  deletedAt?: Date;
 
   @OneToMany(() => MarcaLinea, (marcaLinea) => marcaLinea.linea)
   marcaLineas: MarcaLinea[];
