@@ -162,15 +162,18 @@ async create(createVentaDto: CreateVentaDto, userId: number): Promise<VentaRespo
             const idProducto = nuevoDetalleDto.idProducto;
             const cantidadNueva = nuevoDetalleDto.cantidad;
 
-            if (idProducto === undefined) {
-            throw new BadRequestException('El idProducto es obligatorio para cada detalle de venta.');
+            // Validar que idProducto sea un número válido
+            if (idProducto === undefined || idProducto === null || isNaN(Number(idProducto))) {
+            throw new BadRequestException(`El idProducto es inválido o no fue proporcionado. Valor recibido: ${idProducto}`);
             }
-            if (cantidadNueva === undefined) {
-            throw new BadRequestException(`La cantidad es requerida para el detalle del producto con ID ${idProducto}.`);
+            
+            // Validar que cantidad sea un número válido
+            if (cantidadNueva === undefined || cantidadNueva === null || isNaN(Number(cantidadNueva))) {
+            throw new BadRequestException(`La cantidad es inválida o no fue proporcionada para el producto con ID ${idProducto}. Valor recibido: ${cantidadNueva}`);
             }
 
-            const detalleExistente = detallesActuales.find(d => (d as any).idProducto === idProducto);
-            const producto = await this.productoRepository.findOneActive(idProducto);
+            const detalleExistente = detallesActuales.find(d => (d as any).idProducto === Number(idProducto));
+            const producto = await this.productoRepository.findOneActive(Number(idProducto));
             if (!producto) throw new NotFoundException(`Producto con ID ${idProducto} no encontrado.`);
 
             const precioUnitario = producto.precio;
