@@ -1,6 +1,6 @@
 // src/catalogo/catalogo.module.ts
 
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
 // 1. Entidades
@@ -35,13 +35,15 @@ import {
 // 4. Interfaces y Módulos de Soporte
 import { AuthModule } from 'src/auth/auth.module';
 import { UsersModule } from 'src/users/users.module';
+import { ProductoModule } from 'src/producto/producto.module';
 import { Producto } from 'src/producto/entities/producto.entity';
 
 @Module({
     imports: [
         TypeOrmModule.forFeature([Marca, MarcaLinea, Linea, Producto]),
         AuthModule,
-        UsersModule
+        UsersModule,
+        forwardRef(() => ProductoModule), // ⬅️ Usamos forwardRef para evitar dependencia circular
     ],
     controllers: [
         MarcaController,

@@ -4,12 +4,15 @@ import {
     Injectable, 
     Inject, 
     BadRequestException, 
-    NotFoundException, 
+    NotFoundException,
+    ConflictException,
 } from '@nestjs/common';
 
 import { MarcaServiceInterface } from './interfaces/marca.service.interface';
 import { MarcaRepositoryInterface } from '../repositories/interfaces/marca.repository.interface';
-import { MARCA_REPOSITORY } from '../../constants';
+import { MarcaLineaRepositoryInterface } from '../repositories/interfaces/marca-linea.repository.interface';
+import { ProductoRepositoryInterface } from '../../producto/repositories/interfaces/producto-interface.repository';
+import { MARCA_REPOSITORY, MARCA_LINEA_REPOSITORY, PRODUCTO_REPOSITORY } from '../../constants';
 
 import { Marca } from '../entities/marca.entity';
 import { CreateMarcaDto } from '../dto/create-marca.dto';
@@ -21,6 +24,12 @@ export class MarcaService implements MarcaServiceInterface {
         // Inyección del token del repositorio (DIP)
         @Inject(MARCA_REPOSITORY)
         private readonly marcaRepository: MarcaRepositoryInterface,
+        
+        @Inject(MARCA_LINEA_REPOSITORY)
+        private readonly marcaLineaRepository: MarcaLineaRepositoryInterface,
+        
+        @Inject(PRODUCTO_REPOSITORY)
+        private readonly productoRepository: ProductoRepositoryInterface,
     ) {}
 
 // ---------------------------------------------------------------------
@@ -96,23 +105,27 @@ export class MarcaService implements MarcaServiceInterface {
     
     /**
      * Realiza la eliminación suave de la marca.
-     * ESTRICCIÓN: IMPEDIR ELIMINACIÓN si hay productos asociados.
+     * RESTRICCIÓN: IMPEDIR ELIMINACIÓN si hay productos asociados.
+     * También elimina (soft delete) todas las relaciones marcaLinea asociadas.
      */
     async softDelete(id: number): Promise<void> {
         // 1. Validar que la marca exista y esté activa antes de verificar productos
         await this.findOneActive(id); 
 
         // 2. Lógica de Negocio: Verificar dependencia de productos
-        //const hasProducts = await this.productosValidator.checkIfMarcaHasProducts(id);
+        const hasProducts = await this.productoRepository.hasProductsByMarcaId(id);
 
-        //if (hasProducts) {
+        if (hasProducts) {
             // Lanza 409 Conflict si la marca tiene dependencias activas
-           // throw new ConflictException(
-            //    `No se puede eliminar la marca con ID ${id} porque tiene productos asociados. Debe desvincular los productos primero.`
-            //);
-        //}
+            throw new ConflictException(
+                `No se puede eliminar la marca con ID ${id} porque tiene productos asociados. Debe desvincular los productos primero.`
+            );
+        }
         
-        // 3. Delegación al repositorio
+        // 3. Eliminar todas las relaciones marcaLinea asociadas a esta marca
+        await this.marcaLineaRepository.softDeleteAllByMarcaId(id);
+        
+        // 4. Delegación al repositorio para eliminar la marca
         await this.marcaRepository.softDelete(id);
     }
     

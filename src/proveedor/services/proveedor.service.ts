@@ -1,18 +1,20 @@
 // src/proveedores/services/proveedor.service.ts
-import { Injectable, NotFoundException, ConflictException } from '@nestjs/common';
+import { Injectable, NotFoundException, ConflictException, Inject } from '@nestjs/common';
 import { ProveedorServiceInterface } from './interfaces/proveedor.service.interface';
 import { ProveedorRepositoryInterface } from '../repositories/interfaces/proveedor.repository.interface';
+import { ProductoProveedorRepositoryInterface } from '../repositories/interfaces/producto-proveedor.repository.interface';
 import { Proveedor } from '../entities/proveedor.entity';
 import { CreateProveedorDto } from '../dto/create-proveedor.dto';
 import { UpdateProveedorDto } from '../dto/update-proveedor.dto';
-import { PROVEEDOR_REPOSITORY } from '../../constants';
-import { Inject } from '@nestjs/common';
+import { PROVEEDOR_REPOSITORY, PRODUCTO_PROVEEDOR_REPOSITORY } from '../../constants';
 
 @Injectable()
 export class ProveedorService implements ProveedorServiceInterface {
     constructor(
         @Inject(PROVEEDOR_REPOSITORY)
         private readonly proveedorRepository: ProveedorRepositoryInterface,
+        @Inject(PRODUCTO_PROVEEDOR_REPOSITORY)
+        private readonly productoProveedorRepository: ProductoProveedorRepositoryInterface,
     ) {}
 
     findAll(): Promise<Proveedor[]> {
@@ -69,6 +71,16 @@ export class ProveedorService implements ProveedorServiceInterface {
 
     async softDelete(id: number): Promise<void> {
         const proveedor = await this.findOne(id);
+        
+        // Obtener todas las relaciones producto-proveedor activas
+        const relaciones = await this.productoProveedorRepository.findByProveedor(id);
+        
+        // Eliminar (soft delete) todas las relaciones
+        for (const relacion of relaciones) {
+            await this.productoProveedorRepository.softDelete(relacion.idProductoProveedor);
+        }
+        
+        // Finalmente, eliminar el proveedor
         await this.proveedorRepository.softDelete(id);
     }
 

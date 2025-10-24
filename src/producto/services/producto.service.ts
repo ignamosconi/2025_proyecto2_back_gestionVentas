@@ -4,13 +4,15 @@ import {
     Injectable, 
     Inject, 
     NotFoundException, 
-    BadRequestException
+    BadRequestException,
+    ConflictException
 } from '@nestjs/common';
 import { Producto } from '../entities/producto.entity';
 import { CreateProductoDto } from '../dto/create-producto.dto';
 import { UpdateProductoDto } from '../dto/update-producto.dto';
 import { ProductoServiceInterface } from './interfaces/producto.service.interface';
 import { ProductoRepositoryInterface } from '../repositories/interfaces/producto-interface.repository';
+import { ProductoProveedorRepositoryInterface } from '../../proveedor/repositories/interfaces/producto-proveedor.repository.interface';
 import { LineaServiceInterface } from '../../catalogo/services/interfaces/linea.service.interface';
 import { MarcaServiceInterface } from '../../catalogo/services/interfaces/marca.service.interface';
 import { MarcaLineaServiceInterface } from '../../catalogo/services/interfaces/marca-linea.service.interface'; 
@@ -19,7 +21,8 @@ import {
     PRODUCTO_REPOSITORY, 
     LINEA_SERVICE,  
     MARCA_SERVICE,
-    MARCA_LINEA_SERVICE 
+    MARCA_LINEA_SERVICE,
+    PRODUCTO_PROVEEDOR_REPOSITORY
 } from '../../constants'; 
 import { UpdateStockDto } from '../dto/update-stock.dto';
 import { IUsersService } from 'src/users/interfaces/users.service.interface';
@@ -45,6 +48,8 @@ export class ProductoService implements ProductoServiceInterface {
         private readonly mailerService: IMailerService,
         @Inject('IS3Service')
         private readonly s3Service: IS3Service,
+        @Inject(PRODUCTO_PROVEEDOR_REPOSITORY)
+        private readonly productoProveedorRepository: ProductoProveedorRepositoryInterface,
     ) {}
 
     // ---------------------------------------------------------------------
@@ -231,12 +236,16 @@ export class ProductoService implements ProductoServiceInterface {
         const producto = await this.productoRepository.create(productoData);
 
         // 4. Subir imagen
-        const fotoUrl = await this.handleImageUpload(producto.idProducto, file);
-        if (fotoUrl) {
-            producto.foto = fotoUrl; 
+        await this.handleImageUpload(producto.idProducto, file);
+
+        // 5. Obtener el producto creado con la imagen
+        const productoCreado = await this.productoRepository.findOneActive(producto.idProducto);
+        
+        if (!productoCreado) {
+            throw new NotFoundException(`Producto con ID ${producto.idProducto} no encontrado después de crear.`);
         }
 
-        return producto;
+        return productoCreado;
     }
 
     // ---------------------------------------------------------------------
@@ -253,14 +262,18 @@ export class ProductoService implements ProductoServiceInterface {
         await this.validateLineAndMarkForUpdate(idProducto, data);
 
         // 3. Persistencia de los datos
-        let productoActualizado = await this.productoRepository.update(idProducto, data);
+        await this.productoRepository.update(idProducto, data);
 
         // 4. Subir imagen
-        const fotoUrl = await this.handleImageUpload(idProducto, file);
-        if (fotoUrl) {
-            productoActualizado.foto = fotoUrl; 
-        }
+        await this.handleImageUpload(idProducto, file);
 
+        // 5. Obtener el producto actualizado con la nueva imagen
+        const productoActualizado = await this.productoRepository.findOneActive(idProducto);
+        
+        if (!productoActualizado) {
+            throw new NotFoundException(`Producto con ID ${idProducto} no encontrado después de actualizar.`);
+        }
+        
         return productoActualizado;
     }
 
@@ -270,6 +283,16 @@ export class ProductoService implements ProductoServiceInterface {
     // ---------------------------------------------------------------------
 
     async softDelete(idProducto: number): Promise<void> {
+        // Verificar si el producto tiene proveedores asociados
+        const proveedoresAsociados = await this.productoProveedorRepository.findByProducto(idProducto);
+        
+        if (proveedoresAsociados && proveedoresAsociados.length > 0) {
+            throw new ConflictException(
+                `No se puede eliminar el producto porque tiene ${proveedoresAsociados.length} proveedor(es) asociado(s). ` +
+                `Primero debe desasociar todos los proveedores.`
+            );
+        }
+        
         await this.productoRepository.softDelete(idProducto);
     }
 
