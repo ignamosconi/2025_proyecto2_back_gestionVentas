@@ -10,6 +10,7 @@ export interface ProductoProveedorServiceInterface {
     findOne(id: number): Promise<ProductoProveedor>;
     findByProducto(idProducto: number): Promise<ProductoProveedor[]>;
     findByProveedor(idProveedor: number): Promise<ProductoProveedor[]>;
+    checkLinkExists(idProducto: number, idProveedor: number): Promise<ProductoProveedor | null>;
     create(data: CreateProductoProveedorDto): Promise<ProductoProveedor>;
     update(id: number, data: UpdateProductoProveedorDto): Promise<ProductoProveedor>;
     softDelete(id: number): Promise<void>;

@@ -51,6 +51,11 @@ import {
             useClass: ProductoProveedorService,
         },
     ],
-    exports: [PROVEEDOR_SERVICE, PRODUCTO_PROVEEDOR_SERVICE, PRODUCTO_PROVEEDOR_REPOSITORY],
+    exports: [
+        PROVEEDOR_SERVICE, 
+        PRODUCTO_PROVEEDOR_SERVICE, 
+        PRODUCTO_PROVEEDOR_REPOSITORY,
+        PROVEEDOR_REPOSITORY,
+    ],
 })
 export class ProveedorModule {}
