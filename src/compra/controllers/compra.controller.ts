@@ -1,4 +1,4 @@
-// 📄 src/compras/controllers/compra.controller.ts
+// src/compras/controllers/compra.controller.ts
 
 import { Controller, Get, Param, Post, Body, Req, UseGuards, HttpCode, HttpStatus, Put, Inject, Logger } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiBody, ApiParam } from '@nestjs/swagger';
@@ -36,7 +36,7 @@ export class CompraController implements CompraControllerInterface {
 // -------------------------------------------------------------------------------
 
   @Get()
-  @Roles(UserRole.OWNER, UserRole.EMPLOYEE)
+  @Roles(UserRole.EMPLOYEE)
   @ApiOperation({ summary: 'Obtener todas las compras (solo EMPLEADO y OWNER)' })
   findAll(): Promise<CompraResponseDto[]> {
     this.logger.log('--- ENTRADA A findAll ---');
@@ -44,7 +44,7 @@ export class CompraController implements CompraControllerInterface {
   }
 
   @Get(':id')
-  @Roles(UserRole.EMPLOYEE, UserRole.OWNER)
+  @Roles(UserRole.OWNER)
   @ApiParam({ name: 'id', type: Number, description: 'ID de la compra' })
   @ApiOperation({ summary: 'Obtener una compra por ID' })
   findOne(@Param('id') id: number): Promise<CompraResponseDto | null> {
@@ -54,7 +54,7 @@ export class CompraController implements CompraControllerInterface {
   }
 
   @Get('usuario/:idUsuario')
-  @Roles(UserRole.EMPLOYEE, UserRole.OWNER)
+  @Roles(UserRole.OWNER)
   @ApiParam({ name: 'idUsuario', type: Number, description: 'ID del usuario que registró la compra' })
   @ApiOperation({ summary: 'Obtener todas las compras registradas por un usuario' })
   findByUsuario(@Param('idUsuario') idUsuario: number): Promise<CompraResponseDto[]> {
@@ -68,7 +68,7 @@ export class CompraController implements CompraControllerInterface {
 // -------------------------------------------------------------------------------
 
   @Post()
-  @Roles(UserRole.EMPLOYEE, UserRole.OWNER)
+  @Roles(UserRole.OWNER)
   @HttpCode(HttpStatus.CREATED)
   @ApiBody({ type: CreateCompraDto })
   @ApiOperation({ summary: 'Registrar una nueva compra (AUMENTA stock)' })
@@ -81,7 +81,7 @@ export class CompraController implements CompraControllerInterface {
   }
 
   @Put(':id')
-  @Roles(UserRole.EMPLOYEE, UserRole.OWNER)
+  @Roles(UserRole.OWNER)
   @ApiParam({ name: 'id', type: Number, description: 'ID de la compra a actualizar' })
   @ApiBody({ type: UpdateCompraDto })
   @ApiOperation({ summary: 'Actualizar compra existente (AJUSTA stock)' })
