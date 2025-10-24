@@ -36,7 +36,7 @@ export class CompraController implements CompraControllerInterface {
 // -------------------------------------------------------------------------------
 
   @Get()
-  @Roles(UserRole.EMPLOYEE)
+  @Roles(UserRole.OWNER)
   @ApiOperation({ summary: 'Obtener todas las compras (solo EMPLEADO y OWNER)' })
   findAll(): Promise<CompraResponseDto[]> {
     this.logger.log('--- ENTRADA A findAll ---');
