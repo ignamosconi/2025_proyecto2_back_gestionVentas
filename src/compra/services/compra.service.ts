@@ -24,6 +24,8 @@ import {
 } from 'src/constants'; 
 import { ProveedorRepositoryInterface } from 'src/proveedor/repositories/interfaces/proveedor.repository.interface';
 import { ProductoProveedorServiceInterface } from 'src/proveedor/services/interfaces/producto-proveedor.service.interface';
+import { IAuditoriaService } from 'src/auditoria/interfaces/auditoria.service.interface';
+import { EventosAuditoria } from 'src/auditoria/helpers/enum.eventos';
 
 @Injectable()
 export class CompraService implements CompraServiceInterface {
@@ -40,9 +42,12 @@ export class CompraService implements CompraServiceInterface {
         @Inject(PROVEEDOR_REPOSITORY)
         private readonly proveedorRepository: ProveedorRepositoryInterface,
 
-        // INYECCIÓN NUEVA: Para verificar si Producto y Proveedor están linkeados
+        //Verificar si Producto y Proveedor están linkeados
         @Inject(PRODUCTO_PROVEEDOR_SERVICE)
         private readonly productoProveedorService: ProductoProveedorServiceInterface,
+
+        @Inject('IAuditoriaService')
+        private readonly auditoriaService: IAuditoriaService,
 
         private readonly dataSource: DataSource,
     ) {}
@@ -124,6 +129,13 @@ export class CompraService implements CompraServiceInterface {
             // 6. Commit y Recargar
             await queryRunner.commitTransaction();
             const compraRecargada = await this.compraRepository.findOne(compraCreada.idCompra);
+
+            //Auditar el proceso
+            await this.auditoriaService.registrarEvento(
+                usuario.id,
+                EventosAuditoria.REGISTRO_COMPRA,
+                `El usuario ${usuario.email} CREÓ una COMPRA con id ${compraCreada.idCompra}`,
+            );
 
             // 7. Transformar a DTO de respuesta
             return plainToInstance(CompraResponseDto, compraRecargada, { excludeExtraneousValues: true });
@@ -318,6 +330,13 @@ export class CompraService implements CompraServiceInterface {
 
             // 10. Commit
             await queryRunner.commitTransaction();
+
+            //Auditar el proceso
+            await this.auditoriaService.registrarEvento(
+                compraExistente.usuario.id,
+                EventosAuditoria.MODIFICAR_COMPRA,
+                `El usuario ${compraExistente.usuario.email} ACTUALIZÓ una COMPRA con id ${compraExistente.idCompra}`,
+            );
 
             // 11. Recargar Compra
             const compraActualizada = await this.compraRepository.findOne(idCompra);

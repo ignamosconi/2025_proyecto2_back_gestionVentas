@@ -17,6 +17,7 @@ import { ProductoModule } from 'src/producto/producto.module';
 import { AuthModule } from 'src/auth/auth.module';
 import { UsersModule } from 'src/users/users.module';
 import { ProveedorModule } from 'src/proveedor/proveedor.module';
+import { AuditoriaModule } from 'src/auditoria/auditoria.module';
 
 @Module({
   imports: [
@@ -27,6 +28,7 @@ import { ProveedorModule } from 'src/proveedor/proveedor.module';
     UsersModule, 
     ProductoModule,
     ProveedorModule, // Necesario para inyectar IProveedorRepository en CompraService
+    AuditoriaModule,
   ],
   controllers: [CompraController],
   providers: [
