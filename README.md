@@ -86,7 +86,7 @@ npm run start:dev
 ```
 
 El servidor estará disponible en:  
-👉 **http://localhost:3000**
+👉 **http://localhost:3000/api**
 
 ---
 
