@@ -255,11 +255,11 @@ async create(createVentaDto: CreateVentaDto, userId: number): Promise<VentaRespo
         // 1️⃣1️⃣ Recargar venta
         const ventaActualizada = await this.ventaRepository.findOne(idVenta);
 
-        //Auditar la actualización de ventas
+        //Auditar la modificación de la venta
         await this.auditoriaService.registrarEvento(
           ventaExistente.usuario.id,
-          EventosAuditoria.REGISTRO_VENTA,
-          `El usuario ${ventaExistente.usuario.email} ACTUALIZÓ una venta con id ${ventaExistente.idVenta}`,
+          EventosAuditoria.MODIFICAR_VENTA,
+          `El usuario ${ventaExistente.usuario.email} MODIFICÓ la venta con id ${ventaExistente.idVenta}`,
         );
 
         return plainToInstance(VentaResponseDto, ventaActualizada, { excludeExtraneousValues: true });

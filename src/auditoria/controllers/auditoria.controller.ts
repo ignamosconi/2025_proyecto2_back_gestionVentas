@@ -43,11 +43,19 @@ export class AuditoriaController implements IAuditoriaController {
     @Query('fechaHasta') fechaHasta?: string,
   ): Promise<AuditoriaLogDTO[]> {
     console.log("[AUDITOR] Mostrando entradas auditadas")
+    console.log("[AUDITOR] Filtros recibidos:", { userId, tipo_evento, fechaDesde, fechaHasta })
+    
+    // Convertir strings ISO a Date objects
+    const fechaDesdeDate = fechaDesde ? new Date(fechaDesde) : undefined;
+    const fechaHastaDate = fechaHasta ? new Date(fechaHasta) : undefined;
+
+    console.log("[AUDITOR] Fechas convertidas:", { fechaDesdeDate, fechaHastaDate })
+
     return this.service.listarEventos(
       userId,
       tipo_evento,
-      fechaDesde ? new Date(fechaDesde) : undefined,
-      fechaHasta ? new Date(fechaHasta) : undefined,
+      fechaDesdeDate,
+      fechaHastaDate,
     );
   }
 }
