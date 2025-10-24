@@ -1,98 +1,203 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# 🧾 Sistema de Gestión de Ventas — Backend (NestJS + TypeORM + PostgreSQL)
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+## 📋 Descripción del Proyecto
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+Este proyecto es un **backend desarrollado con NestJS** que implementa un sistema completo de **gestión de ventas, productos, compras y usuarios**.  
+Permite administrar el catálogo (productos, marcas, líneas), gestionar roles y permisos, registrar ventas y compras, y visualizar métricas de rendimiento.
 
-## Description
+El sistema está diseñado para ser **modular, seguro y escalable**, integrando autenticación JWT, gestión de sesiones, roles, auditoría y seeds automáticos.
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+---
 
-## Project setup
+## 🚀 Tecnologías principales
+
+- **NestJS** (Framework principal)
+- **TypeORM** (ORM para base de datos)
+- **PostgreSQL** (Base de datos relacional)
+- **JWT** (Autenticación basada en tokens)
+- **bcrypt** (Hash de contraseñas)
+- **dotenv** (Manejo de variables de entorno)
+- **TypeScript**
+
+---
+
+## ⚙️ Configuración del Proyecto
+
+### 1️⃣ Clonar el repositorio
 
 ```bash
-$ npm install
+git clone <URL_DEL_REPOSITORIO>
+cd <nombre-del-proyecto>
 ```
 
-## Compile and run the project
+### 2️⃣ Instalar dependencias
 
 ```bash
-# development
-$ npm run start
-
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
+npm install
 ```
 
-## Run tests
+### 3️⃣ Configurar variables de entorno
+
+Crear un archivo `.env` en la raíz del proyecto con el siguiente formato:
+
+```env
+# Database
+DB_HOST=localhost
+DB_PORT=5432
+DB_USER=postgres
+DB_PASSWORD=tu_password
+DB_NAME=ventas_db
+
+# JWT
+JWT_SECRET=supersecreto
+JWT_EXPIRES_IN=1d
+
+# Seed Owner User
+SEED_OWNER_EMAIL=admin@empresa.com
+SEED_OWNER_PASSWORD=123456
+SEED_OWNER_FIRST_NAME=Admin
+SEED_OWNER_LAST_NAME=Principal
+```
+
+---
+
+## 🗄️ Migraciones de Base de Datos
+
+Ejecutar las migraciones para crear las tablas necesarias:
 
 ```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
+npm run typeorm:migration:run
 ```
 
-## Deployment
-
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
-
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+Si necesitás revertir una migración:
 
 ```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
+npm run typeorm:migration:revert
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+---
 
-## Resources
+## 🌱 Ejecución de Seeders
 
-Check out a few resources that may come in handy when working with NestJS:
+El proyecto incluye dos seeders principales:
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+| Seeder | Descripción |
+|:--|:--|
+| **seedCatalogoProductos** | Carga inicial de líneas, marcas, productos, proveedores y sus relaciones. |
+| **seedOwnerUser** | Crea un usuario OWNER (dueño) usando las variables del `.env`. |
 
-## Support
+Ejecutar ambos seeders:
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+```bash
+npm run seed:owner
+npm run seed:catalogo
+```
 
-## Stay in touch
+📌 **Asegurate de que la base de datos esté creada y las migraciones ejecutadas antes de correr los seeders.**
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+---
 
-## License
+## 🧩 Scripts disponibles (`package.json`)
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+```json
+"scripts": {
+  "start": "nest start",
+  "start:dev": "nest start --watch",
+  "build": "nest build",
+  "typeorm:migration:run": "npx typeorm-ts-node-commonjs migration:run -d src/database/data-source.ts",
+  "typeorm:migration:revert": "npx typeorm-ts-node-commonjs migration:revert -d src/database/data-source.ts",
+  "seed:owner": "ts-node src/database/seeders/seedOwnerUser.ts",
+  "seed:catalogo": "ts-node src/database/seeders/seedCatalogoProductos.ts"
+}
+```
+
+---
+
+## 🧩 Ejecución del Proyecto
+
+Levantar el servidor en modo desarrollo:
+
+```bash
+npm run start:dev
+```
+
+El servidor estará disponible en:  
+👉 **http://localhost:3000**
+
+---
+
+## 🧑‍💼 Roles del Sistema
+
+| Rol | Permisos principales |
+|:--|:--|
+| **Dueño (OWNER)** | Gestión completa del sistema, usuarios, roles, métricas |
+| **Empleado (EMPLOYEE)** | Registro de ventas, gestión de productos |
+
+---
+
+## 📚 Funcionalidades Principales (User Stories)
+
+### 👥 Gestión de Usuarios y Seguridad
+
+- **US 1:** Creación de cuentas por el Dueño  
+- **US 1.1:** Inicio de sesión con validación JWT  
+- **US 2:** Actualización de perfil y cambio de contraseña  
+- **US 3:** Recuperación de contraseña vía email  
+- **US 4:** Seguridad de sesión (tokens seguros, HTTPS)  
+- **US 5:** Gestión de roles y permisos  
+- **US 6:** Registro de auditoría de sesiones  
+
+### 🛍️ Gestión de Catálogo
+
+- **US 7:** CRUD de productos con validaciones y stock  
+- **US 8:** CRUD de marcas (sin duplicados ni eliminaciones si hay productos asociados)  
+- **US 9:** CRUD de líneas de producto  
+- **US 10:** Creación rápida de líneas desde el formulario de productos  
+
+### 📦 Compras, Ventas y Stock
+
+- **US 11:** Alerta automática de bajo stock (<10 unidades)  
+- **US 12:** Asociación de productos con proveedores y códigos únicos  
+- **US 13:** Dashboard de métricas (solo para Dueños)  
+- **US 14:** Registro y actualización de ventas con impacto en stock  
+- **US 15:** Registro y actualización de compras con impacto en stock  
+
+---
+
+## 📊 Seeds incluidos
+
+| Seeder | Descripción |
+|:--|:--|
+| **seedOwnerUser()** | Crea el usuario Dueño inicial |
+| **seedCatalogoProductos()** | Crea líneas, marcas, relaciones, proveedores, productos y sus vínculos |
+
+---
+
+## 🧪 Comandos útiles
+
+| Acción | Comando |
+|:--|:--|
+| Instalar dependencias | `npm install` |
+| Ejecutar migraciones | `npm run typeorm:migration:run` |
+| Ejecutar seeders | `npm run seed:owner` y `npm run seed:catalogo` |
+| Levantar servidor dev | `npm run start:dev` |
+| Revertir migraciones | `npm run typeorm:migration:revert` |
+| Compilar proyecto | `npm run build` |
+
+---
+
+## 🧰 Buenas prácticas implementadas
+
+- Arquitectura modular basada en dominios  
+- DTOs y validaciones con `class-validator`  
+- Repositorios inyectados mediante tokens  
+- Hash de contraseñas con `bcrypt`  
+- Uso de `dotenv` para configuración  
+- Relaciones explícitas entre entidades  
+- Control de errores con `BadRequestException` y `NotFoundException`  
+
+---
+
+## ✉️ Integrantes del grupo
+
+Liendo Alejo, Lucarelli Bruno, Magni Gastón, Mosconi Ignacio, Terreno Valentino
