@@ -307,7 +307,9 @@ export class CompraService implements CompraServiceInterface {
                 compraExistente.total = nuevoTotal;
             } else {
                 // 5. Si no hay nuevos detalles, mantener los existentes
-                compraExistente.total = detallesActuales.reduce((sum, d) => sum + d.subtotal, 0);
+                compraExistente.total = parseFloat(
+                    detallesActuales.reduce((sum, d) => sum + Number(d.subtotal), 0).toFixed(2)
+                );
             }
 
             // 6. Actualizar metodoPago si viene
