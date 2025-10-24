@@ -18,7 +18,15 @@ export class VentaRepository implements VentaRepositoryInterface {
   // Listar todas las ventas
   findAll(): Promise<Venta[]> {
     return this.repository.find({
-      relations: ['detalles', 'detalles.producto', 'usuario'],
+      relations: [
+        'detalles', 
+        'detalles.producto', 
+        'detalles.producto.marca',
+        'detalles.producto.linea',
+        'detalles.producto.proveedores',
+        'detalles.producto.proveedores.proveedor',
+        'usuario'
+      ],
       order: { fechaCreacion: 'DESC' },
     });
   }
@@ -27,7 +35,15 @@ export class VentaRepository implements VentaRepositoryInterface {
   findOne(id: number): Promise<Venta | null> {
     return this.repository.findOne({
       where: { idVenta: id },
-      relations: ['detalles', 'detalles.producto', 'usuario'],
+      relations: [
+        'detalles', 
+        'detalles.producto', 
+        'detalles.producto.marca',
+        'detalles.producto.linea',
+        'detalles.producto.proveedores',
+        'detalles.producto.proveedores.proveedor',
+        'usuario'
+      ],
     });
   }
 
@@ -35,7 +51,15 @@ export class VentaRepository implements VentaRepositoryInterface {
   findByUsuario(idUsuario: number): Promise<Venta[]> {
     return this.repository.find({
       where: { usuario: { id: idUsuario } },
-      relations: ['detalles', 'detalles.producto', 'usuario'],
+      relations: [
+        'detalles', 
+        'detalles.producto', 
+        'detalles.producto.marca',
+        'detalles.producto.linea',
+        'detalles.producto.proveedores',
+        'detalles.producto.proveedores.proveedor',
+        'usuario'
+      ],
       order: { fechaCreacion: 'DESC' },
     });
   }
@@ -50,7 +74,15 @@ export class VentaRepository implements VentaRepositoryInterface {
     await this.repository.update(id, venta);
     return this.repository.findOne({
       where: { idVenta: id },
-      relations: ['usuario', 'detalles', 'detalles.producto'],
+      relations: [
+        'detalles', 
+        'detalles.producto', 
+        'detalles.producto.marca',
+        'detalles.producto.linea',
+        'detalles.producto.proveedores',
+        'detalles.producto.proveedores.proveedor',
+        'usuario'
+      ],
     });
   }
 
