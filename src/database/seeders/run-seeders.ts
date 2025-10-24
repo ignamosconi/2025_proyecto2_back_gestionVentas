@@ -1,5 +1,6 @@
 import { seedOwnerUser } from './owner-user.seed';
 import { seedCatalogoProductos } from './catalogo-productos.seed';
+import { seedVentas } from './ventas.seed';
 
 /**
  * Main function to run all seeders
@@ -15,6 +16,10 @@ async function runSeeders() {
     // Run the catalog and products seeder
     await seedCatalogoProductos();
     console.log('✅ Catalog and products seeder completed successfully');
+    
+    // Run the sales seeder
+    await seedVentas();
+    console.log('✅ Sales seeder completed successfully');
   } catch (error) {
     console.error('❌ Error running seeders:', error);
     process.exit(1);
