@@ -6,6 +6,14 @@ export class UserVentaResponseDto {
     @Expose()
     id: number;
 
+    @ApiProperty({ description: 'Nombre del usuario.' })
+    @Expose()
+    firstName: string;
+
+    @ApiProperty({ description: 'Apellido del usuario.' })
+    @Expose()
+    lastName: string;
+
     @ApiProperty({ description: 'Correo electrónico del usuario.' })
     @Expose()
     email: string;
