@@ -38,26 +38,7 @@ npm install
 
 ### 3️⃣ Configurar variables de entorno
 
-Crear un archivo `.env` en la raíz del proyecto con el siguiente formato:
-
-```env
-# Database
-DB_HOST=localhost
-DB_PORT=5432
-DB_USER=postgres
-DB_PASSWORD=tu_password
-DB_NAME=ventas_db
-
-# JWT
-JWT_SECRET=supersecreto
-JWT_EXPIRES_IN=1d
-
-# Seed Owner User
-SEED_OWNER_EMAIL=admin@empresa.com
-SEED_OWNER_PASSWORD=123456
-SEED_OWNER_FIRST_NAME=Admin
-SEED_OWNER_LAST_NAME=Principal
-```
+Crear un archivo `.env` en la raíz del proyecto, basándose en el archivo `.env.example`. Lsa API KEYS deberán ser solicitadas al grupo, pero de no tenerlas el código funcionará igual (sólo que no tendrá la habilidad de cargar imágenes para productos, o utilizar el mailer para recuperación de contraseñas y mensajes varios)
 
 ---
 
@@ -66,13 +47,13 @@ SEED_OWNER_LAST_NAME=Principal
 Ejecutar las migraciones para crear las tablas necesarias:
 
 ```bash
-npm run typeorm:migration:run
+npm run migration:run
 ```
 
 Si necesitás revertir una migración:
 
 ```bash
-npm run typeorm:migration:revert
+npm run migration:revert
 ```
 
 ---
@@ -86,30 +67,13 @@ El proyecto incluye dos seeders principales:
 | **seedCatalogoProductos** | Carga inicial de líneas, marcas, productos, proveedores y sus relaciones. |
 | **seedOwnerUser** | Crea un usuario OWNER (dueño) usando las variables del `.env`. |
 
-Ejecutar ambos seeders:
+Podremos ejecutar todos los seeders con el comando:
 
 ```bash
-npm run seed:owner
-npm run seed:catalogo
+npm run seed:db
 ```
 
-📌 **Asegurate de que la base de datos esté creada y las migraciones ejecutadas antes de correr los seeders.**
-
----
-
-## 🧩 Scripts disponibles (`package.json`)
-
-```json
-"scripts": {
-  "start": "nest start",
-  "start:dev": "nest start --watch",
-  "build": "nest build",
-  "typeorm:migration:run": "npx typeorm-ts-node-commonjs migration:run -d src/database/data-source.ts",
-  "typeorm:migration:revert": "npx typeorm-ts-node-commonjs migration:revert -d src/database/data-source.ts",
-  "seed:owner": "ts-node src/database/seeders/seedOwnerUser.ts",
-  "seed:catalogo": "ts-node src/database/seeders/seedCatalogoProductos.ts"
-}
-```
+📌 **Antes de ejecutar este comando, debemos tener creada la base de datos. En el .env.example le dimos de nombre "p2ventas", pero puede ser cualquiera.**
 
 ---
 
@@ -163,25 +127,15 @@ El servidor estará disponible en:
 - **US 15:** Registro y actualización de compras con impacto en stock  
 
 ---
-
-## 📊 Seeds incluidos
-
-| Seeder | Descripción |
-|:--|:--|
-| **seedOwnerUser()** | Crea el usuario Dueño inicial |
-| **seedCatalogoProductos()** | Crea líneas, marcas, relaciones, proveedores, productos y sus vínculos |
-
----
-
-## 🧪 Comandos útiles
+## 🧪 Resumen - Comandos útiles
 
 | Acción | Comando |
 |:--|:--|
 | Instalar dependencias | `npm install` |
-| Ejecutar migraciones | `npm run typeorm:migration:run` |
-| Ejecutar seeders | `npm run seed:owner` y `npm run seed:catalogo` |
+| Ejecutar migraciones | `npm run migration:run` |
+| Ejecutar seeders | `npm run seed:db` |
 | Levantar servidor dev | `npm run start:dev` |
-| Revertir migraciones | `npm run typeorm:migration:revert` |
+| Revertir migraciones | `npm run migration:revert` |
 | Compilar proyecto | `npm run build` |
 
 ---
