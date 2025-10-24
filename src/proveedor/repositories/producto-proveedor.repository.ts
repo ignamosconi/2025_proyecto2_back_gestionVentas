@@ -82,4 +82,20 @@ export class ProductoProveedorRepository implements ProductoProveedorRepositoryI
         if (!entity) throw new NotFoundException(`ProductoProveedor con id ${id} no encontrado`);
         await this.repository.recover(entity);
     }
+
+    async findOneByProductAndSupplier(idProducto: number, idProveedor: number): Promise<ProductoProveedor | null> {
+        
+        // Se utiliza findOne para buscar la coincidencia exacta de ambas FKs.
+        // Se utiliza 'select' para asegurar que solo se recuperen las columnas mínimas (IDs)
+        // lo que optimiza la consulta y el rendimiento.
+        return this.repository.findOne({
+            where: {
+                idProducto: idProducto as any, // Asegura que TypeORM use la FK
+                idProveedor: idProveedor as any, // Asegura que TypeORM use la FK
+            },
+            // Al ser un 'check' simple, solo necesitamos los IDs como prueba de existencia.
+            select: ['idProductoProveedor', 'idProducto', 'idProveedor'] as any,
+        });
+    }
+
 }

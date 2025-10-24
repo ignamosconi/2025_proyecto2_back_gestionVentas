@@ -26,7 +26,7 @@ import { ProveedorModule } from 'src/proveedor/proveedor.module';
     AuthModule, 
     UsersModule, 
     ProductoModule,
-    ProveedorModule // Necesario para inyectar IProveedorRepository en CompraService
+    ProveedorModule, // Necesario para inyectar IProveedorRepository en CompraService
   ],
   controllers: [CompraController],
   providers: [

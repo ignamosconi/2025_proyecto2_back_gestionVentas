@@ -1,5 +1,5 @@
 import { Controller, Get, Post, Patch, Delete, Param, Body, ParseIntPipe, HttpCode, HttpStatus, Inject, UseGuards } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiParam, ApiBody } from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiParam, ApiBody, ApiResponse } from '@nestjs/swagger';
 import { Roles } from '../../auth/decorators/roles.decorator';
 import { AuthGuard } from '../../auth/guards/auth.guard';
 import { RolesGuard } from '../../auth/guards/roles.guard';
@@ -39,6 +39,31 @@ export class ProductoProveedorController implements ProductoProveedorControllerI
     findOne(@Param('id', ParseIntPipe) id: number): Promise<ProductoProveedor> {
         console.log(`[ProductoProveedorController] GET /producto-proveedor/${id} - Obteniendo vínculo por ID.`);
         return this.productoProveedorService.findOne(id);
+    }
+
+    @Get('check/:idProducto/:idProveedor')
+    @HttpCode(HttpStatus.OK)
+    @ApiOperation({ 
+        summary: 'Verifica si un Producto ya está vinculado a un Proveedor.', 
+        description: 'Retorna { exists: true } si el vínculo existe, { exists: false } si no.' 
+    })
+    @ApiParam({ name: 'idProducto', description: 'ID del Producto.', type: Number })
+    @ApiParam({ name: 'idProveedor', description: 'ID del Proveedor.', type: Number })
+    @ApiResponse({ 
+        status: 200, 
+        description: 'Estado del vínculo retornado.',
+        schema: { example: { exists: true } }
+    })
+    async checkLink(
+        @Param('idProducto', ParseIntPipe) idProducto: number,
+        @Param('idProveedor', ParseIntPipe) idProveedor: number,
+    ): Promise<{ exists: boolean }> {
+        console.log(`[ProductoProveedorController] GET /producto-proveedor/check/${idProducto}/${idProveedor} - Verificando vínculo.`);
+        
+        const link = await this.productoProveedorService.checkLinkExists(idProducto, idProveedor);
+        
+        // Convierte el resultado (entidad o null) en un booleano
+        return { exists: !!link };
     }
 
     @Get('producto/:idProducto')

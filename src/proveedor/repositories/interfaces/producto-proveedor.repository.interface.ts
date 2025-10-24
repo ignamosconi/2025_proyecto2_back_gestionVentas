@@ -12,4 +12,5 @@ export interface ProductoProveedorRepositoryInterface {
     update(id: number, data: UpdateProductoProveedorDto): Promise<ProductoProveedor>;
     softDelete(id: number): Promise<void>;
     restore(id: number): Promise<void>;
+    findOneByProductAndSupplier(idProducto: number, idProveedor: number): Promise<ProductoProveedor | null>;
 }

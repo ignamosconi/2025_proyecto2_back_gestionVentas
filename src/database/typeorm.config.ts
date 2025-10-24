@@ -10,6 +10,8 @@ import { ProductoProveedor } from '../proveedor/entities/producto-proveedor.enti
 import { AuditLogEntity } from '../auditoria/entities/registro-auditoria.entity';
 import { Venta } from 'src/venta/entities/venta.entity';
 import { DetalleVenta } from 'src/venta/entities/detalle-venta.entity';
+import { Compra } from 'src/compra/entities/compra.entity';
+import { DetalleCompra } from 'src/compra/entities/detalle-compra.entity';
 
 
 // Load environment variables from .env file
@@ -33,6 +35,8 @@ export const AppDataSource = new DataSource({
     AuditLogEntity,
     Venta,
     DetalleVenta,
+    Compra,
+    DetalleCompra,
   ],
   migrations: ['src/database/migrations/*.ts'],
   synchronize: false, // Set to false for production

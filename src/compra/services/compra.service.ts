@@ -1,5 +1,3 @@
-// 📄 src/compras/services/compra.service.ts
-
 import { Injectable, BadRequestException, NotFoundException, Inject } from '@nestjs/common';
 import { DataSource } from 'typeorm';
 import { plainToInstance } from 'class-transformer';
@@ -22,9 +20,10 @@ import {
     PRODUCTO_REPOSITORY, 
     USUARIO_REPOSITORY,
     PROVEEDOR_REPOSITORY,
-    COMPRA_SERVICE
+    PRODUCTO_PROVEEDOR_SERVICE // NUEVA CONSTANTE
 } from 'src/constants'; 
 import { ProveedorRepositoryInterface } from 'src/proveedor/repositories/interfaces/proveedor.repository.interface';
+import { ProductoProveedorServiceInterface } from 'src/proveedor/services/interfaces/producto-proveedor.service.interface';
 
 @Injectable()
 export class CompraService implements CompraServiceInterface {
@@ -41,6 +40,10 @@ export class CompraService implements CompraServiceInterface {
         @Inject(PROVEEDOR_REPOSITORY)
         private readonly proveedorRepository: ProveedorRepositoryInterface,
 
+        // INYECCIÓN NUEVA: Para verificar si Producto y Proveedor están linkeados
+        @Inject(PRODUCTO_PROVEEDOR_SERVICE)
+        private readonly productoProveedorService: ProductoProveedorServiceInterface,
+
         private readonly dataSource: DataSource,
     ) {}
 
@@ -51,29 +54,38 @@ export class CompraService implements CompraServiceInterface {
     async create(createCompraDto: CreateCompraDto, userId: number): Promise<CompraResponseDto> {
         const { metodoPago, detalles, idProveedor } = createCompraDto;
 
-        // 1️⃣ Obtener usuario y proveedor
+        // 1. Obtener usuario y proveedor
         const usuario = await this.usuarioRepository.findById(userId);
         if (!usuario) throw new NotFoundException('Usuario no encontrado.');
 
-        const proveedor = await this.proveedorRepository.findOne(idProveedor);
+        // Se usa findOne en lugar de findOneActive, ya que la compra no requiere que el proveedor esté activo.
+        const proveedor = await this.proveedorRepository.findOne(idProveedor); 
         if (!proveedor) throw new NotFoundException('Proveedor no encontrado.');
 
-        // 2️⃣ Preparar detalles y calcular total
+        // 2. Preparar detalles y calcular total
         const detallesCompra: DetalleCompra[] = [];
         const productosAActualizar: { idProducto: number; cantidad: number }[] = [];
         let total = 0;
 
         for (const item of detalles) {
+            // VALIDACIÓN CLAVE: Verificar si el Producto está asociado al Proveedor
+            const link = await this.productoProveedorService.checkLinkExists(item.idProducto, idProveedor);
+            if (!link) {
+                throw new BadRequestException(
+                    `El producto con ID ${item.idProducto} no está asociado al proveedor con ID ${idProveedor}. La compra no puede ser procesada.`
+                );
+            }
+            
             const producto = await this.productoRepository.findOneActive(item.idProducto);
-            if (!producto) throw new NotFoundException(`Producto con ID ${item.idProducto} no encontrado.`);
-
+            if (!producto) throw new NotFoundException(`Producto con ID ${item.idProducto} no encontrado o está inactivo.`);
+            
+            // ... (Resto de la lógica del detalle de compra)
             const precioUnitario = producto.precio;
             const subtotal = precioUnitario * item.cantidad;
             total += subtotal;
 
             const detalleCompra = new DetalleCompra();
             
-            // Asignación de FK
             (detalleCompra as any).idProducto = producto.idProducto; 
             
             detalleCompra.producto = producto; 
@@ -85,7 +97,7 @@ export class CompraService implements CompraServiceInterface {
             productosAActualizar.push({ idProducto: producto.idProducto, cantidad: item.cantidad });
         }
 
-        // 3️⃣ Crear Compra
+        // 3. Crear Compra
         const compra = new Compra();
         compra.fechaCreacion = new Date();
         compra.metodoPago = metodoPago;
@@ -94,7 +106,7 @@ export class CompraService implements CompraServiceInterface {
         compra.proveedor = proveedor; 
         compra.detalles = detallesCompra;
         
-        // 4️⃣ Iniciar Transacción
+        // 4. Iniciar Transacción
         let compraCreada: Compra;
         const queryRunner = this.dataSource.createQueryRunner();
         await queryRunner.connect();
@@ -104,21 +116,24 @@ export class CompraService implements CompraServiceInterface {
             // Guardar la compra junto con los detalles
             compraCreada = await queryRunner.manager.save(compra);
 
-            // 5️⃣ Actualizar stock (SUMAR STOCK)
+            // 5. Actualizar stock (SUMAR STOCK)
             for (const { idProducto, cantidad } of productosAActualizar) {
-                // Cantidad es positiva, se SUMA al stock
                 await this.productoRepository.updateStock(idProducto, cantidad); 
             }
             
-            // 6️⃣ Commit y Recargar
+            // 6. Commit y Recargar
             await queryRunner.commitTransaction();
             const compraRecargada = await this.compraRepository.findOne(compraCreada.idCompra);
 
-            // 7️Transformar a DTO de respuesta
+            // 7. Transformar a DTO de respuesta
             return plainToInstance(CompraResponseDto, compraRecargada, { excludeExtraneousValues: true });
 
         } catch (error) {
             await queryRunner.rollbackTransaction();
+            // Si el error fue por la validación del link o producto no encontrado, relanzamos
+            if (error instanceof BadRequestException || error instanceof NotFoundException) {
+                throw error;
+            }
             throw new BadRequestException('Error al registrar la compra y actualizar el inventario: ' + error.message);
         } finally {
             await queryRunner.release();
@@ -153,13 +168,13 @@ export class CompraService implements CompraServiceInterface {
         // Asumo que idProveedor es opcional en UpdateCompraDto
         const { metodoPago, detalles: nuevosDetallesDto, idProveedor } = updateCompraDto as any; 
 
-        // 1️⃣ Iniciar transacción
+        // 1. Iniciar transacción
         const queryRunner = this.dataSource.createQueryRunner();
         await queryRunner.connect();
         await queryRunner.startTransaction();
 
         try {
-            // 2️⃣ Obtener Compra existente
+            // 2. Obtener Compra existente
             const compraExistente = await queryRunner.manager.findOne(Compra, {
                 where: { idCompra } as any,
                 relations: ['detalles', 'detalles.producto', 'usuario', 'proveedor'], 
@@ -169,7 +184,7 @@ export class CompraService implements CompraServiceInterface {
               throw new NotFoundException(`Compra con ID ${idCompra} no encontrada.`);
             }
 
-            // 2️⃣b. Actualizar Proveedor si se proporciona
+            // 2.b. Actualizar Proveedor si se proporciona
             if (idProveedor !== undefined) {
               const proveedor = await this.proveedorRepository.findOne(idProveedor);
               if (!proveedor) throw new NotFoundException('Proveedor no encontrado.');
@@ -177,13 +192,17 @@ export class CompraService implements CompraServiceInterface {
               (compraExistente as any).idProveedor = idProveedor;
             }
 
+            // ID del proveedor con el que se deben validar todos los productos 
+            // (Será el nuevo ID si se actualizó, o el ID original si no se modificó)
+            const currentIdProveedor = (compraExistente.proveedor as any).idProveedor;
+            
             const detallesActuales: DetalleCompra[] = compraExistente.detalles || [];
             const productosAActualizar: { idProducto: number; cambioStock: number }[] = [];
             const detallesAProcesar: DetalleCompra[] = [];
             const detallesAEliminar: DetalleCompra[] = [];
             let nuevoTotal = 0;
 
-            // 3️⃣ Procesar detalles solo si envían nuevos
+            // 3. Procesar detalles solo si envían nuevos
             if (nuevosDetallesDto?.length) {
                 for (const nuevoDetalleDto of nuevosDetallesDto) {
                     const idProducto = nuevoDetalleDto.idProducto;
@@ -191,6 +210,14 @@ export class CompraService implements CompraServiceInterface {
 
                     if (idProducto === undefined || cantidadNueva === undefined) {
                         throw new BadRequestException('El idProducto y la cantidad son obligatorios para cada detalle de compra.');
+                    }
+                    
+                    // NUEVA VALIDACIÓN CLAVE: Verificar si el Producto está asociado al Proveedor actual
+                    const link = await this.productoProveedorService.checkLinkExists(idProducto, currentIdProveedor);
+                    if (!link) {
+                        throw new BadRequestException(
+                            `El producto con ID ${idProducto} no está asociado al proveedor con ID ${currentIdProveedor}. La actualización no puede ser procesada.`
+                        );
                     }
 
                     const detalleExistente = detallesActuales.find(d => (d as any).idProducto === idProducto);
@@ -237,7 +264,7 @@ export class CompraService implements CompraServiceInterface {
                     }
                 }
 
-                // 4️⃣ Detectar detalles eliminados
+                // 4. Detectar detalles eliminados
                 const idsNuevos = nuevosDetallesDto.map(d => d.idProducto);
                 const eliminados = detallesActuales.filter(d => !idsNuevos.includes((d as any).idProducto));
                 
@@ -245,7 +272,7 @@ export class CompraService implements CompraServiceInterface {
                     // Se resta el stock completo del detalle eliminado
                     const cambioStock = -detalle.cantidad; 
 
-                    // 🚨 SOLUCIÓN ts(18047): Chequeo de nulo antes de acceder a las propiedades
+                    // Chequeo de nulo antes de acceder a las propiedades
                     const producto = await this.productoRepository.findOneActive((detalle as any).idProducto);
                     if (!producto) { 
                         throw new NotFoundException(
@@ -267,32 +294,32 @@ export class CompraService implements CompraServiceInterface {
                 compraExistente.detalles = detallesAProcesar;
                 compraExistente.total = nuevoTotal;
             } else {
-                // 5️⃣ Si no hay nuevos detalles, mantener los existentes
+                // 5. Si no hay nuevos detalles, mantener los existentes
                 compraExistente.total = detallesActuales.reduce((sum, d) => sum + d.subtotal, 0);
             }
 
-            // 6️⃣ Actualizar metodoPago si viene
+            // 6. Actualizar metodoPago si viene
             if (metodoPago !== undefined) {
                 compraExistente.metodoPago = metodoPago;
             }
 
-            // 7️⃣ Guardar Compra
+            // 7. Guardar Compra
             await queryRunner.manager.save(compraExistente);
 
-            // 8️⃣ Eliminar detalles si los hay
+            // 8. Eliminar detalles si los hay
             if (detallesAEliminar.length > 0) {
                 await queryRunner.manager.remove(detallesAEliminar);
             }
 
-            // 9️⃣ Actualizar stock
+            // 9. Actualizar stock
             for (const { idProducto, cambioStock } of productosAActualizar) {
                 await this.productoRepository.updateStock(idProducto, cambioStock);
             }
 
-            // 🔟 Commit
+            // 10. Commit
             await queryRunner.commitTransaction();
 
-            // 1️⃣1️⃣ Recargar Compra
+            // 11. Recargar Compra
             const compraActualizada = await this.compraRepository.findOne(idCompra);
             return plainToInstance(CompraResponseDto, compraActualizada, { excludeExtraneousValues: true });
         } catch (error) {

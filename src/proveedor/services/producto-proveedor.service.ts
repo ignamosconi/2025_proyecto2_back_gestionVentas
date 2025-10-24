@@ -85,4 +85,8 @@ export class ProductoProveedorService implements ProductoProveedorServiceInterfa
     async restore(id: number): Promise<void> {
         await this.productoProveedorRepo.restore(id);
     }
+
+    async checkLinkExists(idProducto: number, idProveedor: number): Promise<ProductoProveedor | null> {
+        return this.productoProveedorRepo.findOneByProductAndSupplier(idProducto, idProveedor);
+    }
 }

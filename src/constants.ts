@@ -19,4 +19,4 @@ export const COMPRA_SERVICE = 'CompraServiceInterface';
 export const VENTA_REPOSITORY = 'VentaRepositoryInterface';
 export const VENTA_SERVICE = 'VentaServiceInterface';
 export const USUARIO_SERVICE = 'UsuarioServiceInterface';
-export const USUARIO_REPOSITORY = 'IUserRepository';
+export const USUARIO_REPOSITORY = 'IUserRepository'
