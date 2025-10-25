@@ -19,15 +19,16 @@ export class AuditoriaService implements IAuditoriaService {
       fecha_hora: evento.fecha_hora,
       tipo_evento: evento.tipo_evento,
       detalle: evento.detalle,
-      user: {
-        id: evento.user.id,
-        firstName: evento.user.firstName,
-        lastName: evento.user.lastName,
-        email: evento.user.email,
-        phone: evento.user.phone,
-        address: evento.user.address,
-        role: evento.user.role,
-      },
+      user: evento.user 
+        ? {
+          id: evento.user.id,
+          firstName: evento.user.firstName,
+          lastName: evento.user.lastName,
+          email: evento.user.email,
+          phone: evento.user.phone,
+          address: evento.user.address,
+          role: evento.user.role,
+        }: null,
     });
   }
 

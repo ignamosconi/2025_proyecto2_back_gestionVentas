@@ -104,7 +104,7 @@ export class UsersService implements IUsersService {
     await this.auditoriaService.registrarEvento(
       savedUser.id, // usuario que fue creado
       EventosAuditoria.CREAR_USUARIO_EMPLOYEE,
-      `Usuario EMPLEADO creado con email ${savedUser.email}`,
+      `Usuario EMPLEADO creado para el email ${savedUser.email}`,
     );
 
     return this.toUserResponse(savedUser);
@@ -143,7 +143,7 @@ export class UsersService implements IUsersService {
     await this.auditoriaService.registrarEvento(
       savedUser.id, // usuario que fue creado
       EventosAuditoria.CREAR_USUARIO_OWNER,
-      `Usuario DUEÑO creado con email ${savedUser.email}`,
+      `Usuario DUEÑO creado para el email ${savedUser.email}`,
     );
 
     return this.toUserResponse(savedUser);

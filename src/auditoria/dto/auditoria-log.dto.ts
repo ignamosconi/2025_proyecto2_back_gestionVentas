@@ -5,7 +5,7 @@ export class AuditoriaLogDTO {
   fecha_hora: Date;
   tipo_evento: string;
   detalle?: string;
-  user: AuditoriaUserDTO;
+  user: AuditoriaUserDTO | null; //por si está soft-deleted
 
   constructor(partial: Partial<AuditoriaLogDTO>) {
     if (partial.user) {

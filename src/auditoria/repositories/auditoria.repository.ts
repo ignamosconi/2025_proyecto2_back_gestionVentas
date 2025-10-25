@@ -32,7 +32,10 @@ export class AuditoriaRepository implements IAuditoriaRepository {
     fechaDesde?: Date,
     fechaHasta?: Date,
   ): Promise<AuditLogEntity[]> {
-    const qb = this.repository.createQueryBuilder('audit').leftJoinAndSelect('audit.user', 'user');
+    const qb = this.repository
+      .createQueryBuilder('audit')
+      .leftJoinAndSelect('audit.user', 'user')
+      .withDeleted();
 
     if (userId) {
       qb.andWhere('audit.userId = :userId', { userId });
