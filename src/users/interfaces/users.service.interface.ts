@@ -13,7 +13,7 @@ export interface IUsersService {
   findAllEmployees(): Promise<UserEntity[]>;
 
   registerAsEmployee(body: RegisterEmployeeDTO): Promise<UserResponseDto>;
-  registerByOwner(body: RegisterEmployeeOwnerDTO): Promise<UserResponseDto>;
+  registerByOwner(body: RegisterEmployeeOwnerDTO, req: string): Promise<UserResponseDto>;
   update(id: number, body: UpdateUserDTO): Promise<UserResponseDto>;
   softDelete(id: number): Promise<MessageResponseDTO>;
   restore(id: number): Promise<MessageResponseDTO>;

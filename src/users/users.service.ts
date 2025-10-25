@@ -20,6 +20,7 @@ import { IUsersService } from './interfaces/users.service.interface';
 import type { IMailerService } from '../mailer/interfaces/mailer.service.interface';
 import type { IAuditoriaService } from '../auditoria/interfaces/auditoria.service.interface';
 import { EventosAuditoria } from '../auditoria/helpers/enum.eventos';
+import { LoggedUser } from './interfaces/logged-user.interface';
 
 @Injectable()
 export class UsersService implements IUsersService {
@@ -113,6 +114,7 @@ export class UsersService implements IUsersService {
   // Registro por OWNER (puede ser OWNER o EMPLOYEE)
   async registerByOwner(
     body: RegisterEmployeeOwnerDTO,
+    req: string,
   ): Promise<UserResponseDto> {
     validatePasswordStrength(
       body.password,
@@ -140,8 +142,13 @@ export class UsersService implements IUsersService {
     );
 
     //Auditar el proceso
+    
+    const emailCreador = await this.userRepository.findByEmail(req);
+    if (!emailCreador) {
+      throw new NotFoundException('Usuario creador no encontrado');
+    }
     await this.auditoriaService.registrarEvento(
-      savedUser.id, // usuario que fue creado
+      emailCreador.id,// usuario que realizó la acción
       EventosAuditoria.CREAR_USUARIO_OWNER,
       `Usuario DUEÑO creado para el email ${savedUser.email}`,
     );

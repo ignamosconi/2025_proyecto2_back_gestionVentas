@@ -44,5 +44,4 @@ export class RegisterEmployeeDTO {
   @IsNotEmpty()
   address: string;
 
-  // No pasamos un role.
 }

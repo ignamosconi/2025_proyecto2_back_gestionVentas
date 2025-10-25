@@ -9,6 +9,7 @@ import {
   ParseIntPipe,
   Patch,
   Post,
+  Req,
   UseGuards,
 } from '@nestjs/common';
 import { RegisterEmployeeOwnerDTO } from './dto/register-employee-owner.dto';
@@ -23,6 +24,7 @@ import { UserRole } from './helpers/enum.roles';
 import { Roles } from '../auth/decorators/roles.decorator';
 import type { IUsersController } from './interfaces/users.controller.interface';
 import type { IUsersService } from './interfaces/users.service.interface';
+import { LoggedUser } from './interfaces/logged-user.interface';
 
 /*
   PROTECCIÓN DE ENDPOINTS:
@@ -64,7 +66,9 @@ export class UsersController implements IUsersController {
   //REGISTER "PÚBLICO", sólo crea usuarios con rol EMPLOYEE.
   @ApiOperation({ summary: 'Registro público de usuario EMPLOYEE' })
   @Post('register')
-  registerPublic(@Body() body: RegisterEmployeeDTO): Promise<UserResponseDto> {
+  registerPublic(
+    @Body() body: RegisterEmployeeDTO,
+  ): Promise<UserResponseDto> {
     console.log(
       `[UsersController] POST /users/register - Registrando EMPLOYEE: ${body.email}`,
     );
@@ -81,11 +85,10 @@ export class UsersController implements IUsersController {
   @Post('register-owner')
   createUserByOwner(
     @Body() body: RegisterEmployeeOwnerDTO,
+    @Req() req: Request & { user: LoggedUser }
   ): Promise<UserResponseDto> {
-    console.log(
-      `[UsersController] POST /users/register-owner - OWNER creando usuario ${body.email} con rol ${body.role}`,
-    );
-    return this.service.registerByOwner(body);
+    console.log(`[UsersController] POST /users/register-owner - OWNER creando usuario ${body.email} con rol ${body.role}`,);
+    return this.service.registerByOwner(body, req.user.email);
   }
 
   @ApiBearerAuth()
