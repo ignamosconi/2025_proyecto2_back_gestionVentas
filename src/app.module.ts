@@ -17,7 +17,7 @@ import { CompraModule } from './compra/compra.module';
   imports: [
     // Cargamos el .env
     ConfigModule.forRoot({
-      isGlobal: true
+      isGlobal: true,
     }),
 
     // Configuramos la conexión con TypeORM
@@ -30,9 +30,9 @@ import { CompraModule } from './compra/compra.module';
         port: configService.get<number>('DB_PORT'),
         username: configService.get<string>('DB_USERNAME'),
         password: configService.get<string>('DB_PASSWORD'),
-        database: configService.get<string>('DB_NAME'), 
+        database: configService.get<string>('DB_NAME'),
         autoLoadEntities: true,
-        synchronize: false
+        synchronize: false,
       }),
     }),
     CatalogoModule,
@@ -43,7 +43,7 @@ import { CompraModule } from './compra/compra.module';
     ProductoModule,
     AuditoriaModule,
     VentaModule,
-    CompraModule
+    CompraModule,
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -27,7 +27,9 @@ async function bootstrap() {
   const address = configService.get<string>('SEED_OWNER_ADDRESS');
 
   if (!email || !password || !firstName || !lastName || !phone || !address) {
-    throw new Error('Faltan variables de entorno necesarias para crear el usuario OWNER');
+    throw new Error(
+      'Faltan variables de entorno necesarias para crear el usuario OWNER',
+    );
   }
   const ownerDto: RegisterEmployeeOwnerDTO = {
     email,
@@ -39,10 +41,10 @@ async function bootstrap() {
     role: UserRole.OWNER,
   };
 
-    const created = await userService.registerByOwner(ownerDto);
-    console.log('Usuario OWNER creado:', created);
-    
-    await app.close();
+  const created = await userService.registerByOwner(ownerDto);
+  console.log('Usuario OWNER creado:', created);
+
+  await app.close();
 }
 
 bootstrap().catch((err) => {

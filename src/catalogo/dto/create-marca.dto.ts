@@ -3,7 +3,6 @@
 import { IsNotEmpty, IsOptional, IsString, MaxLength } from 'class-validator';
 
 export class CreateMarcaDto {
-  
   /**
    * Criterio: "permitir ingresar: nombre"
    * Requisito: Nombre de la marca. Será validado en el servicio contra duplicados.
@@ -18,7 +17,9 @@ export class CreateMarcaDto {
    * Descripción opcional de la marca.
    */
   @IsString({ message: 'La descripción debe ser una cadena de texto.' })
-  @MaxLength(500, { message: 'La descripción no puede exceder los 500 caracteres.' })
+  @MaxLength(500, {
+    message: 'La descripción no puede exceder los 500 caracteres.',
+  })
   @IsOptional()
   descripcion?: string;
 }

@@ -12,11 +12,15 @@ export const updateProductoWithImageSwagger = {
       data: {
         type: 'string',
         description: 'JSON serializado del objeto UpdateProductoDto',
-        example: JSON.stringify({
-          nombre: 'Camiseta actualizada',
-          precio: 120,
-          stock: 60,
-        }, null, 2),
+        example: JSON.stringify(
+          {
+            nombre: 'Camiseta actualizada',
+            precio: 120,
+            stock: 60,
+          },
+          null,
+          2,
+        ),
       },
     },
   },

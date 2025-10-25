@@ -10,7 +10,9 @@ export class UpdateVentaDto {
   metodoPago?: MetodoPago;
 
   @ApiProperty({ type: [UpdateDetalleVentaDto], required: false })
-  @ArrayMinSize(1, { message: 'Debe incluir al menos un producto en la venta.' })
+  @ArrayMinSize(1, {
+    message: 'Debe incluir al menos un producto en la venta.',
+  })
   @IsOptional()
   detalles?: UpdateDetalleVentaDto[];
 }

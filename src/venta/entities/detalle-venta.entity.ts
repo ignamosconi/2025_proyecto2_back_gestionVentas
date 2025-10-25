@@ -31,7 +31,7 @@ export class DetalleVenta {
 
   @Column({ type: 'numeric', precision: 10, scale: 2 })
   subtotal: number;
-  
-  @Column() 
+
+  @Column()
   idProducto: number; // Propiedad que el DTO intentará leer
 }

@@ -180,9 +180,7 @@ describe('AuthService', () => {
         resetPasswordExpires: pastDate,
       };
 
-      mockUsersService.findByResetToken.mockResolvedValue(
-        userWithExpiredToken,
-      );
+      mockUsersService.findByResetToken.mockResolvedValue(userWithExpiredToken);
 
       await expect(
         service.resetPassword('expired-token', 'NewValidPass123!'),
@@ -196,9 +194,7 @@ describe('AuthService', () => {
         resetPasswordExpires: null,
       };
 
-      mockUsersService.findByResetToken.mockResolvedValue(
-        userWithNullExpires,
-      );
+      mockUsersService.findByResetToken.mockResolvedValue(userWithNullExpires);
 
       await expect(
         service.resetPassword('valid-token', 'NewValidPass123!'),

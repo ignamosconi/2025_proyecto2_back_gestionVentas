@@ -14,7 +14,7 @@ dotenv.config();
 export async function seedOwnerUser(): Promise<void> {
   // Initialize the data source
   let dataSource: DataSource;
-  
+
   try {
     dataSource = AppDataSource;
     if (!dataSource.isInitialized) {
@@ -30,17 +30,17 @@ export async function seedOwnerUser(): Promise<void> {
 
     // Check if owner already exists
     const existingOwner = await userRepository.findOne({
-      where: { 
+      where: {
         email: process.env.SEED_OWNER_EMAIL,
-        role: UserRole.OWNER 
-      }
+        role: UserRole.OWNER,
+      },
     });
 
     if (existingOwner) {
       console.log('Usuario OWNER ya existe, omitiendo la creación...');
       return;
     }
-    
+
     // Validate environment variables
     const email = process.env.SEED_OWNER_EMAIL;
     const password = process.env.SEED_OWNER_PASSWORD;
@@ -50,8 +50,12 @@ export async function seedOwnerUser(): Promise<void> {
     const address = process.env.SEED_OWNER_ADDRESS;
 
     if (!email || !password || !firstName || !lastName || !phone || !address) {
-      console.error('Faltan variables de entorno necesarias para crear el usuario OWNER');
-      throw new Error('Faltan variables de entorno necesarias para crear el usuario OWNER');
+      console.error(
+        'Faltan variables de entorno necesarias para crear el usuario OWNER',
+      );
+      throw new Error(
+        'Faltan variables de entorno necesarias para crear el usuario OWNER',
+      );
     }
 
     // Hash the password
@@ -70,8 +74,11 @@ export async function seedOwnerUser(): Promise<void> {
     });
 
     const created = await userRepository.save(ownerUser);
-    console.log('Usuario OWNER creado exitosamente:', { email, firstName, lastName });
-    
+    console.log('Usuario OWNER creado exitosamente:', {
+      email,
+      firstName,
+      lastName,
+    });
   } catch (error) {
     console.error('Error creating OWNER user', error);
     throw error;

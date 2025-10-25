@@ -31,7 +31,12 @@ import { AuditoriaModule } from '../auditoria/auditoria.module';
     },
   ],
 
-  exports: ['IUsersService', 'IUserRepository', USUARIO_REPOSITORY, TypeOrmModule],
+  exports: [
+    'IUsersService',
+    'IUserRepository',
+    USUARIO_REPOSITORY,
+    TypeOrmModule,
+  ],
   controllers: [UsersController],
 })
 export class UsersModule {}

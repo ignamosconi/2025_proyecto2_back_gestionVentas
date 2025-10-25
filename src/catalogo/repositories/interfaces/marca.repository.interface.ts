@@ -9,7 +9,6 @@ import { UpdateMarcaDto } from '../../dto/update-marca.dto';
  * La capa de Servicio dependerá solo de esta interfaz.
  */
 export interface MarcaRepositoryInterface {
-
   findAllDeleted(): Promise<Marca[]>;
   // --- Métodos Requeridos por la US 8 ---
 
@@ -42,7 +41,7 @@ export interface MarcaRepositoryInterface {
    * @param id ID de la marca.
    */
   findOneWithProducts(id: number): Promise<Marca | null>;
-  
+
   /**
    * Criterio: "eliminar marcas..."
    * Elimina lógicamente (soft delete) una marca.
@@ -59,7 +58,7 @@ export interface MarcaRepositoryInterface {
    * Obtiene todas las marcas activas (no eliminadas).
    */
   findAllActive(): Promise<Marca[]>;
-  
+
   /**
    * Obtiene una marca activa por su ID.
    * @param id ID de la marca.
@@ -73,6 +72,4 @@ export interface MarcaRepositoryInterface {
    * @param lineId ID de la línea a buscar.
    */
   findByLineId(lineId: number): Promise<Marca[]>;
-
-
 }

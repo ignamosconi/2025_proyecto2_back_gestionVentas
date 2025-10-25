@@ -18,17 +18,17 @@ export default class UserOwnerSeeder implements Seeder {
 
     // Check if owner already exists
     const existingOwner = await userRepository.findOne({
-      where: { 
+      where: {
         email: process.env.SEED_OWNER_EMAIL,
-        role: UserRole.OWNER 
-      }
+        role: UserRole.OWNER,
+      },
     });
 
     if (existingOwner) {
       console.log('Usuario OWNER ya existe, omitiendo la creación...');
       return;
     }
-    
+
     // Validate environment variables
     const email = process.env.SEED_OWNER_EMAIL;
     const password = process.env.SEED_OWNER_PASSWORD;
@@ -38,8 +38,12 @@ export default class UserOwnerSeeder implements Seeder {
     const address = process.env.SEED_OWNER_ADDRESS;
 
     if (!email || !password || !firstName || !lastName || !phone || !address) {
-      console.error('Faltan variables de entorno necesarias para crear el usuario OWNER');
-      throw new Error('Faltan variables de entorno necesarias para crear el usuario OWNER');
+      console.error(
+        'Faltan variables de entorno necesarias para crear el usuario OWNER',
+      );
+      throw new Error(
+        'Faltan variables de entorno necesarias para crear el usuario OWNER',
+      );
     }
 
     // Hash the password
@@ -58,6 +62,10 @@ export default class UserOwnerSeeder implements Seeder {
     });
 
     await userRepository.save(ownerUser);
-    console.log('Usuario OWNER creado exitosamente:', { email, firstName, lastName });
+    console.log('Usuario OWNER creado exitosamente:', {
+      email,
+      firstName,
+      lastName,
+    });
   }
 }

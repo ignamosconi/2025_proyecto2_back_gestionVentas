@@ -413,9 +413,9 @@ export class ProductoService implements ProductoServiceInterface {
   async findOneActive(id: number): Promise<Producto> {
     const producto = await this.findOne(id);
     if (!producto || producto.deletedAt)
-      throw new NotFoundException(
+      {throw new NotFoundException(
         `Producto con id ${id} no encontrado o eliminado`,
-      );
+      );}
     return producto;
   }
 }

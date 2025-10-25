@@ -18,9 +18,12 @@ export interface IUsersService {
   softDelete(id: number): Promise<MessageResponseDTO>;
   restore(id: number): Promise<MessageResponseDTO>;
 
-  setResetPasswordToken(userId: number, token: string, expires: Date): Promise<void>;
+  setResetPasswordToken(
+    userId: number,
+    token: string,
+    expires: Date,
+  ): Promise<void>;
   sendPasswordResetEmail(email: string, resetLink: string): Promise<void>;
   findByResetToken(token: string): Promise<UserEntity | null>;
   updatePassword(userId: number, newPassword: string): Promise<void>;
-  
 }

@@ -18,44 +18,44 @@ import { UsersModule } from '../users/users.module';
 import { AuthModule } from '../auth/auth.module';
 import { ProductoModule } from '../producto/producto.module'; // <-- para PRODUCTO_SERVICE
 
-import { 
-    PROVEEDOR_REPOSITORY, 
-    PROVEEDOR_SERVICE,
-    PRODUCTO_PROVEEDOR_REPOSITORY,
-    PRODUCTO_PROVEEDOR_SERVICE
+import {
+  PROVEEDOR_REPOSITORY,
+  PROVEEDOR_SERVICE,
+  PRODUCTO_PROVEEDOR_REPOSITORY,
+  PRODUCTO_PROVEEDOR_SERVICE,
 } from '../constants';
 
 @Module({
-    imports: [
-        TypeOrmModule.forFeature([Proveedor, ProductoProveedor]),
-        AuthModule,       // Para AuthGuard y RolesGuard
-        UsersModule,      // Para la verificación de roles
-        forwardRef(() => ProductoModule),   // Para inyectar ProductoService y validar existencia
-    ],
-    controllers: [ProveedorController, ProductoProveedorController],
-    providers: [
-        {
-            provide: PROVEEDOR_REPOSITORY,
-            useClass: ProveedorRepository,
-        },
-        {
-            provide: PROVEEDOR_SERVICE,
-            useClass: ProveedorService,
-        },
-        {
-            provide: PRODUCTO_PROVEEDOR_REPOSITORY,
-            useClass: ProductoProveedorRepository,
-        },
-        {
-            provide: PRODUCTO_PROVEEDOR_SERVICE,
-            useClass: ProductoProveedorService,
-        },
-    ],
-    exports: [
-        PROVEEDOR_SERVICE, 
-        PRODUCTO_PROVEEDOR_SERVICE, 
-        PRODUCTO_PROVEEDOR_REPOSITORY,
-        PROVEEDOR_REPOSITORY,
-    ],
+  imports: [
+    TypeOrmModule.forFeature([Proveedor, ProductoProveedor]),
+    AuthModule, // Para AuthGuard y RolesGuard
+    UsersModule, // Para la verificación de roles
+    forwardRef(() => ProductoModule), // Para inyectar ProductoService y validar existencia
+  ],
+  controllers: [ProveedorController, ProductoProveedorController],
+  providers: [
+    {
+      provide: PROVEEDOR_REPOSITORY,
+      useClass: ProveedorRepository,
+    },
+    {
+      provide: PROVEEDOR_SERVICE,
+      useClass: ProveedorService,
+    },
+    {
+      provide: PRODUCTO_PROVEEDOR_REPOSITORY,
+      useClass: ProductoProveedorRepository,
+    },
+    {
+      provide: PRODUCTO_PROVEEDOR_SERVICE,
+      useClass: ProductoProveedorService,
+    },
+  ],
+  exports: [
+    PROVEEDOR_SERVICE,
+    PRODUCTO_PROVEEDOR_SERVICE,
+    PRODUCTO_PROVEEDOR_REPOSITORY,
+    PROVEEDOR_REPOSITORY,
+  ],
 })
 export class ProveedorModule {}

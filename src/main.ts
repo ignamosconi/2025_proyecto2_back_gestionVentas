@@ -9,18 +9,20 @@ async function bootstrap() {
 
   //Permite recibir peticiones desde el frontend, que se ejecuta en un puerto diferente
   app.enableCors({
-    origin: process.env.FRONTEND_URL, 
+    origin: process.env.FRONTEND_URL,
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     allowedHeaders: ['Content-Type', 'Authorization'],
   });
 
   // Establecer prefijo global para todas las rutas
   app.setGlobalPrefix('api');
-  
-  app.useGlobalPipes(new ValidationPipe({
-    whitelist: true,
-    forbidNonWhitelisted: true 
-  }));
+
+  app.useGlobalPipes(
+    new ValidationPipe({
+      whitelist: true,
+      forbidNonWhitelisted: true,
+    }),
+  );
 
   //Documentación de endpoints con Swagger → http://localhost:3000/docs
   const config = new DocumentBuilder()
