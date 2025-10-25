@@ -5,17 +5,19 @@ import {
 } from '@nestjs/common';
 import { ProductoService } from './producto.service';
 import { ProductoRepositoryInterface } from '../repositories/interfaces/producto-interface.repository';
+import { ProductoProveedorRepositoryInterface } from '../../proveedor/repositories/interfaces/producto-proveedor.repository.interface';
 import { MarcaServiceInterface } from '../../catalogo/services/interfaces/marca.service.interface';
 import { LineaServiceInterface } from '../../catalogo/services/interfaces/linea.service.interface';
 import { MarcaLineaServiceInterface } from '../../catalogo/services/interfaces/marca-linea.service.interface';
-import { IUsersService } from 'src/users/interfaces/users.service.interface';
-import { IMailerService } from 'src/mailer/interfaces/mailer.service.interface';
-import { IS3Service } from 'src/s3/interfaces/s3.service.interface';
+import { IUsersService } from '../../users/interfaces/users.service.interface';
+import { IMailerService } from '../../mailer/interfaces/mailer.service.interface';
+import { IS3Service } from '../../s3/interfaces/s3.service.interface';
 import {
   PRODUCTO_REPOSITORY,
   MARCA_SERVICE,
   LINEA_SERVICE,
   MARCA_LINEA_SERVICE,
+  PRODUCTO_PROVEEDOR_REPOSITORY,
 } from '../../constants';
 import { Producto } from '../entities/producto.entity';
 import { UpdateStockDto } from '../dto/update-stock.dto';
@@ -23,6 +25,7 @@ import { UpdateStockDto } from '../dto/update-stock.dto';
 describe('ProductoService', () => {
   let service: ProductoService;
   let mockProductoRepo: jest.Mocked<ProductoRepositoryInterface>;
+  let mockProductoProveedorRepo: jest.Mocked<ProductoProveedorRepositoryInterface>;
   let mockMarcaService: jest.Mocked<MarcaServiceInterface>;
   let mockLineaService: jest.Mocked<LineaServiceInterface>;
   let mockMarcaLineaService: jest.Mocked<MarcaLineaServiceInterface>;
@@ -88,10 +91,20 @@ describe('ProductoService', () => {
       uploadFile: jest.fn(),
     } as any;
 
+    mockProductoProveedorRepo = {
+      findByProveedor: jest.fn(),
+      findByProducto: jest.fn(),
+      findOneByIds: jest.fn(),
+      create: jest.fn(),
+      update: jest.fn(),
+      softDelete: jest.fn(),
+    } as any;
+
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         ProductoService,
         { provide: PRODUCTO_REPOSITORY, useValue: mockProductoRepo },
+        { provide: PRODUCTO_PROVEEDOR_REPOSITORY, useValue: mockProductoProveedorRepo },
         { provide: MARCA_SERVICE, useValue: mockMarcaService },
         { provide: LINEA_SERVICE, useValue: mockLineaService },
         { provide: MARCA_LINEA_SERVICE, useValue: mockMarcaLineaService },
@@ -184,6 +197,8 @@ describe('ProductoService', () => {
         { lineaId: 1 } as any,
       ]);
       mockProductoRepo.create.mockResolvedValue(productoMock);
+      // Mock findOneActive después de crear (para obtener el producto con la imagen)
+      mockProductoRepo.findOneActive.mockResolvedValue(productoMock);
 
       const result = await service.create(body);
 
@@ -226,10 +241,10 @@ describe('ProductoService', () => {
       mockMarcaService.findOneActive.mockResolvedValue({} as any);
       mockLineaService.create.mockResolvedValue({ id: 5 } as any);
       mockMarcaLineaService.assignLineaToMarca.mockResolvedValue({} as any);
-      mockProductoRepo.create.mockResolvedValue({
-        ...productoMock,
-        idLinea: 5,
-      });
+      const productoConNuevaLinea = { ...productoMock, idLinea: 5 };
+      mockProductoRepo.create.mockResolvedValue(productoConNuevaLinea);
+      // Mock findOneActive después de crear
+      mockProductoRepo.findOneActive.mockResolvedValue(productoConNuevaLinea);
 
       const result = await service.create(body);
 
@@ -302,14 +317,17 @@ describe('ProductoService', () => {
 
     // CASO 11: Actualización exitosa sin cambiar marca/línea
     it('debería actualizar producto sin cambiar marca/línea', async () => {
-      mockProductoRepo.findOneActive.mockResolvedValue(productoMock);
+      const productoActualizado = { ...productoMock, precio: 150 };
+
+      // Primera llamada en validateLineAndMarkForUpdate
+      mockProductoRepo.findOneActive.mockResolvedValueOnce(productoMock);
+      // Segunda llamada después de actualizar
+      mockProductoRepo.findOneActive.mockResolvedValueOnce(productoActualizado);
+
       mockMarcaLineaService.findAllByMarcaId.mockResolvedValue([
         { lineaId: 1 } as any,
       ]);
-      mockProductoRepo.update.mockResolvedValue({
-        ...productoMock,
-        precio: 150,
-      });
+      mockProductoRepo.update.mockResolvedValue(undefined);
 
       const result = await service.update(1, bodyUpdate);
 

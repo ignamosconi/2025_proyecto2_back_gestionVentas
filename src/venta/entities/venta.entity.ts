@@ -9,8 +9,8 @@ import {
 } from 'typeorm';
 
 import { DetalleVenta } from './detalle-venta.entity';
-import { UserEntity } from 'src/users/entities/user.entity';
-import { MetodoPago} from 'src/venta/enums/metodo-pago.enum';
+import { UserEntity } from '../../users/entities/user.entity';
+import { MetodoPago} from '../enums/metodo-pago.enum';
 
 @Entity('venta')
 export class Venta {

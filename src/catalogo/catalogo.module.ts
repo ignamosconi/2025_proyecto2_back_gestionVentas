@@ -33,10 +33,10 @@ import {
 } from '../constants'; 
 
 // 4. Interfaces y Módulos de Soporte
-import { AuthModule } from 'src/auth/auth.module';
-import { UsersModule } from 'src/users/users.module';
-import { ProductoModule } from 'src/producto/producto.module';
-import { Producto } from 'src/producto/entities/producto.entity';
+import { AuthModule } from '../auth/auth.module';
+import { UsersModule } from '../users/users.module';
+import { ProductoModule } from '../producto/producto.module';
+import { Producto } from '../producto/entities/producto.entity';
 
 @Module({
     imports: [

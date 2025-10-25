@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { BadRequestException, NotFoundException } from '@nestjs/common';
 import { LineaService } from './linea.service';
 import { LineaRepositoryInterface } from '../repositories/interfaces/linea.repository.interface';
-import { LINEA_REPOSITORY } from '../../constants';
+import { LINEA_REPOSITORY, MARCA_LINEA_REPOSITORY, PRODUCTO_REPOSITORY } from '../../constants';
 import { Linea } from '../entities/linea.entity';
 import { CreateLineaDto } from '../dto/create-linea.dto';
 import { UpdateLineaDto } from '../dto/update-linea.dto';
@@ -10,6 +10,8 @@ import { UpdateLineaDto } from '../dto/update-linea.dto';
 describe('LineaService', () => {
   let service: LineaService;
   let mockRepository: jest.Mocked<LineaRepositoryInterface>;
+  let mockMarcaLineaRepository: any;
+  let mockProductoRepository: any;
 
   const lineaMock: Linea = {
     id: 1,
@@ -33,10 +35,23 @@ describe('LineaService', () => {
       restore: jest.fn(),
     } as any;
 
+    mockMarcaLineaRepository = {
+      findAllByMarcaId: jest.fn(),
+      hasMarcasByLineaId: jest.fn(),
+      softDeleteAllByLineaId: jest.fn(),
+    };
+
+    mockProductoRepository = {
+      findByLinea: jest.fn(),
+      hasProductsByLineaId: jest.fn(),
+    };
+
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         LineaService,
         { provide: LINEA_REPOSITORY, useValue: mockRepository },
+        { provide: MARCA_LINEA_REPOSITORY, useValue: mockMarcaLineaRepository },
+        { provide: PRODUCTO_REPOSITORY, useValue: mockProductoRepository },
       ],
     }).compile();
 
@@ -154,6 +169,9 @@ describe('LineaService', () => {
     // CASO 9: Eliminación exitosa de línea activa
     it('debería eliminar línea activa exitosamente', async () => {
       mockRepository.findOneActive.mockResolvedValue(lineaMock);
+      mockMarcaLineaRepository.hasMarcasByLineaId.mockResolvedValue(false);
+      mockProductoRepository.hasProductsByLineaId.mockResolvedValue(false);
+      mockMarcaLineaRepository.softDeleteAllByLineaId.mockResolvedValue(undefined);
       mockRepository.softDelete.mockResolvedValue(undefined);
 
       await expect(service.softDelete(1)).resolves.not.toThrow();

@@ -1,5 +1,5 @@
 
-import { Proveedor } from 'src/proveedor/entities/proveedor.entity';
+import { Proveedor } from '../../entities/proveedor.entity';
 import { CreateProductoProveedorDto } from '../../dto/create-producto-proveedor.dto';
 import { UpdateProductoProveedorDto } from '../../dto/update-producto-proveedor.dto';
 import { ProductoProveedor } from '../../entities/producto-proveedor.entity';

@@ -5,8 +5,8 @@ import { AuditoriaService } from './services/auditoria.service';
 import { AuditoriaRepository } from './repositories/auditoria.repository';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuditLogEntity } from './entities/registro-auditoria.entity';
-import { UsersModule } from 'src/users/users.module';
-import { AuthModule } from 'src/auth/auth.module';
+import { UsersModule } from '../users/users.module';
+import { AuthModule } from '../auth/auth.module';
 
 @Module({
   imports: [

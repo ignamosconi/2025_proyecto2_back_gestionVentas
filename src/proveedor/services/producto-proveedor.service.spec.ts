@@ -41,6 +41,8 @@ describe('ProductoProveedorService', () => {
       findOne: jest.fn(),
       findByProducto: jest.fn(),
       findByProveedor: jest.fn(),
+      findExistingRelation: jest.fn(),
+      findOneByIds: jest.fn(),
       create: jest.fn(),
       update: jest.fn(),
       softDelete: jest.fn(),
@@ -146,7 +148,7 @@ describe('ProductoProveedorService', () => {
     it('debería crear vínculo cuando producto y proveedor existen y no hay vínculo previo', async () => {
       mockProductoService.findOneActive.mockResolvedValue({} as any);
       mockProveedorService.findOneActive.mockResolvedValue({} as any);
-      mockRepository.findByProducto.mockResolvedValue([]);
+      mockRepository.findExistingRelation.mockResolvedValue(null);
       mockRepository.create.mockResolvedValue(productoProveedorMock);
 
       const result = await service.create(createDto);
@@ -186,9 +188,7 @@ describe('ProductoProveedorService', () => {
     it('debería lanzar ConflictException cuando vínculo ya existe', async () => {
       mockProductoService.findOneActive.mockResolvedValue({} as any);
       mockProveedorService.findOneActive.mockResolvedValue({} as any);
-      mockRepository.findByProducto.mockResolvedValue([
-        productoProveedorMock,
-      ]);
+      mockRepository.findExistingRelation.mockResolvedValue(productoProveedorMock);
 
       await expect(service.create(createDto)).rejects.toThrow(
         ConflictException,
@@ -201,11 +201,9 @@ describe('ProductoProveedorService', () => {
 
     // CASO 10: Creación exitosa cuando producto tiene otros proveedores (no duplicado)
     it('debería crear vínculo cuando producto tiene otros proveedores diferentes', async () => {
-      const otroVinculo = { ...productoProveedorMock, idProveedor: 2 };
-
       mockProductoService.findOneActive.mockResolvedValue({} as any);
       mockProveedorService.findOneActive.mockResolvedValue({} as any);
-      mockRepository.findByProducto.mockResolvedValue([otroVinculo]);
+      mockRepository.findExistingRelation.mockResolvedValue(null); // No existe esta relación específica
       mockRepository.create.mockResolvedValue(productoProveedorMock);
 
       const result = await service.create(createDto);

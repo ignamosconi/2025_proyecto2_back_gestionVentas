@@ -1,7 +1,7 @@
 import { Entity, PrimaryGeneratedColumn, Column, OneToMany, ManyToOne, JoinColumn, RelationId, } from 'typeorm';
 import { DetalleCompra } from './detalle-compra.entity';
 import { Proveedor } from '../../proveedor/entities/proveedor.entity';
-import { UserEntity } from 'src/users/entities/user.entity';
+import { UserEntity } from '../../users/entities/user.entity';
 import { MetodoPagoCompraEnum } from '../helpers/metodo-pago-compra.enum';
 
 

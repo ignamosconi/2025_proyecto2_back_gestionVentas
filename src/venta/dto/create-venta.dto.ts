@@ -11,7 +11,7 @@ import {
 import { Type } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
 import { CreateDetalleVentaDto } from './create-detalle-venta.dto';
-import { MetodoPago } from 'src/venta/enums/metodo-pago.enum';
+import { MetodoPago } from '../enums/metodo-pago.enum';
 
 export class CreateVentaDto {
   @ApiProperty({

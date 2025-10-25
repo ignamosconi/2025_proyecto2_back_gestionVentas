@@ -7,10 +7,10 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserEntity } from './entities/user.entity';
 import { UserRepository } from './repositories/users.repository';
 import { JwtModule } from '../auth/jwt/jwt.module';
-import { AuthModule } from 'src/auth/auth.module';
-import { MailerModule } from 'src/mailer/mailer.module';
-import { USUARIO_REPOSITORY } from 'src/constants';
-import { AuditoriaModule } from 'src/auditoria/auditoria.module';
+import { AuthModule } from '../auth/auth.module';
+import { MailerModule } from '../mailer/mailer.module';
+import { USUARIO_REPOSITORY } from '../constants';
+import { AuditoriaModule } from '../auditoria/auditoria.module';
 
 @Module({
   imports: [

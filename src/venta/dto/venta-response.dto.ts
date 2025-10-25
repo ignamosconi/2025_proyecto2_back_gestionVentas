@@ -1,6 +1,6 @@
 import { Expose, Transform, Type } from 'class-transformer';
 import { DetalleVentaResponseDto } from './detalle-venta-response.dto';
-import { UserVentaResponseDto } from 'src/users/dto/user-venta-response.dto';
+import { UserVentaResponseDto } from '../../users/dto/user-venta-response.dto';
 
 export class VentaResponseDto {
     // ID

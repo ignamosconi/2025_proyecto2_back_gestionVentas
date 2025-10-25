@@ -6,11 +6,11 @@ import { VentaRepository } from './repositories/venta.repository';
 import { VentaService } from './services/venta.service';
 import { VentaController } from './controllers/venta.controller';
 import { VENTA_REPOSITORY, VENTA_SERVICE } from '../constants';
-import { Producto } from 'src/producto/entities/producto.entity';
-import { ProductoModule } from 'src/producto/producto.module';
-import { AuthModule } from 'src/auth/auth.module';
-import { UsersModule } from 'src/users/users.module';
-import { AuditoriaModule } from 'src/auditoria/auditoria.module';
+import { Producto } from '../producto/entities/producto.entity';
+import { ProductoModule } from '../producto/producto.module';
+import { AuthModule } from '../auth/auth.module';
+import { UsersModule } from '../users/users.module';
+import { AuditoriaModule } from '../auditoria/auditoria.module';
 
 @Module({
   imports: [

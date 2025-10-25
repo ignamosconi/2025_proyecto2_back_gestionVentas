@@ -2,7 +2,8 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { NotFoundException } from '@nestjs/common';
 import { ProveedorService } from './proveedor.service';
 import { ProveedorRepositoryInterface } from '../repositories/interfaces/proveedor.repository.interface';
-import { PROVEEDOR_REPOSITORY } from '../../constants';
+import { ProductoProveedorRepositoryInterface } from '../repositories/interfaces/producto-proveedor.repository.interface';
+import { PROVEEDOR_REPOSITORY, PRODUCTO_PROVEEDOR_REPOSITORY } from '../../constants';
 import { Proveedor } from '../entities/proveedor.entity';
 import { CreateProveedorDto } from '../dto/create-proveedor.dto';
 import { UpdateProveedorDto } from '../dto/update-proveedor.dto';
@@ -10,6 +11,7 @@ import { UpdateProveedorDto } from '../dto/update-proveedor.dto';
 describe('ProveedorService', () => {
   let service: ProveedorService;
   let mockRepository: jest.Mocked<ProveedorRepositoryInterface>;
+  let mockProductoProveedorRepository: jest.Mocked<ProductoProveedorRepositoryInterface>;
 
   const proveedorMock: Proveedor = {
     idProveedor: 1,
@@ -34,10 +36,20 @@ describe('ProveedorService', () => {
       restore: jest.fn(),
     } as any;
 
+    mockProductoProveedorRepository = {
+      findByProveedor: jest.fn(),
+      findByProducto: jest.fn(),
+      findOneByIds: jest.fn(),
+      create: jest.fn(),
+      update: jest.fn(),
+      softDelete: jest.fn(),
+    } as any;
+
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         ProveedorService,
         { provide: PROVEEDOR_REPOSITORY, useValue: mockRepository },
+        { provide: PRODUCTO_PROVEEDOR_REPOSITORY, useValue: mockProductoProveedorRepository },
       ],
     }).compile();
 
@@ -163,6 +175,7 @@ describe('ProveedorService', () => {
     // CASO 9: Eliminación exitosa de proveedor activo
     it('debería eliminar proveedor activo exitosamente', async () => {
       mockRepository.findOne.mockResolvedValue(proveedorMock);
+      mockProductoProveedorRepository.findByProveedor.mockResolvedValue([]);
       mockRepository.softDelete.mockResolvedValue(undefined);
 
       await expect(service.softDelete(1)).resolves.not.toThrow();

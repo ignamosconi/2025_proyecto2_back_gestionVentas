@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { BadRequestException, NotFoundException } from '@nestjs/common';
 import { MarcaService } from './marca.service';
 import { MarcaRepositoryInterface } from '../repositories/interfaces/marca.repository.interface';
-import { MARCA_REPOSITORY } from '../../constants';
+import { MARCA_REPOSITORY, MARCA_LINEA_REPOSITORY, PRODUCTO_REPOSITORY } from '../../constants';
 import { Marca } from '../entities/marca.entity';
 import { CreateMarcaDto } from '../dto/create-marca.dto';
 import { UpdateMarcaDto } from '../dto/update-marca.dto';
@@ -10,6 +10,8 @@ import { UpdateMarcaDto } from '../dto/update-marca.dto';
 describe('MarcaService', () => {
   let service: MarcaService;
   let mockRepository: jest.Mocked<MarcaRepositoryInterface>;
+  let mockMarcaLineaRepository: any;
+  let mockProductoRepository: any;
 
   const marcaMock: Marca = {
     id: 1,
@@ -34,10 +36,22 @@ describe('MarcaService', () => {
       restore: jest.fn(),
     } as any;
 
+    mockMarcaLineaRepository = {
+      findAllByMarcaId: jest.fn(),
+      softDeleteAllByMarcaId: jest.fn(),
+    };
+
+    mockProductoRepository = {
+      findByMarca: jest.fn(),
+      hasProductsByMarcaId: jest.fn(),
+    };
+
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         MarcaService,
         { provide: MARCA_REPOSITORY, useValue: mockRepository },
+        { provide: MARCA_LINEA_REPOSITORY, useValue: mockMarcaLineaRepository },
+        { provide: PRODUCTO_REPOSITORY, useValue: mockProductoRepository },
       ],
     }).compile();
 
@@ -156,6 +170,8 @@ describe('MarcaService', () => {
     // CASO 9: Eliminación exitosa de marca activa
     it('debería eliminar marca activa exitosamente', async () => {
       mockRepository.findOneActive.mockResolvedValue(marcaMock);
+      mockProductoRepository.hasProductsByMarcaId.mockResolvedValue(false);
+      mockMarcaLineaRepository.softDeleteAllByMarcaId.mockResolvedValue(undefined);
       mockRepository.softDelete.mockResolvedValue(undefined);
 
       await expect(service.softDelete(1)).resolves.not.toThrow();

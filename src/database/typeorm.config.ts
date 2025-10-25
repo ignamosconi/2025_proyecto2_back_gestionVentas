@@ -8,10 +8,10 @@ import { Producto } from '../producto/entities/producto.entity';
 import { Proveedor } from '../proveedor/entities/proveedor.entity';
 import { ProductoProveedor } from '../proveedor/entities/producto-proveedor.entity';
 import { AuditLogEntity } from '../auditoria/entities/registro-auditoria.entity';
-import { Venta } from 'src/venta/entities/venta.entity';
-import { DetalleVenta } from 'src/venta/entities/detalle-venta.entity';
-import { Compra } from 'src/compra/entities/compra.entity';
-import { DetalleCompra } from 'src/compra/entities/detalle-compra.entity';
+import { Venta } from '../venta/entities/venta.entity';
+import { DetalleVenta } from '../venta/entities/detalle-venta.entity';
+import { Compra } from '../compra/entities/compra.entity';
+import { DetalleCompra } from '../compra/entities/detalle-compra.entity';
 
 
 // Load environment variables from .env file

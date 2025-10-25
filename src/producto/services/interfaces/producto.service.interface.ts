@@ -1,5 +1,5 @@
 import { Producto } from '../../entities/producto.entity';
-import { UpdateStockDto } from 'src/producto/dto/update-stock.dto';
+import { UpdateStockDto } from '../../dto/update-stock.dto';
 
 export interface ProductoServiceInterface {
     // CRUD (US 7)

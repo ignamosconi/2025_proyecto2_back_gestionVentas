@@ -13,11 +13,11 @@ import { CompraController } from './controllers/compra.controller';
 // Constantes
 import { COMPRA_REPOSITORY, COMPRA_SERVICE } from '../constants'; // Asumo la ruta
 // Dependencias Compartidas
-import { ProductoModule } from 'src/producto/producto.module';
-import { AuthModule } from 'src/auth/auth.module';
-import { UsersModule } from 'src/users/users.module';
-import { ProveedorModule } from 'src/proveedor/proveedor.module';
-import { AuditoriaModule } from 'src/auditoria/auditoria.module';
+import { ProductoModule } from '../producto/producto.module';
+import { AuthModule } from '../auth/auth.module';
+import { UsersModule } from '../users/users.module';
+import { ProveedorModule } from '../proveedor/proveedor.module';
+import { AuditoriaModule } from '../auditoria/auditoria.module';
 
 @Module({
   imports: [

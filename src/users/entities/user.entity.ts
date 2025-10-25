@@ -1,6 +1,6 @@
 import { BaseEntity, Column, DeleteDateColumn, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { UserRole } from '../helpers/enum.roles';
-import { Venta } from 'src/venta/entities/venta.entity';
+import { Venta } from '../../venta/entities/venta.entity';
 
 @Entity('users')
 export class UserEntity extends BaseEntity {

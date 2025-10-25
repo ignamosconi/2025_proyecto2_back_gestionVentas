@@ -3,7 +3,7 @@
 import { Producto } from '../../entities/producto.entity';
 import { CreateProductoDto } from '../../dto/create-producto.dto';
 import { UpdateProductoDto } from '../../dto/update-producto.dto';
-import { UpdateStockDto } from 'src/producto/dto/update-stock.dto';
+import { UpdateStockDto } from '../../dto/update-stock.dto';
 
 export interface ProductoControllerInterface {
     

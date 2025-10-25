@@ -3,10 +3,10 @@ import { IAuditoriaController } from '../interfaces/auditoria.controller.interfa
 import { AuditoriaService } from '../services/auditoria.service';
 import { EventosAuditoria } from '../helpers/enum.eventos';
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { AuthGuard } from 'src/auth/guards/auth.guard';
-import { RolesGuard } from 'src/auth/guards/roles.guard';
-import { Roles } from 'src/auth/decorators/roles.decorator';
-import { UserRole } from 'src/users/helpers/enum.roles';
+import { AuthGuard } from '../../auth/guards/auth.guard';
+import { RolesGuard } from '../../auth/guards/roles.guard';
+import { Roles } from '../../auth/decorators/roles.decorator';
+import { UserRole } from '../../users/helpers/enum.roles';
 import { AuditoriaLogDTO } from '../dto/auditoria-log.dto';
 import { OptionalParseEnumPipe } from '../pipes/tipo-evento.pipe';
 

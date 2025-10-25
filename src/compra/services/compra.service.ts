@@ -13,19 +13,19 @@ import { UpdateCompraDto } from '../dto/update-compra.dto';
 import { CompraResponseDto } from '../dto/compra-response.dto'; 
 
 // Repositorios compartidos e Interfaces
-import { ProductoRepositoryInterface } from 'src/producto/repositories/interfaces/producto-interface.repository';
-import { IUserRepository } from 'src/users/interfaces/users.repository.interface';
-import { 
-    COMPRA_REPOSITORY, 
-    PRODUCTO_REPOSITORY, 
+import { ProductoRepositoryInterface } from '../../producto/repositories/interfaces/producto-interface.repository';
+import { IUserRepository } from '../../users/interfaces/users.repository.interface';
+import {
+    COMPRA_REPOSITORY,
+    PRODUCTO_REPOSITORY,
     USUARIO_REPOSITORY,
     PROVEEDOR_REPOSITORY,
     PRODUCTO_PROVEEDOR_SERVICE // NUEVA CONSTANTE
-} from 'src/constants'; 
-import { ProveedorRepositoryInterface } from 'src/proveedor/repositories/interfaces/proveedor.repository.interface';
-import { ProductoProveedorServiceInterface } from 'src/proveedor/services/interfaces/producto-proveedor.service.interface';
-import { IAuditoriaService } from 'src/auditoria/interfaces/auditoria.service.interface';
-import { EventosAuditoria } from 'src/auditoria/helpers/enum.eventos';
+} from '../../constants';
+import { ProveedorRepositoryInterface } from '../../proveedor/repositories/interfaces/proveedor.repository.interface';
+import { ProductoProveedorServiceInterface } from '../../proveedor/services/interfaces/producto-proveedor.service.interface';
+import { IAuditoriaService } from '../../auditoria/interfaces/auditoria.service.interface';
+import { EventosAuditoria } from '../../auditoria/helpers/enum.eventos';
 
 @Injectable()
 export class CompraService implements CompraServiceInterface {
