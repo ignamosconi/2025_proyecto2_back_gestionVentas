@@ -5,9 +5,9 @@ import {
   ConflictException,
   Inject,
 } from '@nestjs/common';
-import { ProveedorServiceInterface } from './interfaces/proveedor.service.interface';
-import { ProveedorRepositoryInterface } from '../repositories/interfaces/proveedor.repository.interface';
-import { ProductoProveedorRepositoryInterface } from '../repositories/interfaces/producto-proveedor.repository.interface';
+import type { ProveedorServiceInterface } from './interfaces/proveedor.service.interface';
+import type { ProveedorRepositoryInterface } from '../repositories/interfaces/proveedor.repository.interface';
+import type { ProductoProveedorRepositoryInterface } from '../repositories/interfaces/producto-proveedor.repository.interface';
 import { Proveedor } from '../entities/proveedor.entity';
 import { CreateProveedorDto } from '../dto/create-proveedor.dto';
 import { UpdateProveedorDto } from '../dto/update-proveedor.dto';

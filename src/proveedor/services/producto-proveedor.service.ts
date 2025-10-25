@@ -5,14 +5,14 @@ import {
   NotFoundException,
   ConflictException,
 } from '@nestjs/common';
-import { ProductoProveedorServiceInterface } from './interfaces/producto-proveedor.service.interface';
-import { ProductoProveedorRepositoryInterface } from '../repositories/interfaces/producto-proveedor.repository.interface';
+import type { ProductoProveedorServiceInterface } from './interfaces/producto-proveedor.service.interface';
+import type { ProductoProveedorRepositoryInterface } from '../repositories/interfaces/producto-proveedor.repository.interface';
 import { PRODUCTO_PROVEEDOR_REPOSITORY } from '../../constants';
 import { ProductoProveedor } from '../entities/producto-proveedor.entity';
 import { CreateProductoProveedorDto } from '../dto/create-producto-proveedor.dto';
 import { UpdateProductoProveedorDto } from '../dto/update-producto-proveedor.dto';
-import { ProductoServiceInterface } from '../../producto/services/interfaces/producto.service.interface';
-import { ProveedorServiceInterface } from './interfaces/proveedor.service.interface';
+import type { ProductoServiceInterface } from '../../producto/services/interfaces/producto.service.interface';
+import type { ProveedorServiceInterface } from './interfaces/proveedor.service.interface';
 import { PRODUCTO_SERVICE, PROVEEDOR_SERVICE } from '../../constants';
 
 @Injectable()

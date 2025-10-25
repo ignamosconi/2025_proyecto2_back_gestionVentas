@@ -9,9 +9,9 @@ import {
 } from '@nestjs/common';
 
 import { LineaServiceInterface } from './interfaces/linea.service.interface';
-import { LineaRepositoryInterface } from '../repositories/interfaces/linea.repository.interface';
-import { MarcaLineaRepositoryInterface } from '../repositories/interfaces/marca-linea.repository.interface';
-import { ProductoRepositoryInterface } from '../../producto/repositories/interfaces/producto-interface.repository';
+import type { LineaRepositoryInterface } from '../repositories/interfaces/linea.repository.interface';
+import type { MarcaLineaRepositoryInterface } from '../repositories/interfaces/marca-linea.repository.interface';
+import type { ProductoRepositoryInterface } from '../../producto/repositories/interfaces/producto-interface.repository';
 import {
   LINEA_REPOSITORY,
   MARCA_LINEA_REPOSITORY,

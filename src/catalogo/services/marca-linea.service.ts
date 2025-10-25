@@ -8,10 +8,10 @@ import {
 } from '@nestjs/common';
 import { CreateMarcaLineaDto } from '../dto/create-marca-linea.dto';
 import { MarcaLinea } from '../entities/marca-linea.entity';
-import { MarcaLineaServiceInterface } from './interfaces/marca-linea.service.interface';
-import { MarcaLineaRepositoryInterface } from '../repositories/interfaces/marca-linea.repository.interface';
-import { LineaServiceInterface } from './interfaces/linea.service.interface';
-import { MarcaServiceInterface } from './interfaces/marca.service.interface';
+import type { MarcaLineaServiceInterface } from './interfaces/marca-linea.service.interface';
+import type { MarcaLineaRepositoryInterface } from '../repositories/interfaces/marca-linea.repository.interface';
+import type { LineaServiceInterface } from './interfaces/linea.service.interface';
+import type { MarcaServiceInterface } from './interfaces/marca.service.interface';
 
 // Asegúrate de que los tokens de inyección sigan siendo válidos
 import {

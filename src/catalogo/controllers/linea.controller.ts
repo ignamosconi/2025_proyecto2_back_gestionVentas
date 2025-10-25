@@ -19,7 +19,7 @@ import {
 import { Linea } from '../entities/linea.entity';
 import { CreateLineaDto } from '../dto/create-linea.dto';
 import { UpdateLineaDto } from '../dto/update-linea.dto';
-import { LineaServiceInterface } from '../services/interfaces/linea.service.interface';
+import type { LineaServiceInterface } from '../services/interfaces/linea.service.interface';
 import { LINEA_SERVICE } from '../../constants';
 
 // ✅ Importaciones de Seguridad (Asegúrate de que estas rutas sean correctas)

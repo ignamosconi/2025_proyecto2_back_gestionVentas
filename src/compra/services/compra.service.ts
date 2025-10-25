@@ -8,8 +8,8 @@ import { DataSource } from 'typeorm';
 import { plainToInstance } from 'class-transformer';
 
 // Interfaces y Entidades de COMPRA
-import { CompraServiceInterface } from './interfaces/compra.service.interface';
-import { CompraRepositoryInterface } from '../repositories/interfaces/compra.repository.interface';
+import type { CompraServiceInterface } from './interfaces/compra.service.interface';
+import type { CompraRepositoryInterface } from '../repositories/interfaces/compra.repository.interface';
 import { Compra } from '../entities/compra.entity';
 import { DetalleCompra } from '../entities/detalle-compra.entity';
 // DTOs de Compra
@@ -18,8 +18,8 @@ import { UpdateCompraDto } from '../dto/update-compra.dto';
 import { CompraResponseDto } from '../dto/compra-response.dto';
 
 // Repositorios compartidos e Interfaces
-import { ProductoRepositoryInterface } from '../../producto/repositories/interfaces/producto-interface.repository';
-import { IUserRepository } from '../../users/interfaces/users.repository.interface';
+import type { ProductoRepositoryInterface } from '../../producto/repositories/interfaces/producto-interface.repository';
+import type { IUserRepository } from '../../users/interfaces/users.repository.interface';
 import {
     COMPRA_REPOSITORY,
     PRODUCTO_REPOSITORY,
@@ -27,9 +27,9 @@ import {
     PROVEEDOR_REPOSITORY,
     PRODUCTO_PROVEEDOR_SERVICE // NUEVA CONSTANTE
 } from '../../constants';
-import { ProveedorRepositoryInterface } from '../../proveedor/repositories/interfaces/proveedor.repository.interface';
-import { ProductoProveedorServiceInterface } from '../../proveedor/services/interfaces/producto-proveedor.service.interface';
-import { IAuditoriaService } from '../../auditoria/interfaces/auditoria.service.interface';
+import type { ProveedorRepositoryInterface } from '../../proveedor/repositories/interfaces/proveedor.repository.interface';
+import type { ProductoProveedorServiceInterface } from '../../proveedor/services/interfaces/producto-proveedor.service.interface';
+import type { IAuditoriaService } from '../../auditoria/interfaces/auditoria.service.interface';
 import { EventosAuditoria } from '../../auditoria/helpers/enum.eventos';
 
 @Injectable()

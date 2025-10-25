@@ -17,7 +17,7 @@ import {
 import { ApiTags, ApiOperation, ApiBody, ApiParam } from '@nestjs/swagger';
 
 // Interfaces y DTOs de Compra
-import { CompraServiceInterface } from '../services/interfaces/compra.service.interface';
+import type { CompraServiceInterface } from '../services/interfaces/compra.service.interface';
 import { CompraControllerInterface } from './interface/compra.controller.interface';
 import { CreateCompraDto } from '../dto/create-compra.dto';
 import { UpdateCompraDto } from '../dto/update-compra.dto';

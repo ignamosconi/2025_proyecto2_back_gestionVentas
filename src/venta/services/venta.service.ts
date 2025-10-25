@@ -8,16 +8,15 @@ import { DataSource } from 'typeorm';
 import { CreateVentaDto } from '../dto/create-venta.dto';
 import { Venta } from '../entities/venta.entity';
 import { DetalleVenta } from '../entities/detalle-venta.entity';
-import { VentaRepositoryInterface } from '../repositories/interfaces/venta.repository.interface';
-import { ProductoRepositoryInterface } from '../../producto/repositories/interfaces/producto-interface.repository';
-import { IUserRepository } from '../../users/interfaces/users.repository.interface';
+import type { VentaRepositoryInterface } from '../repositories/interfaces/venta.repository.interface';
+import type { ProductoRepositoryInterface } from '../../producto/repositories/interfaces/producto-interface.repository';
+import type { IUserRepository } from '../../users/interfaces/users.repository.interface';
 import { plainToInstance } from 'class-transformer';
-import { instanceToPlain } from 'class-transformer';
 import { VentaResponseDto } from '../dto/venta-response.dto';
 import { VENTA_REPOSITORY, PRODUCTO_REPOSITORY, USUARIO_REPOSITORY } from '../../constants';
 import { UpdateVentaDto } from '../dto/update-venta.dto';
-import { VentaServiceInterface } from './interfaces/venta.service.interface';
-import { IAuditoriaService } from '../../auditoria/interfaces/auditoria.service.interface';
+import type { VentaServiceInterface } from './interfaces/venta.service.interface';
+import type { IAuditoriaService } from '../../auditoria/interfaces/auditoria.service.interface';
 import { EventosAuditoria } from '../../auditoria/helpers/enum.eventos';
 
 @Injectable()

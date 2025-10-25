@@ -14,7 +14,7 @@ import {
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiBody, ApiParam } from '@nestjs/swagger';
 import { Inject } from '@nestjs/common';
-import { VentaServiceInterface } from '../services/interfaces/venta.service.interface';
+import type { VentaServiceInterface } from '../services/interfaces/venta.service.interface';
 import { CreateVentaDto } from '../dto/create-venta.dto';
 import { VentaResponseDto } from '../dto/venta-response.dto';
 import { AuthGuard } from '../../auth/guards/auth.guard';
@@ -23,7 +23,7 @@ import { Roles } from '../../auth/decorators/roles.decorator';
 import { UserRole } from '../../users/helpers/enum.roles';
 import { VENTA_SERVICE } from '../../constants';
 import { UpdateVentaDto } from '../dto/update-venta.dto';
-import { VentaControllerInterface } from './interfaces/venta.controller.interface';
+import type { VentaControllerInterface } from './interfaces/venta.controller.interface';
 
 @ApiTags('Ventas')
 @Controller('ventas')

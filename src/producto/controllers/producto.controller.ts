@@ -31,7 +31,7 @@ import { Roles } from '../../auth/decorators/roles.decorator';
 
 import { Producto } from '../entities/producto.entity';
 import { ProductoControllerInterface } from './interfaces/producto.controller.interace';
-import { ProductoServiceInterface } from '../services/interfaces/producto.service.interface';
+import type { ProductoServiceInterface } from '../services/interfaces/producto.service.interface';
 import { PRODUCTO_SERVICE } from '../../constants';
 import { UpdateStockDto } from '../dto/update-stock.dto';
 import { FileInterceptor } from '@nestjs/platform-express';

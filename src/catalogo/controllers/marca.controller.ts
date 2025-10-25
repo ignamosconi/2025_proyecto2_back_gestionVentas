@@ -23,7 +23,7 @@ import { RolesGuard } from '../../auth/guards/roles.guard';
 import { Roles } from '../../auth/decorators/roles.decorator';
 
 import { MarcaControllerInterface } from './interfaces/marca.controller-interface';
-import { MarcaServiceInterface } from '../services/interfaces/marca.service.interface';
+import type { MarcaServiceInterface } from '../services/interfaces/marca.service.interface';
 import { MARCA_SERVICE } from '../../constants';
 import { CreateMarcaDto } from '../dto/create-marca.dto';
 import { UpdateMarcaDto } from '../dto/update-marca.dto';

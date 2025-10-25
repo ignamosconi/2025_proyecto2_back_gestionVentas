@@ -1,6 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { IAuditoriaService } from '../interfaces/auditoria.service.interface';
-import { IAuditoriaRepository } from '../interfaces/auditoria.repository.interface';
+import type { IAuditoriaRepository } from '../interfaces/auditoria.repository.interface';
 import { AuditLogEntity } from '../entities/registro-auditoria.entity';
 import { EventosAuditoria } from '../helpers/enum.eventos';
 import { AuditoriaLogDTO } from '../dto/auditoria-log.dto';

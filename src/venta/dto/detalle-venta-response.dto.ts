@@ -1,5 +1,5 @@
 // DTO para la respuesta del DetalleVenta
-import { ProductoResponseDto } from '../../producto/dto/producto-response.dto';
+import { ProductoVentaResponseDto } from 'src/producto/dto/producto-venta-response.dto';
 import { Expose, Type, Transform } from 'class-transformer';
 
 export class DetalleVentaResponseDto {

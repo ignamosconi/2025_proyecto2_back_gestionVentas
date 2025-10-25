@@ -21,8 +21,8 @@ import { UserResponseDto } from './dto/user-response.dto';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { UserRole } from './helpers/enum.roles';
 import { Roles } from '../auth/decorators/roles.decorator';
-import { IUsersController } from './interfaces/users.controller.interface';
-import { IUsersService } from './interfaces/users.service.interface';
+import type { IUsersController } from './interfaces/users.controller.interface';
+import type { IUsersService } from './interfaces/users.service.interface';
 
 /*
   PROTECCIÓN DE ENDPOINTS:

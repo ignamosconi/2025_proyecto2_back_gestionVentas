@@ -10,12 +10,12 @@ import {
 import { Producto } from '../entities/producto.entity';
 import { CreateProductoDto } from '../dto/create-producto.dto';
 import { UpdateProductoDto } from '../dto/update-producto.dto';
-import { ProductoServiceInterface } from './interfaces/producto.service.interface';
-import { ProductoRepositoryInterface } from '../repositories/interfaces/producto-interface.repository';
-import { ProductoProveedorRepositoryInterface } from '../../proveedor/repositories/interfaces/producto-proveedor.repository.interface';
-import { LineaServiceInterface } from '../../catalogo/services/interfaces/linea.service.interface';
-import { MarcaServiceInterface } from '../../catalogo/services/interfaces/marca.service.interface';
-import { MarcaLineaServiceInterface } from '../../catalogo/services/interfaces/marca-linea.service.interface';
+import type { ProductoServiceInterface } from './interfaces/producto.service.interface';
+import type { ProductoRepositoryInterface } from '../repositories/interfaces/producto-interface.repository';
+import type { ProductoProveedorRepositoryInterface } from '../../proveedor/repositories/interfaces/producto-proveedor.repository.interface';
+import type { LineaServiceInterface } from '../../catalogo/services/interfaces/linea.service.interface';
+import type { MarcaServiceInterface } from '../../catalogo/services/interfaces/marca.service.interface';
+import type { MarcaLineaServiceInterface } from '../../catalogo/services/interfaces/marca-linea.service.interface';
 import { CreateLineaDto } from '../../catalogo/dto/create-linea.dto';
 import {
   PRODUCTO_REPOSITORY,
@@ -25,9 +25,9 @@ import {
   PRODUCTO_PROVEEDOR_REPOSITORY,
 } from '../../constants';
 import { UpdateStockDto } from '../dto/update-stock.dto';
-import { IUsersService } from '../../users/interfaces/users.service.interface';
-import { IMailerService } from '../../mailer/interfaces/mailer.service.interface';
-import { IS3Service } from '../../s3/interfaces/s3.service.interface';
+import type { IUsersService } from '../../users/interfaces/users.service.interface';
+import type { IMailerService } from '../../mailer/interfaces/mailer.service.interface';
+import type { IS3Service } from '../../s3/interfaces/s3.service.interface';
 import { plainToInstance } from 'class-transformer';
 import { validate } from 'class-validator';
 
