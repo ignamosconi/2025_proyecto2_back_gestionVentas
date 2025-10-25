@@ -1,13 +1,5 @@
-import {
-  Entity,
-  PrimaryGeneratedColumn,
-  Column,
-  ManyToOne,
-  JoinColumn,
-  Unique,
-  DeleteDateColumn,
-} from 'typeorm';
-import { Producto } from 'src/producto/entities/producto.entity';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, Unique, DeleteDateColumn } from 'typeorm';
+import { Producto } from '../../producto/entities/producto.entity';
 import { Proveedor } from './proveedor.entity';
 
 @Entity()

@@ -8,7 +8,7 @@ import { UsersModule } from '../users/users.module';
 import { AuthGuard } from './guards/auth.guard';
 import { JwtService } from '@nestjs/jwt';
 import { RolesGuard } from './guards/roles.guard';
-import { AuditoriaModule } from 'src/auditoria/auditoria.module';
+import { AuditoriaModule } from '../auditoria/auditoria.module';
 
 @Module({
   imports: [

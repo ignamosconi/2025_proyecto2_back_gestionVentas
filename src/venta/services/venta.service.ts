@@ -9,20 +9,16 @@ import { CreateVentaDto } from '../dto/create-venta.dto';
 import { Venta } from '../entities/venta.entity';
 import { DetalleVenta } from '../entities/detalle-venta.entity';
 import { VentaRepositoryInterface } from '../repositories/interfaces/venta.repository.interface';
-import { ProductoRepositoryInterface } from 'src/producto/repositories/interfaces/producto-interface.repository';
-import { IUserRepository } from 'src/users/interfaces/users.repository.interface';
+import { ProductoRepositoryInterface } from '../../producto/repositories/interfaces/producto-interface.repository';
+import { IUserRepository } from '../../users/interfaces/users.repository.interface';
 import { plainToInstance } from 'class-transformer';
 import { instanceToPlain } from 'class-transformer';
 import { VentaResponseDto } from '../dto/venta-response.dto';
-import {
-  VENTA_REPOSITORY,
-  PRODUCTO_REPOSITORY,
-  USUARIO_REPOSITORY,
-} from 'src/constants';
+import { VENTA_REPOSITORY, PRODUCTO_REPOSITORY, USUARIO_REPOSITORY } from '../../constants';
 import { UpdateVentaDto } from '../dto/update-venta.dto';
 import { VentaServiceInterface } from './interfaces/venta.service.interface';
-import { IAuditoriaService } from 'src/auditoria/interfaces/auditoria.service.interface';
-import { EventosAuditoria } from 'src/auditoria/helpers/enum.eventos';
+import { IAuditoriaService } from '../../auditoria/interfaces/auditoria.service.interface';
+import { EventosAuditoria } from '../../auditoria/helpers/enum.eventos';
 
 @Injectable()
 export class VentaService implements VentaServiceInterface {

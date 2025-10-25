@@ -33,8 +33,8 @@ export class MarcaLinea {
   updatedAt: Date;
 
   @DeleteDateColumn({ name: 'deleted_at', type: 'timestamp', nullable: true })
-  deletedAt: Date;
-
+  deletedAt?: Date;
+  
   // 2. ELIMINA la opción `{ primary: true }` de aquí.
   @ManyToOne(() => Marca, (marca) => marca.marcaLineas, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'marcaId' })

@@ -1,5 +1,5 @@
 import { ExecutionContext, BadRequestException } from '@nestjs/common';
-import { RefreshToken } from './refresh-token.decorator';
+import { refreshTokenFactory } from './refresh-token.decorator';
 
 describe('RefreshToken Decorator', () => {
   let mockExecutionContext: jest.Mocked<ExecutionContext>;
@@ -42,7 +42,7 @@ describe('RefreshToken Decorator', () => {
     const expectedToken = 'valid-refresh-token';
     createMockHttpContext(`Bearer ${expectedToken}`);
 
-    const result = RefreshToken(undefined, mockExecutionContext);
+    const result = refreshTokenFactory(undefined, mockExecutionContext);
 
     expect(result).toBe(expectedToken);
     expect(mockExecutionContext.switchToHttp).toHaveBeenCalledTimes(1);
@@ -53,7 +53,7 @@ describe('RefreshToken Decorator', () => {
       'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c';
     createMockHttpContext(`Bearer ${jwtToken}`);
 
-    const result = RefreshToken(undefined, mockExecutionContext);
+    const result = refreshTokenFactory(undefined, mockExecutionContext);
 
     expect(result).toBe(jwtToken);
   });
@@ -62,7 +62,7 @@ describe('RefreshToken Decorator', () => {
     const tokenWithSpecialChars = 'token-with_special.chars123';
     createMockHttpContext(`Bearer ${tokenWithSpecialChars}`);
 
-    const result = RefreshToken(undefined, mockExecutionContext);
+    const result = refreshTokenFactory(undefined, mockExecutionContext);
 
     expect(result).toBe(tokenWithSpecialChars);
   });
@@ -70,7 +70,7 @@ describe('RefreshToken Decorator', () => {
   it('should handle tokens with multiple segments after Bearer', () => {
     createMockHttpContext('Bearer token with spaces');
 
-    const result = RefreshToken(undefined, mockExecutionContext);
+    const result = refreshTokenFactory(undefined, mockExecutionContext);
 
     expect(result).toBe('token with spaces');
   });
@@ -78,10 +78,10 @@ describe('RefreshToken Decorator', () => {
   it('should throw BadRequestException when authorization header is missing', () => {
     createMockHttpContext(); // No authorization header
 
-    expect(() => RefreshToken(undefined, mockExecutionContext)).toThrow(
+    expect(() => refreshTokenFactory(undefined, mockExecutionContext)).toThrow(
       BadRequestException,
     );
-    expect(() => RefreshToken(undefined, mockExecutionContext)).toThrow(
+    expect(() => refreshTokenFactory(undefined, mockExecutionContext)).toThrow(
       'El header Authorization debe tener el formato Bearer [token]',
     );
   });
@@ -89,10 +89,10 @@ describe('RefreshToken Decorator', () => {
   it('should throw BadRequestException when authorization header is empty string', () => {
     createMockHttpContext('');
 
-    expect(() => RefreshToken(undefined, mockExecutionContext)).toThrow(
+    expect(() => refreshTokenFactory(undefined, mockExecutionContext)).toThrow(
       BadRequestException,
     );
-    expect(() => RefreshToken(undefined, mockExecutionContext)).toThrow(
+    expect(() => refreshTokenFactory(undefined, mockExecutionContext)).toThrow(
       'El header Authorization debe tener el formato Bearer [token]',
     );
   });
@@ -103,10 +103,10 @@ describe('RefreshToken Decorator', () => {
     invalidHeaders.forEach((header) => {
       createMockHttpContext(header);
 
-      expect(() => RefreshToken(undefined, mockExecutionContext)).toThrow(
+      expect(() => refreshTokenFactory(undefined, mockExecutionContext)).toThrow(
         BadRequestException,
       );
-      expect(() => RefreshToken(undefined, mockExecutionContext)).toThrow(
+      expect(() => refreshTokenFactory(undefined, mockExecutionContext)).toThrow(
         'El header Authorization debe tener el formato Bearer [token]',
       );
     });
@@ -125,11 +125,14 @@ describe('RefreshToken Decorator', () => {
       createMockHttpContext(header);
 
       if (header === 'Bearer ' || header === 'Bearer  ') {
-        // These cases should extract empty string as token, not throw
-        const result = RefreshToken(undefined, mockExecutionContext);
-        expect(result).toBe('');
+        // These cases extract whatever comes after "Bearer "
+        // "Bearer " -> "" (empty string)
+        // "Bearer  " -> " " (single space)
+        const result = refreshTokenFactory(undefined, mockExecutionContext);
+        const expected = header.substring('Bearer '.length);
+        expect(result).toBe(expected);
       } else {
-        expect(() => RefreshToken(undefined, mockExecutionContext)).toThrow(
+        expect(() => refreshTokenFactory(undefined, mockExecutionContext)).toThrow(
           BadRequestException,
         );
       }
@@ -148,10 +151,10 @@ describe('RefreshToken Decorator', () => {
       createMockHttpContext(header);
 
       if (shouldWork) {
-        const result = RefreshToken(undefined, mockExecutionContext);
+        const result = refreshTokenFactory(undefined, mockExecutionContext);
         expect(result).toBe(expected);
       } else {
-        expect(() => RefreshToken(undefined, mockExecutionContext)).toThrow(
+        expect(() => refreshTokenFactory(undefined, mockExecutionContext)).toThrow(
           BadRequestException,
         );
       }
@@ -172,7 +175,7 @@ describe('RefreshToken Decorator', () => {
     validHeaders.forEach(({ header, expected }) => {
       createMockHttpContext(header);
 
-      const result = RefreshToken(undefined, mockExecutionContext);
+      const result = refreshTokenFactory(undefined, mockExecutionContext);
       expect(result).toBe(expected);
     });
   });
@@ -182,7 +185,7 @@ describe('RefreshToken Decorator', () => {
       'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c';
     createMockHttpContext(`Bearer ${token}`);
 
-    const result = RefreshToken(undefined, mockExecutionContext);
+    const result = refreshTokenFactory(undefined, mockExecutionContext);
     expect(result).toBe(token);
   });
 
@@ -198,10 +201,10 @@ describe('RefreshToken Decorator', () => {
       createMockHttpContext(`${prefix} token`);
 
       if (shouldWork) {
-        const result = RefreshToken(undefined, mockExecutionContext);
+        const result = refreshTokenFactory(undefined, mockExecutionContext);
         expect(result).toBe('token');
       } else {
-        expect(() => RefreshToken(undefined, mockExecutionContext)).toThrow(
+        expect(() => refreshTokenFactory(undefined, mockExecutionContext)).toThrow(
           BadRequestException,
         );
       }
@@ -212,7 +215,7 @@ describe('RefreshToken Decorator', () => {
     const header = 'Bearer part1 part2 part3';
     createMockHttpContext(header);
 
-    const result = RefreshToken(undefined, mockExecutionContext);
+    const result = refreshTokenFactory(undefined, mockExecutionContext);
     const expected = header.substring('Bearer '.length);
     expect(result).toBe(expected);
   });

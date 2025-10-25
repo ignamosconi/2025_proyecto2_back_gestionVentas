@@ -16,7 +16,7 @@ import { ProductoProveedorRepositoryInterface } from '../../proveedor/repositori
 import { LineaServiceInterface } from '../../catalogo/services/interfaces/linea.service.interface';
 import { MarcaServiceInterface } from '../../catalogo/services/interfaces/marca.service.interface';
 import { MarcaLineaServiceInterface } from '../../catalogo/services/interfaces/marca-linea.service.interface';
-import { CreateLineaDto } from 'src/catalogo/dto/create-linea.dto';
+import { CreateLineaDto } from '../../catalogo/dto/create-linea.dto';
 import {
   PRODUCTO_REPOSITORY,
   LINEA_SERVICE,
@@ -25,9 +25,9 @@ import {
   PRODUCTO_PROVEEDOR_REPOSITORY,
 } from '../../constants';
 import { UpdateStockDto } from '../dto/update-stock.dto';
-import { IUsersService } from 'src/users/interfaces/users.service.interface';
-import { IMailerService } from 'src/mailer/interfaces/mailer.service.interface';
-import { IS3Service } from 'src/s3/interfaces/s3.service.interface';
+import { IUsersService } from '../../users/interfaces/users.service.interface';
+import { IMailerService } from '../../mailer/interfaces/mailer.service.interface';
+import { IS3Service } from '../../s3/interfaces/s3.service.interface';
 import { plainToInstance } from 'class-transformer';
 import { validate } from 'class-validator';
 
@@ -101,7 +101,7 @@ export class ProductoService implements ProductoServiceInterface {
         throw new BadRequestException(errorMessages);
       }
 
-      return object;
+      return object as T;
     } catch (error) {
       if (error instanceof BadRequestException) {
         throw error;

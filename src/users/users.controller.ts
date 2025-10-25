@@ -18,9 +18,9 @@ import { UpdateUserDTO } from './dto/update-user.dto';
 import { MessageResponseDTO } from '../auth/dto/message-response.dto';
 import { ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
 import { UserResponseDto } from './dto/user-response.dto';
-import { RolesGuard } from 'src/auth/guards/roles.guard';
+import { RolesGuard } from '../auth/guards/roles.guard';
 import { UserRole } from './helpers/enum.roles';
-import { Roles } from 'src/auth/decorators/roles.decorator';
+import { Roles } from '../auth/decorators/roles.decorator';
 import { IUsersController } from './interfaces/users.controller.interface';
 import { IUsersService } from './interfaces/users.service.interface';
 

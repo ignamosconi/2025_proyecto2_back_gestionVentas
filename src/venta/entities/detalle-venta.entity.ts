@@ -6,7 +6,7 @@ import {
   JoinColumn,
 } from 'typeorm';
 import { Venta } from './venta.entity';
-import { Producto } from 'src/producto/entities/producto.entity';
+import { Producto } from '../../producto/entities/producto.entity';
 import { Exclude } from 'class-transformer';
 
 @Entity('detalle_venta')

@@ -14,11 +14,11 @@ import type { IJwtService } from './interfaces/jwt.service.interface';
 import { IAuthService } from './interfaces/auth.service.interface';
 import { randomBytes } from 'crypto';
 import { addHours, isAfter } from 'date-fns';
-import { validatePasswordStrength } from 'src/users/helpers/validatePasswordStrength';
+import { validatePasswordStrength } from '../users/helpers/validatePasswordStrength';
 import { ConfigService } from '@nestjs/config';
-import { IUsersService } from 'src/users/interfaces/users.service.interface';
-import { IAuditoriaService } from 'src/auditoria/interfaces/auditoria.service.interface';
-import { EventosAuditoria } from 'src/auditoria/helpers/enum.eventos';
+import type { IUsersService } from '../users/interfaces/users.service.interface';
+import type { IAuditoriaService } from '../auditoria/interfaces/auditoria.service.interface';
+import { EventosAuditoria } from '../auditoria/helpers/enum.eventos';
 
 @Injectable()
 export class AuthService implements IAuthService {

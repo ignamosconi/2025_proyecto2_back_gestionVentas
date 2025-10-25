@@ -1,14 +1,7 @@
 //ARCHIVO: registro-auditoria.entity.ts
 
-import {
-  BaseEntity,
-  Column,
-  Entity,
-  PrimaryGeneratedColumn,
-  ManyToOne,
-  JoinColumn,
-} from 'typeorm';
-import { UserEntity } from 'src/users/entities/user.entity';
+import { BaseEntity, Column, Entity, PrimaryGeneratedColumn, ManyToOne, JoinColumn } from 'typeorm';
+import { UserEntity } from '../../users/entities/user.entity';
 import { EventosAuditoria } from '../helpers/enum.eventos';
 
 @Entity('registro_auditoria')

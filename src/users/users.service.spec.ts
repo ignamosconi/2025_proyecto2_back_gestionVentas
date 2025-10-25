@@ -14,6 +14,7 @@ describe('UsersService', () => {
   let service: UsersService;
   let mockUserRepository: any;
   let mockMailerService: any;
+  let mockAuditoriaService: any;
 
   // Datos de prueba reutilizables
   const validEmployeeData = {
@@ -25,7 +26,7 @@ describe('UsersService', () => {
     address: 'Calle Falsa 123',
   };
 
-  const mockUserEntity: UserEntity = {
+  const mockUserEntity = {
     id: 1,
     email: 'employee@example.com',
     password: 'hashed_ValidPass123!',
@@ -34,10 +35,12 @@ describe('UsersService', () => {
     phone: '+54 9 11 1234-5678',
     address: 'Calle Falsa 123',
     role: UserRole.EMPLOYEE,
-    deletedAt: null,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    deletedAt: undefined,
     resetPasswordToken: null,
     resetPasswordExpires: null,
-  };
+  } as UserEntity;
 
   beforeEach(async () => {
     // Mock del repositorio
@@ -58,6 +61,11 @@ describe('UsersService', () => {
       sendMail: jest.fn().mockResolvedValue(undefined),
     };
 
+    // Mock del servicio de auditoría
+    mockAuditoriaService = {
+      registrarEvento: jest.fn().mockResolvedValue(undefined),
+    };
+
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         UsersService,
@@ -68,6 +76,10 @@ describe('UsersService', () => {
         {
           provide: 'IMailerService',
           useValue: mockMailerService,
+        },
+        {
+          provide: 'IAuditoriaService',
+          useValue: mockAuditoriaService,
         },
       ],
     }).compile();
@@ -93,6 +105,10 @@ describe('UsersService', () => {
         firstName: 'John',
         lastName: 'Doe',
         role: UserRole.EMPLOYEE,
+        address: 'Calle Falsa 123',
+        phone: '+54 9 11 1234-5678',
+        createdAt: mockUserEntity.createdAt,
+        updatedAt: mockUserEntity.updatedAt,
       });
     });
   });

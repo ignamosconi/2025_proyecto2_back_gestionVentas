@@ -9,7 +9,7 @@ import {
   DeleteDateColumn,
 } from 'typeorm';
 import { MarcaLinea } from './marca-linea.entity';
-import { Producto } from 'src/producto/entities/producto.entity';
+import { Producto } from '../../producto/entities/producto.entity';
 //import { Linea } from '../../linea/entities/brand-line.entity'; // Asumo que BrandLine está en una carpeta 'brand-line'
 //import { Producto } from '../../productos/entities/producto.entity'; // Asumo la entidad Producto en un módulo 'productos'
 
@@ -55,7 +55,7 @@ export class Marca {
   updatedAt: Date;
 
   @DeleteDateColumn({ name: 'deleted_at', type: 'timestamp', nullable: true })
-  deletedAt: Date;
+  deletedAt?: Date;
 
   // --- Relaciones ---
 

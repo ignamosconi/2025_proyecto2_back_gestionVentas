@@ -9,8 +9,8 @@ import {
 } from 'typeorm';
 import { Linea } from '../../catalogo/entities/linea.entity';
 //import { ProductoProveedor } from '../../proveedor/entities/producto-proveedor.entity';
-import { Marca } from 'src/catalogo/entities/marca.entity';
-import { ProductoProveedor } from 'src/proveedor/entities/producto-proveedor.entity';
+import { Marca } from '../../catalogo/entities/marca.entity';
+import { ProductoProveedor } from '../../proveedor/entities/producto-proveedor.entity';
 
 @Entity('producto')
 export class Producto {

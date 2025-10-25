@@ -17,9 +17,9 @@ import { UserResponseDto } from './dto/user-response.dto';
 import { validatePasswordStrength } from './helpers/validatePasswordStrength';
 import { UserRole } from './helpers/enum.roles';
 import { IUsersService } from './interfaces/users.service.interface';
-import type { IMailerService } from 'src/mailer/interfaces/mailer.service.interface';
-import { IAuditoriaService } from 'src/auditoria/interfaces/auditoria.service.interface';
-import { EventosAuditoria } from 'src/auditoria/helpers/enum.eventos';
+import type { IMailerService } from '../mailer/interfaces/mailer.service.interface';
+import type { IAuditoriaService } from '../auditoria/interfaces/auditoria.service.interface';
+import { EventosAuditoria } from '../auditoria/helpers/enum.eventos';
 
 @Injectable()
 export class UsersService implements IUsersService {

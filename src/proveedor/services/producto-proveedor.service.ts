@@ -11,7 +11,7 @@ import { PRODUCTO_PROVEEDOR_REPOSITORY } from '../../constants';
 import { ProductoProveedor } from '../entities/producto-proveedor.entity';
 import { CreateProductoProveedorDto } from '../dto/create-producto-proveedor.dto';
 import { UpdateProductoProveedorDto } from '../dto/update-producto-proveedor.dto';
-import { ProductoServiceInterface } from 'src/producto/services/interfaces/producto.service.interface';
+import { ProductoServiceInterface } from '../../producto/services/interfaces/producto.service.interface';
 import { ProveedorServiceInterface } from './interfaces/proveedor.service.interface';
 import { PRODUCTO_SERVICE, PROVEEDOR_SERVICE } from '../../constants';
 

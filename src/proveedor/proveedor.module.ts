@@ -14,9 +14,9 @@ import { ProductoProveedorRepository } from './repositories/producto-proveedor.r
 import { ProveedorService } from './services/proveedor.service';
 import { ProductoProveedorService } from './services/producto-proveedor.service';
 
-import { UsersModule } from 'src/users/users.module';
-import { AuthModule } from 'src/auth/auth.module';
-import { ProductoModule } from 'src/producto/producto.module'; // <-- para PRODUCTO_SERVICE
+import { UsersModule } from '../users/users.module';
+import { AuthModule } from '../auth/auth.module';
+import { ProductoModule } from '../producto/producto.module'; // <-- para PRODUCTO_SERVICE
 
 import {
   PROVEEDOR_REPOSITORY,

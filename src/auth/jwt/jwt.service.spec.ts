@@ -3,6 +3,7 @@ import { JwtService } from './jwt.service';
 import { ConfigService } from '@nestjs/config';
 import { UnauthorizedException } from '@nestjs/common';
 import * as jwt from 'jsonwebtoken';
+import { UserRole } from '../../users/helpers/enum.roles';
 
 jest.mock('jsonwebtoken');
 
@@ -43,12 +44,12 @@ describe('JwtService', () => {
 
       const result = service.generateToken({
         email: 'test@example.com',
-        role: 'Empleado',
+        role: UserRole.EMPLOYEE,
       });
 
       expect(result).toBe('generated-access-token');
       expect(jwt.sign).toHaveBeenCalledWith(
-        { email: 'test@example.com', role: 'Empleado' },
+        { email: 'test@example.com', role: UserRole.EMPLOYEE },
         'access-secret',
         { expiresIn: '15m' },
       );
@@ -58,13 +59,13 @@ describe('JwtService', () => {
       (jwt.sign as jest.Mock).mockReturnValue('generated-refresh-token');
 
       const result = service.generateToken(
-        { email: 'test@example.com', role: 'Empleado' },
+        { email: 'test@example.com', role: UserRole.EMPLOYEE },
         'refresh',
       );
 
       expect(result).toBe('generated-refresh-token');
       expect(jwt.sign).toHaveBeenCalledWith(
-        { email: 'test@example.com', role: 'Empleado' },
+        { email: 'test@example.com', role: UserRole.EMPLOYEE },
         'refresh-secret',
         { expiresIn: '1d' },
       );
@@ -76,7 +77,7 @@ describe('JwtService', () => {
       const currentTime = Math.floor(Date.now() / 1000);
       const mockPayload = {
         email: 'test@example.com',
-        role: 'Empleado',
+        role: UserRole.EMPLOYEE,
         exp: currentTime + 30 * 60, // 30 minutos restantes
       };
 
@@ -93,7 +94,7 @@ describe('JwtService', () => {
       const currentTime = Math.floor(Date.now() / 1000);
       const mockPayload = {
         email: 'test@example.com',
-        role: 'Empleado',
+        role: UserRole.EMPLOYEE,
         exp: currentTime + 10 * 60, // 10 minutos restantes
       };
 
@@ -114,7 +115,7 @@ describe('JwtService', () => {
     it('debería rechazar token sin exp', () => {
       const mockPayload = {
         email: 'test@example.com',
-        role: 'Empleado',
+        role: UserRole.EMPLOYEE,
         // sin exp
       };
 
@@ -140,7 +141,7 @@ describe('JwtService', () => {
     it('debería retornar payload de token válido', () => {
       const mockPayload = {
         email: 'test@example.com',
-        role: 'Empleado',
+        role: UserRole.EMPLOYEE,
         exp: 123456789,
       };
 
@@ -160,7 +161,7 @@ describe('JwtService', () => {
     });
 
     it('debería rechazar token sin email', () => {
-      (jwt.verify as jest.Mock).mockReturnValue({ role: 'Empleado' });
+      (jwt.verify as jest.Mock).mockReturnValue({ role: UserRole.EMPLOYEE });
 
       expect(() => service.getPayload('invalid-token')).toThrow(
         'Token inválido',

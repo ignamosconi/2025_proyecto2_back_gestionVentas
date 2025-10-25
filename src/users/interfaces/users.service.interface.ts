@@ -1,7 +1,7 @@
 import { RegisterEmployeeDTO } from '../dto/register-employee.dto';
 import { RegisterEmployeeOwnerDTO } from '../dto/register-employee-owner.dto';
 import { UpdateUserDTO } from '../dto/update-user.dto';
-import { MessageResponseDTO } from 'src/auth/dto/message-response.dto';
+import { MessageResponseDTO } from '../../auth/dto/message-response.dto';
 import { UserResponseDto } from '../dto/user-response.dto';
 import { UserEntity } from '../entities/user.entity';
 

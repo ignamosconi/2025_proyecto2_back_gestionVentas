@@ -7,7 +7,7 @@ import {
   DeleteDateColumn,
 } from 'typeorm';
 import { MarcaLinea } from './marca-linea.entity';
-import { Producto } from 'src/producto/entities/producto.entity';
+import { Producto } from '../../producto/entities/producto.entity';
 
 @Entity('linea')
 @Index(['nombre'], { unique: true })
@@ -29,7 +29,7 @@ export class Linea {
   updatedAt: Date;
 
   @DeleteDateColumn({ name: 'deleted_at', type: 'timestamp', nullable: true })
-  deletedAt: Date;
+  deletedAt?: Date;
 
   @OneToMany(() => MarcaLinea, (marcaLinea) => marcaLinea.linea)
   marcaLineas: MarcaLinea[];

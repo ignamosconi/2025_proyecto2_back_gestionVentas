@@ -1,6 +1,6 @@
-import { CreateProveedorDto } from 'src/proveedor/dto/create-proveedor.dto';
+import { CreateProveedorDto } from '../../dto/create-proveedor.dto';
 import { Proveedor } from '../../entities/proveedor.entity';
-import { UpdateProveedorDto } from 'src/proveedor/dto/update-proveedor.dto';
+import { UpdateProveedorDto } from '../../dto/update-proveedor.dto';
 
 export interface ProveedorControllerInterface {
   findAll(): Promise<Proveedor[]>;
