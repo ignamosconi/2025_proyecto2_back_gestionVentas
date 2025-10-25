@@ -19,13 +19,13 @@ export class VentaRepository implements VentaRepositoryInterface {
   findAll(): Promise<Venta[]> {
     return this.repository.find({
       relations: [
-        'detalles', 
-        'detalles.producto', 
+        'detalles',
+        'detalles.producto',
         'detalles.producto.marca',
         'detalles.producto.linea',
         'detalles.producto.proveedores',
         'detalles.producto.proveedores.proveedor',
-        'usuario'
+        'usuario',
       ],
       order: { fechaCreacion: 'DESC' },
     });
@@ -36,13 +36,13 @@ export class VentaRepository implements VentaRepositoryInterface {
     return this.repository.findOne({
       where: { idVenta: id },
       relations: [
-        'detalles', 
-        'detalles.producto', 
+        'detalles',
+        'detalles.producto',
         'detalles.producto.marca',
         'detalles.producto.linea',
         'detalles.producto.proveedores',
         'detalles.producto.proveedores.proveedor',
-        'usuario'
+        'usuario',
       ],
     });
   }
@@ -52,13 +52,13 @@ export class VentaRepository implements VentaRepositoryInterface {
     return this.repository.find({
       where: { usuario: { id: idUsuario } },
       relations: [
-        'detalles', 
-        'detalles.producto', 
+        'detalles',
+        'detalles.producto',
         'detalles.producto.marca',
         'detalles.producto.linea',
         'detalles.producto.proveedores',
         'detalles.producto.proveedores.proveedor',
-        'usuario'
+        'usuario',
       ],
       order: { fechaCreacion: 'DESC' },
     });
@@ -75,15 +75,14 @@ export class VentaRepository implements VentaRepositoryInterface {
     return this.repository.findOne({
       where: { idVenta: id },
       relations: [
-        'detalles', 
-        'detalles.producto', 
+        'detalles',
+        'detalles.producto',
         'detalles.producto.marca',
         'detalles.producto.linea',
         'detalles.producto.proveedores',
         'detalles.producto.proveedores.proveedor',
-        'usuario'
+        'usuario',
       ],
     });
   }
-
 }

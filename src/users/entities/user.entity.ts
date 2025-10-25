@@ -1,4 +1,11 @@
-import { BaseEntity, Column, DeleteDateColumn, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  BaseEntity,
+  Column,
+  DeleteDateColumn,
+  Entity,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 import { UserRole } from '../helpers/enum.roles';
 import { Venta } from 'src/venta/entities/venta.entity';
 
@@ -13,7 +20,7 @@ export class UserEntity extends BaseEntity {
   @Column()
   lastName: string;
 
-  @Column( {unique: true})
+  @Column({ unique: true })
   email: string;
 
   @Column()
@@ -36,7 +43,11 @@ export class UserEntity extends BaseEntity {
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   createdAt: Date;
 
-  @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP', onUpdate: 'CURRENT_TIMESTAMP' })
+  @Column({
+    type: 'timestamp',
+    default: () => 'CURRENT_TIMESTAMP',
+    onUpdate: 'CURRENT_TIMESTAMP',
+  })
   updatedAt: Date;
 
   //Columna para soft-delete
@@ -45,13 +56,12 @@ export class UserEntity extends BaseEntity {
 
   //Columna para token de recuperación de contraseña
   @Column({ type: 'text', nullable: true })
-  resetPasswordToken?: string | null; 
+  resetPasswordToken?: string | null;
 
   @Column({ type: 'timestamp', nullable: true })
   resetPasswordExpires?: Date | null;
 
   //relación con ventas
-  @OneToMany(() => Venta, (venta) => venta.usuario) 
-  ventas: Venta[]; 
-
+  @OneToMany(() => Venta, (venta) => venta.usuario)
+  ventas: Venta[];
 }

@@ -6,6 +6,12 @@ export interface CompraControllerInterface {
   findAll(): Promise<CompraResponseDto[]>;
   findOne(id: number): Promise<CompraResponseDto | null>;
   findByUsuario(idUsuario: number): Promise<CompraResponseDto[]>;
-  create(createCompraDto: CreateCompraDto, req: any): Promise<CompraResponseDto>;
-  update(id: number, updateCompraDto: UpdateCompraDto): Promise<CompraResponseDto>;
+  create(
+    createCompraDto: CreateCompraDto,
+    req: any,
+  ): Promise<CompraResponseDto>;
+  update(
+    id: number,
+    updateCompraDto: UpdateCompraDto,
+  ): Promise<CompraResponseDto>;
 }

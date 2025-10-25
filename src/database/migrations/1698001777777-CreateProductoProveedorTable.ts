@@ -1,6 +1,14 @@
-import { MigrationInterface, QueryRunner, Table, TableForeignKey, TableIndex } from 'typeorm';
+import {
+  MigrationInterface,
+  QueryRunner,
+  Table,
+  TableForeignKey,
+  TableIndex,
+} from 'typeorm';
 
-export class CreateProductoProveedorTable1698001777777 implements MigrationInterface {
+export class CreateProductoProveedorTable1698001777777
+  implements MigrationInterface
+{
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.createTable(
       new Table({
@@ -90,16 +98,25 @@ export class CreateProductoProveedorTable1698001777777 implements MigrationInter
     const foreignKeyProveedor = table?.foreignKeys.find(
       (fk) => fk.columnNames.indexOf('idProveedor') !== -1,
     );
-    
+
     if (foreignKeyProducto) {
-      await queryRunner.dropForeignKey('producto_proveedor', foreignKeyProducto);
+      await queryRunner.dropForeignKey(
+        'producto_proveedor',
+        foreignKeyProducto,
+      );
     }
-    
+
     if (foreignKeyProveedor) {
-      await queryRunner.dropForeignKey('producto_proveedor', foreignKeyProveedor);
+      await queryRunner.dropForeignKey(
+        'producto_proveedor',
+        foreignKeyProveedor,
+      );
     }
-    
-    await queryRunner.dropIndex('producto_proveedor', 'IDX_PRODUCTO_PROVEEDOR_UNIQUE');
+
+    await queryRunner.dropIndex(
+      'producto_proveedor',
+      'IDX_PRODUCTO_PROVEEDOR_UNIQUE',
+    );
     await queryRunner.dropTable('producto_proveedor');
   }
 }

@@ -6,17 +6,16 @@ import { MetodoPagoCompraEnum } from '../helpers/metodo-pago-compra.enum';
 // Asumo que tienes un DTO simplificado para Usuario y Proveedor (como UserResponseDto y ProveedorResponseDto)
 
 class UserSimpleResponseDto {
-    @Expose() id: number;
-    @Expose() email: string;
+  @Expose() id: number;
+  @Expose() email: string;
 }
 
 class ProveedorResponseDto {
-    @Expose() idProveedor: number;
-    @Expose() nombre: string;
+  @Expose() idProveedor: number;
+  @Expose() nombre: string;
 }
 
 export class CompraResponseDto {
-  
   @ApiProperty()
   @Expose()
   idCompra: number;
@@ -32,7 +31,7 @@ export class CompraResponseDto {
   // El total se expone como string para mantener la precisión decimal
   @ApiProperty()
   @Expose()
-  total: string; 
+  total: string;
 
   // ---------------------------------------------
   // RELACIONES
@@ -43,7 +42,7 @@ export class CompraResponseDto {
   @Expose()
   @Type(() => ProveedorResponseDto)
   proveedor: ProveedorResponseDto;
-  
+
   // Usuario que registró la compra
   @ApiProperty({ type: UserSimpleResponseDto })
   @Expose()

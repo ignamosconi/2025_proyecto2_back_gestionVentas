@@ -1,6 +1,10 @@
 // src/catalogo/repositories/marca.repository.ts
 
-import { Injectable, BadRequestException, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  BadRequestException,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { IsNull, Not, Repository } from 'typeorm';
 import { Marca } from '../entities/marca.entity';
@@ -25,12 +29,15 @@ export class MarcaRepository implements MarcaRepositoryInterface {
   // --- Métodos Requeridos por la US 8 ---
   // =================================================================
 
-  async findByName(name: string, includeDeleted: boolean = false): Promise<Marca | null> {
+  async findByName(
+    name: string,
+    includeDeleted: boolean = false,
+  ): Promise<Marca | null> {
     // Buscamos una marca que coincida con el nombre.
     // Si includeDeleted es true, incluimos también las marcas eliminadas en la búsqueda
-    return this.marcaOrmRepository.findOne({ 
+    return this.marcaOrmRepository.findOne({
       where: { nombre: name },
-      withDeleted: includeDeleted // Incluir registros eliminados si se solicita
+      withDeleted: includeDeleted, // Incluir registros eliminados si se solicita
     });
   }
 
@@ -41,7 +48,9 @@ export class MarcaRepository implements MarcaRepositoryInterface {
     } catch (error) {
       // Manejo de errores de base de datos, si la validación de unicidad falla por concurrencia
       if (error.code === '23505' || error.code === 'ER_DUP_ENTRY') {
-          throw new BadRequestException('El nombre de la marca ya existe en el sistema.');
+        throw new BadRequestException(
+          'El nombre de la marca ya existe en el sistema.',
+        );
       }
       throw error;
     }
@@ -70,9 +79,11 @@ export class MarcaRepository implements MarcaRepositoryInterface {
     // Criterio: "Las marcas eliminadas no deben aparecer..."
     // TypeORM setea automáticamente la columna 'deletedAt'.
     const result = await this.marcaOrmRepository.softDelete(id);
-    
+
     if (result.affected === 0) {
-      throw new NotFoundException(`Marca con ID ${id} no encontrada para eliminar.`);
+      throw new NotFoundException(
+        `Marca con ID ${id} no encontrada para eliminar.`,
+      );
     }
   }
 
@@ -81,7 +92,9 @@ export class MarcaRepository implements MarcaRepositoryInterface {
     const result = await this.marcaOrmRepository.restore(id);
 
     if (result.affected === 0) {
-      throw new NotFoundException(`Marca con ID ${id} no encontrada o no está marcada como eliminada para restaurar.`);
+      throw new NotFoundException(
+        `Marca con ID ${id} no encontrada o no está marcada como eliminada para restaurar.`,
+      );
     }
   }
 
@@ -102,7 +115,7 @@ export class MarcaRepository implements MarcaRepositoryInterface {
       },
     });
   }
-  
+
   async findOneActive(id: number): Promise<Marca | null> {
     return this.marcaOrmRepository.findOneBy({ id });
   }
@@ -119,11 +132,16 @@ export class MarcaRepository implements MarcaRepositoryInterface {
   async associateLine(marcaId: number, lineaId: number): Promise<MarcaLinea> {
     // Implementación usando la tabla BrandLine con manejo de unicidad de la BD
     try {
-      const newAssociation = this.brandLineOrmRepository.create({ marcaId, lineaId });
+      const newAssociation = this.brandLineOrmRepository.create({
+        marcaId,
+        lineaId,
+      });
       return await this.brandLineOrmRepository.save(newAssociation);
     } catch (error) {
       if (error.code === '23505' || error.code === 'ER_DUP_ENTRY') {
-        throw new BadRequestException('Esta marca ya tiene asociada esta línea (violación de unicidad).');
+        throw new BadRequestException(
+          'Esta marca ya tiene asociada esta línea (violación de unicidad).',
+        );
       }
       throw error;
     }

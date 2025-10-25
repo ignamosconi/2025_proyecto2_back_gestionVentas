@@ -1,6 +1,13 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, RelationId } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  ManyToOne,
+  JoinColumn,
+  RelationId,
+} from 'typeorm';
 import { Compra } from './compra.entity';
-import { Producto } from '../../producto/entities/producto.entity'; 
+import { Producto } from '../../producto/entities/producto.entity';
 
 @Entity('detalle_compra')
 export class DetalleCompra {
@@ -22,15 +29,15 @@ export class DetalleCompra {
   // ---------------------------------------------------------------------
 
   // FK idCompra (Muchos DetalleCompra a una Compra)
-  @ManyToOne(() => Compra, (compra) => compra.detalles, { 
-      onDelete: 'CASCADE' // Si se elimina la Compra, se eliminan los detalles
+  @ManyToOne(() => Compra, (compra) => compra.detalles, {
+    onDelete: 'CASCADE', // Si se elimina la Compra, se eliminan los detalles
   })
   @JoinColumn({ name: 'idCompra' })
   compra: Compra;
 
   // TypeORM generará la columna 'idCompra'
   @RelationId((detalle: DetalleCompra) => detalle.compra)
-  idCompra: number; 
+  idCompra: number;
 
   // FK idProducto (Muchos DetalleCompra a un Producto)
   @ManyToOne(() => Producto)

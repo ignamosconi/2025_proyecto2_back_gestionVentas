@@ -31,7 +31,7 @@ export class UsersService implements IUsersService {
     private readonly mailerService: IMailerService,
 
     @Inject('IAuditoriaService')
-    private readonly auditoriaService: IAuditoriaService, 
+    private readonly auditoriaService: IAuditoriaService,
   ) {}
 
   private toUserResponse(user: UserEntity): UserResponseDto {
@@ -65,7 +65,6 @@ export class UsersService implements IUsersService {
   async findAllEmployees(): Promise<UserEntity[]> {
     return this.userRepository.findAllEmployees();
   }
-  
 
   //Usado por auth.service en login()
   async findByEmail(email: string): Promise<UserEntity | null> {
@@ -108,7 +107,6 @@ export class UsersService implements IUsersService {
       `Usuario EMPLEADO creado con email ${savedUser.email}`,
     );
 
-
     return this.toUserResponse(savedUser);
   }
 
@@ -147,7 +145,7 @@ export class UsersService implements IUsersService {
       EventosAuditoria.CREAR_USUARIO_OWNER,
       `Usuario DUEÑO creado con email ${savedUser.email}`,
     );
-    
+
     return this.toUserResponse(savedUser);
   }
 
@@ -157,7 +155,7 @@ export class UsersService implements IUsersService {
     if (body.password) {
       // Traer el usuario para tener sus datos personales
       const user = await this.userRepository.findById(id);
-      if (!user) throw new NotFoundException('Usuario no encontrado');
+      if (!user) {throw new NotFoundException('Usuario no encontrado');}
 
       // Validar la nueva contraseña con datos actuales
       validatePasswordStrength(
@@ -174,18 +172,18 @@ export class UsersService implements IUsersService {
     const actualizado = await this.userRepository.update(id, body);
 
     if (!actualizado)
-      throw new NotFoundException(
+      {throw new NotFoundException(
         'No se pudo actualizar el usuario. Verifica que la ID exista.',
-      );
+      );}
     return this.toUserResponse(actualizado);
   }
 
   async softDelete(id: number): Promise<MessageResponseDTO> {
     const result = await this.userRepository.softDelete(id);
     if (!result)
-      throw new NotFoundException(
+      {throw new NotFoundException(
         'No se pudo eliminar el usuario. Verifica que la ID exista.',
-      );
+      );}
 
     return { message: 'Usuario ID N°' + id + ' eliminado.' };
   }
@@ -193,9 +191,9 @@ export class UsersService implements IUsersService {
   async restore(id: number): Promise<MessageResponseDTO> {
     const result = await this.userRepository.restore(id);
     if (!result)
-      throw new NotFoundException(
+      {throw new NotFoundException(
         'No se pudo restaurar el usuario. Verifica que la ID exista.',
-      );
+      );}
 
     return { message: `Usuario ID N°${id} restaurado correctamente.` };
   }

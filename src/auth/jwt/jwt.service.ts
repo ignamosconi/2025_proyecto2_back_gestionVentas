@@ -18,11 +18,20 @@ export class JwtService implements IJwtService {
   //Cargamos la config con los datos del .env. Si falta alguno, damos error.
   constructor(private readonly configService: ConfigService) {
     const accessSecret = this.configService.get<string>('JWT_ACCESS_SECRET');
-    const accessExpiresIn = this.configService.get<string>('JWT_ACCESS_EXPIRATION');
+    const accessExpiresIn = this.configService.get<string>(
+      'JWT_ACCESS_EXPIRATION',
+    );
     const refreshSecret = this.configService.get<string>('JWT_REFRESH_SECRET');
-    const refreshExpiresIn = this.configService.get<string>('JWT_REFRESH_EXPIRATION');
+    const refreshExpiresIn = this.configService.get<string>(
+      'JWT_REFRESH_EXPIRATION',
+    );
 
-    if (!accessSecret || !accessExpiresIn || !refreshSecret || !refreshExpiresIn) {
+    if (
+      !accessSecret ||
+      !accessExpiresIn ||
+      !refreshSecret ||
+      !refreshExpiresIn
+    ) {
       throw new InternalServerErrorException('Faltan variables de entorno JWT');
     }
 
@@ -44,13 +53,9 @@ export class JwtService implements IJwtService {
   ): string {
     //El método sign() toma un payload y lo firma con un secreto. Le añade además exp, iat, etc.
     //Devuelve el token jwt formado en formato string.
-    return jwt.sign(
-      payload, 
-      this.config[type].secret, 
-      {
-      expiresIn: this.config[type].expiresIn as string,
-      } as jwt.SignOptions
-  );
+    return jwt.sign(payload, this.config[type].secret, {
+      expiresIn: this.config[type].expiresIn,
+    } as jwt.SignOptions);
   }
 
   //Verificamos si el refresh es correcto, y generamos refresh || access, según el caso.
@@ -64,7 +69,7 @@ export class JwtService implements IJwtService {
 
       //Validamos si ese payload trae la fecha de expiración
       if (!payload.exp)
-        throw new UnauthorizedException('Token sin fecha de expiración');
+        {throw new UnauthorizedException('Token sin fecha de expiración');}
 
       //Obtenemos el tiempo actual, en segundos.
       const currentTime = Math.floor(Date.now() / 1000);
@@ -76,14 +81,23 @@ export class JwtService implements IJwtService {
       //Si está cerca de expirar el refresh, generamos un nuevo refresh y access.
       if (timeToExpire < 20) {
         return {
-          accessToken: this.generateToken({ email: payload.email, role: payload.role }),
-          refreshToken: this.generateToken({ email: payload.email, role: payload.role }, 'refresh'),
+          accessToken: this.generateToken({
+            email: payload.email,
+            role: payload.role,
+          }),
+          refreshToken: this.generateToken(
+            { email: payload.email, role: payload.role },
+            'refresh',
+          ),
         };
       }
 
       //Caso contrario, generamos solamente el access.
       return {
-        accessToken: this.generateToken({ email: payload.email, role: payload.role }),
+        accessToken: this.generateToken({
+          email: payload.email,
+          role: payload.role,
+        }),
       };
     } catch (error) {
       throw new UnauthorizedException();

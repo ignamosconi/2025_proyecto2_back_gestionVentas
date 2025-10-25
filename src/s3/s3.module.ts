@@ -8,7 +8,7 @@ import { ConfigModule } from '@nestjs/config';
     {
       provide: 'IS3Service',
       useClass: S3Service,
-    }
+    },
   ],
   exports: ['IS3Service'], //nos permite usar s3 en otros servicios
 })

@@ -1,6 +1,6 @@
 //ARCHIVO: jwt.config.ts
 
-import { JwtConfigApp } from "../interfaces/jwt-config.interface";
+import { JwtConfigApp } from '../interfaces/jwt-config.interface';
 
 const jwtConfig = (): JwtConfigApp => ({
   jwt: {

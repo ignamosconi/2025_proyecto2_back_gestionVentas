@@ -12,7 +12,7 @@ import { AppDataSource } from '../typeorm.config';
 export async function seedVentas(): Promise<void> {
   // Initialize the data source
   let dataSource: DataSource;
-  
+
   try {
     dataSource = AppDataSource;
     if (!dataSource.isInitialized) {
@@ -34,21 +34,28 @@ export async function seedVentas(): Promise<void> {
     // Obtener usuarios existentes
     const users = await userRepository.find();
     if (users.length === 0) {
-      console.log('⚠️  No hay usuarios en la base de datos. Ejecuta primero el seeder de usuarios.');
+      console.log(
+        '⚠️  No hay usuarios en la base de datos. Ejecuta primero el seeder de usuarios.',
+      );
       return;
     }
 
     // Obtener productos existentes
     const productos = await productoRepository.find();
     if (productos.length === 0) {
-      console.log('⚠️  No hay productos en la base de datos. Ejecuta primero el seeder de productos.');
+      console.log(
+        '⚠️  No hay productos en la base de datos. Ejecuta primero el seeder de productos.',
+      );
       return;
     }
 
-    console.log(`📊 Encontrados: ${users.length} usuarios y ${productos.length} productos`);
+    console.log(
+      `📊 Encontrados: ${users.length} usuarios y ${productos.length} productos`,
+    );
 
     // Helper function to get a random item from an array
-    const randomItem = <T>(array: T[]): T => array[Math.floor(Math.random() * array.length)];
+    const randomItem = <T>(array: T[]): T =>
+      array[Math.floor(Math.random() * array.length)];
 
     // Helper function to get random items from an array
     const randomItems = <T>(array: T[], count: number): T[] => {
@@ -93,7 +100,9 @@ export async function seedVentas(): Promise<void> {
 
     // Crear ventas para cada mes
     for (const config of ventasPorMes) {
-      console.log(`📅 Creando ${config.cantidad} ventas para hace ${config.mes} mes(es)...`);
+      console.log(
+        `📅 Creando ${config.cantidad} ventas para hace ${config.mes} mes(es)...`,
+      );
 
       for (let i = 0; i < config.cantidad; i++) {
         // Seleccionar un usuario aleatorio
@@ -143,7 +152,9 @@ export async function seedVentas(): Promise<void> {
         totalVentas++;
         totalMontoVentas += total;
 
-        console.log(`  ✅ Venta #${totalVentas} creada: $${total.toFixed(2)} - ${usuario.firstName} ${usuario.lastName} - ${metodoPago}`);
+        console.log(
+          `  ✅ Venta #${totalVentas} creada: $${total.toFixed(2)} - ${usuario.firstName} ${usuario.lastName} - ${metodoPago}`,
+        );
       }
     }
 
@@ -152,16 +163,52 @@ export async function seedVentas(): Promise<void> {
 
     const ventasEspecificas = [
       // Primera semana del mes actual
-      { dia: 1, mes: 0, usuario: users[0], productos: [productos[0]], cantidades: [2] },
-      { dia: 3, mes: 0, usuario: users[0], productos: [productos[1]], cantidades: [1] },
-      { dia: 5, mes: 0, usuario: users[0], productos: [productos[2], productos[3]], cantidades: [1, 3] },
-      
+      {
+        dia: 1,
+        mes: 0,
+        usuario: users[0],
+        productos: [productos[0]],
+        cantidades: [2],
+      },
+      {
+        dia: 3,
+        mes: 0,
+        usuario: users[0],
+        productos: [productos[1]],
+        cantidades: [1],
+      },
+      {
+        dia: 5,
+        mes: 0,
+        usuario: users[0],
+        productos: [productos[2], productos[3]],
+        cantidades: [1, 3],
+      },
+
       // Última semana del mes anterior
-      { dia: 25, mes: 1, usuario: users[0], productos: [productos[4]], cantidades: [2] },
-      { dia: 28, mes: 1, usuario: users[0], productos: [productos[5], productos[6]], cantidades: [1, 1] },
-      
+      {
+        dia: 25,
+        mes: 1,
+        usuario: users[0],
+        productos: [productos[4]],
+        cantidades: [2],
+      },
+      {
+        dia: 28,
+        mes: 1,
+        usuario: users[0],
+        productos: [productos[5], productos[6]],
+        cantidades: [1, 1],
+      },
+
       // Mitad del mes hace 2 meses
-      { dia: 15, mes: 2, usuario: users[0], productos: [productos[0], productos[2], productos[4]], cantidades: [1, 2, 1] },
+      {
+        dia: 15,
+        mes: 2,
+        usuario: users[0],
+        productos: [productos[0], productos[2], productos[4]],
+        cantidades: [1, 2, 1],
+      },
     ];
 
     for (const ventaData of ventasEspecificas) {
@@ -199,7 +246,9 @@ export async function seedVentas(): Promise<void> {
       totalVentas++;
       totalMontoVentas += total;
 
-      console.log(`  ✅ Venta específica creada: Día ${ventaData.dia}, hace ${ventaData.mes} mes(es)`);
+      console.log(
+        `  ✅ Venta específica creada: Día ${ventaData.dia}, hace ${ventaData.mes} mes(es)`,
+      );
     }
 
     console.log('✅ Seed de ventas completado exitosamente');
@@ -210,7 +259,6 @@ export async function seedVentas(): Promise<void> {
    - Promedio por venta: $${(totalMontoVentas / totalVentas).toFixed(2)}
    - Rango de fechas: Últimos 6 meses
     `);
-    
   } catch (error) {
     console.error('❌ Error creating sales data', error);
     throw error;

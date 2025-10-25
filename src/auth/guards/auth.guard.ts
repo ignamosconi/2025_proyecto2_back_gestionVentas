@@ -1,10 +1,16 @@
 //ARCHIVO: auth.middleware.ts
-import { CanActivate, ExecutionContext, Inject, Injectable, UnauthorizedException } from "@nestjs/common";
-import { JwtService } from "../jwt/jwt.service";
-import { UsersService } from "../../users/users.service";
-import { RequestWithUser } from "../interfaces/request-with-user.interface";
-import type { IJwtService } from "../interfaces/jwt.service.interface";
-import { IUsersService } from "src/users/interfaces/users.service.interface";
+import {
+  CanActivate,
+  ExecutionContext,
+  Inject,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
+import { JwtService } from '../jwt/jwt.service';
+import { UsersService } from '../../users/users.service';
+import { RequestWithUser } from '../interfaces/request-with-user.interface';
+import type { IJwtService } from '../interfaces/jwt.service.interface';
+import { IUsersService } from 'src/users/interfaces/users.service.interface';
 
 /*
   Cuando usemos @UseGuards(AuthGuard), Nest va a ejecutar el método canActivate() antes de entrar
@@ -16,26 +22,29 @@ import { IUsersService } from "src/users/interfaces/users.service.interface";
 
 @Injectable()
 export class AuthGuard implements CanActivate {
-  
   constructor(
     @Inject('IJwtService') private readonly jwtService: IJwtService,
-    @Inject('IUsersService') private usersService: IUsersService
+    @Inject('IUsersService') private usersService: IUsersService,
   ) {}
-  
+
   async canActivate(context: ExecutionContext): Promise<boolean> {
-   
     try {
       //Obtenemos la request de la solicitud (con usuario, ver interfaz)
       const request: RequestWithUser = context.switchToHttp().getRequest();
 
       const authHeader = request.headers.authorization;
-      if (!authHeader) throw new UnauthorizedException('No se envió el Header junto a la solicitud');
-    
-      //authHeader tiene la forma "Bearer [token]", asique extraemos el token 
-      const [encabezado, token] = authHeader.split(' ')
+      if (!authHeader)
+        {throw new UnauthorizedException(
+          'No se envió el Header junto a la solicitud',
+        );}
+
+      //authHeader tiene la forma "Bearer [token]", asique extraemos el token
+      const [encabezado, token] = authHeader.split(' ');
 
       if (encabezado !== 'Bearer' || !token) {
-        throw new UnauthorizedException('Formato de Header inválido. Debe ser "Bearer [token]". ');
+        throw new UnauthorizedException(
+          'Formato de Header inválido. Debe ser "Bearer [token]". ',
+        );
       }
 
       /* 
@@ -47,7 +56,7 @@ export class AuthGuard implements CanActivate {
         necesitemos. En este caso, definimos las partes del payload en la interfaz "payload.ts",
         la cual es devuelta por el método getPayload().        
       */
-      const payload = this.jwtService.getPayload(token)
+      const payload = this.jwtService.getPayload(token);
       const user = await this.usersService.findByEmail(payload.email);
 
       if (!user) {
@@ -69,7 +78,6 @@ export class AuthGuard implements CanActivate {
 
       //Si todo lo anterior pudo hacerse, permitimos el acceso a la ruta cubierta por el Guard.
       return true;
-
     } catch (error) {
       throw new UnauthorizedException(error?.message);
     }

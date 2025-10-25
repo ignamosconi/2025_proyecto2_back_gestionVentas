@@ -20,7 +20,6 @@ import { Producto } from 'src/producto/entities/producto.entity';
 // Se agrega la condición para que la unicidad solo aplique a marcas NO eliminadas:
 // @Index(['nombre', 'deletedAt'], { unique: true }) // Alternativa más robusta para Soft Delete
 export class Marca {
-  
   @PrimaryGeneratedColumn()
   id: number; //DEUDA TECNICA: Cambiar a idMarca para homogeneizar con Producto
 
@@ -45,10 +44,14 @@ export class Marca {
    * TypeORM filtra automáticamente las entidades con esta columna rellenada en las consultas 'find'.
    */
 
-  @Column({ type: 'timestamp',  default: () => 'CURRENT_TIMESTAMP' })
+  @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   createdAt: Date;
 
-  @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP', onUpdate: 'CURRENT_TIMESTAMP' })
+  @Column({
+    type: 'timestamp',
+    default: () => 'CURRENT_TIMESTAMP',
+    onUpdate: 'CURRENT_TIMESTAMP',
+  })
   updatedAt: Date;
 
   @DeleteDateColumn({ name: 'deleted_at', type: 'timestamp', nullable: true })

@@ -18,12 +18,13 @@ import { AuthModule } from 'src/auth/auth.module';
   providers: [
     {
       provide: 'IAuditoriaRepository',
-      useFactory: (dataSource: DataSource) => new AuditoriaRepository(dataSource),
+      useFactory: (dataSource: DataSource) =>
+        new AuditoriaRepository(dataSource),
       inject: [DataSource],
     },
     {
-    provide: 'IAuditoriaService',
-    useClass: AuditoriaService,
+      provide: 'IAuditoriaService',
+      useClass: AuditoriaService,
     },
   ],
   exports: ['IAuditoriaService'],

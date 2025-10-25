@@ -7,16 +7,16 @@ import { seedVentas } from './ventas.seed';
  */
 async function runSeeders() {
   console.log('======= Running Seeders =======');
-  
+
   try {
     // Run the owner user seeder
     await seedOwnerUser();
     console.log('✅ Owner user seeder completed successfully');
-    
+
     // Run the catalog and products seeder
     await seedCatalogoProductos();
     console.log('✅ Catalog and products seeder completed successfully');
-    
+
     // Run the sales seeder
     await seedVentas();
     console.log('✅ Sales seeder completed successfully');
@@ -24,7 +24,7 @@ async function runSeeders() {
     console.error('❌ Error running seeders:', error);
     process.exit(1);
   }
-  
+
   console.log('======= All Seeders Completed =======');
   process.exit(0);
 }

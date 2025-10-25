@@ -24,7 +24,7 @@ import { EventosAuditoria } from 'src/auditoria/helpers/enum.eventos';
 export class AuthService implements IAuthService {
   constructor(
     private readonly configService: ConfigService,
-    @Inject('IUsersService') 
+    @Inject('IUsersService')
     private readonly usersService: IUsersService,
     @Inject('IJwtService')
     private readonly jwtService: IJwtService,
@@ -39,24 +39,31 @@ export class AuthService implements IAuthService {
   async login(body: LoginDTO): Promise<TokenPairDTO> {
     const user = await this.usersService.findByEmail(body.email);
     if (!user)
-      throw new UnauthorizedException(
+      {throw new UnauthorizedException(
         'No se pudo loguear. Correo electrónico inválido.',
-      );
+      );}
 
     //compareSync nos permite comparar el pswd plano que pasó el usuario con el hasheado de la bd.
     const compareResult = compareSync(body.password, user.password);
     if (!compareResult)
-      throw new UnauthorizedException(
+      {throw new UnauthorizedException(
         'No se pudo loguear. Contraseña incorrecta.',
-      );
+      );}
 
     //Auditamos un login exitoso
-    await this.auditoriaService.registrarEvento(user.id, EventosAuditoria.LOGIN, 'Login exitoso del usuario '+body.email);
+    await this.auditoriaService.registrarEvento(
+      user.id,
+      EventosAuditoria.LOGIN,
+      'Login exitoso del usuario ' + body.email,
+    );
 
     //Si el usuario pasó el logueo, le damos los tokens
     return {
       //En generateToken() se especifica que si no pasás nada, type = 'access' → usa config.access
-      accessToken: this.jwtService.generateToken({ email: user.email, role: user.role }),
+      accessToken: this.jwtService.generateToken({
+        email: user.email,
+        role: user.role,
+      }),
       refreshToken: this.jwtService.generateToken(
         { email: user.email, role: user.role },
         'refresh',
@@ -64,14 +71,12 @@ export class AuthService implements IAuthService {
     };
   }
 
-
-
   /*
     OLVIDÉ MI CONTRASEÑA
   */
   async forgotPassword(email: string): Promise<{ message: string }> {
     const user = await this.usersService.findByEmail(email);
-    if (!user) throw new NotFoundException('Usuario no encontrado.');
+    if (!user) {throw new NotFoundException('Usuario no encontrado.');}
 
     // Generar token aleatorio
     const token = randomBytes(32).toString('hex');
@@ -92,16 +97,27 @@ export class AuthService implements IAuthService {
     return { message: 'Email para restablecer contraseña enviado.' };
   }
 
-  async resetPassword(token: string, newPassword: string): Promise<{ message: string }> {
+  async resetPassword(
+    token: string,
+    newPassword: string,
+  ): Promise<{ message: string }> {
     const user = await this.usersService.findByResetToken(token);
-    if (!user) throw new UnauthorizedException('Token inválido o expirado.');
+    if (!user) {throw new UnauthorizedException('Token inválido o expirado.');}
 
-    if (!user.resetPasswordExpires || isAfter(new Date(), user.resetPasswordExpires)) {
+    if (
+      !user.resetPasswordExpires ||
+      isAfter(new Date(), user.resetPasswordExpires)
+    ) {
       throw new UnauthorizedException('Token expirado.');
     }
 
     // Validar nuevo password
-    validatePasswordStrength(newPassword, user.email, user.firstName, user.lastName);
+    validatePasswordStrength(
+      newPassword,
+      user.email,
+      user.firstName,
+      user.lastName,
+    );
 
     // Cambiar contraseña y limpiar token
     await this.usersService.updatePassword(user.id, newPassword);

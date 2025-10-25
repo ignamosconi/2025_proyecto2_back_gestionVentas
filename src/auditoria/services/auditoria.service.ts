@@ -9,7 +9,7 @@ import { AuditoriaLogDTO } from '../dto/auditoria-log.dto';
 export class AuditoriaService implements IAuditoriaService {
   constructor(
     @Inject('IAuditoriaRepository')
-    private readonly auditoriaRepository: IAuditoriaRepository
+    private readonly auditoriaRepository: IAuditoriaRepository,
   ) {}
 
   //MÉTODOS PRIVADOS
@@ -31,8 +31,6 @@ export class AuditoriaService implements IAuditoriaService {
     });
   }
 
-
-
   //MÉTODOS PUBLICOS
   async registrarEvento(
     userId: number,
@@ -48,7 +46,12 @@ export class AuditoriaService implements IAuditoriaService {
     fechaDesde?: Date,
     fechaHasta?: Date,
   ): Promise<AuditoriaLogDTO[]> {
-    const eventos = await this.auditoriaRepository.findAuditLogs(userId, tipo_evento, fechaDesde, fechaHasta);
+    const eventos = await this.auditoriaRepository.findAuditLogs(
+      userId,
+      tipo_evento,
+      fechaDesde,
+      fechaHasta,
+    );
     return eventos.map(this.mapToDTO);
   }
 }

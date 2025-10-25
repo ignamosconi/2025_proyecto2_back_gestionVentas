@@ -1,4 +1,8 @@
-import { createParamDecorator, ExecutionContext, BadRequestException } from '@nestjs/common';
+import {
+  createParamDecorator,
+  ExecutionContext,
+  BadRequestException,
+} from '@nestjs/common';
 
 /*
   En el auth.controller, en el endpoint /tokens, tenemos que extraer un token del header Authorization
@@ -17,10 +21,12 @@ export const RefreshToken = createParamDecorator(
     const authHeader = request.headers['authorization'];
 
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      throw new BadRequestException('El header Authorization debe tener el formato Bearer [token]');
+      throw new BadRequestException(
+        'El header Authorization debe tener el formato Bearer [token]',
+      );
     }
 
     //Después de hacer el split, nos queda [Bearer, token]. Devolvemos el elemento 1 de este array.
-    return authHeader.split(' ')[1]; 
-  }
+    return authHeader.split(' ')[1];
+  },
 );

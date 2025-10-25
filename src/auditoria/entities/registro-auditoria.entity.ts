@@ -1,9 +1,15 @@
 //ARCHIVO: registro-auditoria.entity.ts
 
-import { BaseEntity, Column, Entity, PrimaryGeneratedColumn, ManyToOne, JoinColumn } from 'typeorm';
+import {
+  BaseEntity,
+  Column,
+  Entity,
+  PrimaryGeneratedColumn,
+  ManyToOne,
+  JoinColumn,
+} from 'typeorm';
 import { UserEntity } from 'src/users/entities/user.entity';
 import { EventosAuditoria } from '../helpers/enum.eventos';
-
 
 @Entity('registro_auditoria')
 export class AuditLogEntity extends BaseEntity {
@@ -15,7 +21,7 @@ export class AuditLogEntity extends BaseEntity {
 
   @Column({ type: 'enum', enum: EventosAuditoria })
   tipo_evento: EventosAuditoria;
-  
+
   @Column({ type: 'text', nullable: true })
   detalle?: string;
 

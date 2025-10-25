@@ -22,10 +22,10 @@ import { AuditoriaModule } from 'src/auditoria/auditoria.module';
 @Module({
   imports: [
     // 1. Registrar entidades de Compra y DetalleCompra con TypeORM
-    TypeOrmModule.forFeature([Compra, DetalleCompra]), 
+    TypeOrmModule.forFeature([Compra, DetalleCompra]),
     // 2. Módulos que el servicio necesita para sus inyecciones (Usuario, Producto, Proveedor)
-    AuthModule, 
-    UsersModule, 
+    AuthModule,
+    UsersModule,
     ProductoModule,
     ProveedorModule, // Necesario para inyectar IProveedorRepository en CompraService
     AuditoriaModule,
@@ -44,6 +44,6 @@ import { AuditoriaModule } from 'src/auditoria/auditoria.module';
     },
   ],
   // Exportar el servicio para que otros módulos puedan inyectar CompraServiceInterface
-  exports: [COMPRA_SERVICE], 
+  exports: [COMPRA_SERVICE],
 })
 export class CompraModule {}

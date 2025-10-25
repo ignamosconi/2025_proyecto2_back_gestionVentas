@@ -1,4 +1,9 @@
-import { Injectable, ParseEnumPipe, ArgumentMetadata, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  ParseEnumPipe,
+  ArgumentMetadata,
+  BadRequestException,
+} from '@nestjs/common';
 
 @Injectable()
 export class OptionalParseEnumPipe extends ParseEnumPipe {

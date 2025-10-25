@@ -13,7 +13,6 @@ import { DetalleVenta } from 'src/venta/entities/detalle-venta.entity';
 import { Compra } from 'src/compra/entities/compra.entity';
 import { DetalleCompra } from 'src/compra/entities/detalle-compra.entity';
 
-
 // Load environment variables from .env file
 dotenv.config();
 

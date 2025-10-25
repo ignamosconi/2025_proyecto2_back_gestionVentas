@@ -63,7 +63,9 @@ describe('UserRepository', () => {
     it('debería retornar null cuando no existe', async () => {
       mockTypeOrmRepo.findOneBy.mockResolvedValue(null);
 
-      const result = await userRepository.findByEmail('nonexistent@example.com');
+      const result = await userRepository.findByEmail(
+        'nonexistent@example.com',
+      );
 
       expect(result).toBeNull();
     });

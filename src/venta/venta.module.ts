@@ -14,9 +14,9 @@ import { AuditoriaModule } from 'src/auditoria/auditoria.module';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Venta, DetalleVenta, Producto]), 
-    AuthModule, 
-    UsersModule, 
+    TypeOrmModule.forFeature([Venta, DetalleVenta, Producto]),
+    AuthModule,
+    UsersModule,
     ProductoModule,
     AuditoriaModule,
   ],

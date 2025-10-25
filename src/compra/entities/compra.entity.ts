@@ -1,10 +1,16 @@
-import { Entity, PrimaryGeneratedColumn, Column, OneToMany, ManyToOne, JoinColumn, RelationId, } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  OneToMany,
+  ManyToOne,
+  JoinColumn,
+  RelationId,
+} from 'typeorm';
 import { DetalleCompra } from './detalle-compra.entity';
 import { Proveedor } from '../../proveedor/entities/proveedor.entity';
 import { UserEntity } from 'src/users/entities/user.entity';
 import { MetodoPagoCompraEnum } from '../helpers/metodo-pago-compra.enum';
-
-
 
 @Entity('compra')
 export class Compra {
@@ -41,9 +47,9 @@ export class Compra {
   idUsuario: number;
 
   // Una Compra tiene muchos DetalleCompra
-  @OneToMany(() => DetalleCompra, (detalle) => detalle.compra, { 
-      cascade: ['insert', 'update'],  // Permite guardar detalles junto con la compra
-      eager: true
+  @OneToMany(() => DetalleCompra, (detalle) => detalle.compra, {
+    cascade: ['insert', 'update'], // Permite guardar detalles junto con la compra
+    eager: true,
   })
   detalles: DetalleCompra[];
 }

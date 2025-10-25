@@ -1,4 +1,9 @@
-import { MigrationInterface, QueryRunner, Table, TableForeignKey } from 'typeorm';
+import {
+  MigrationInterface,
+  QueryRunner,
+  Table,
+  TableForeignKey,
+} from 'typeorm';
 
 export class CreateProductoTable1698001666666 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {
@@ -107,15 +112,15 @@ export class CreateProductoTable1698001666666 implements MigrationInterface {
     const foreignKeyMarca = table?.foreignKeys.find(
       (fk) => fk.columnNames.indexOf('id_marca') !== -1,
     );
-    
+
     if (foreignKeyLinea) {
       await queryRunner.dropForeignKey('producto', foreignKeyLinea);
     }
-    
+
     if (foreignKeyMarca) {
       await queryRunner.dropForeignKey('producto', foreignKeyMarca);
     }
-    
+
     await queryRunner.dropTable('producto');
   }
 }

@@ -25,13 +25,15 @@ export class CreateVentaDto {
     description: 'ID del usuario que realiza la venta.',
     example: 1,
   })
-
   @ApiProperty({
-    description: 'Lista de los detalles (productos vendidos) incluidos en esta venta.',
+    description:
+      'Lista de los detalles (productos vendidos) incluidos en esta venta.',
     type: [CreateDetalleVentaDto],
   })
   @IsArray()
-  @ArrayMinSize(1, { message: 'Debe incluir al menos un producto en la venta.' })
+  @ArrayMinSize(1, {
+    message: 'Debe incluir al menos un producto en la venta.',
+  })
   @ValidateNested({ each: true })
   @Type(() => CreateDetalleVentaDto)
   detalles: CreateDetalleVentaDto[];

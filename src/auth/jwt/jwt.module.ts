@@ -11,7 +11,7 @@ import { JwtService } from './jwt.service';
     {
       provide: 'IJwtService',
       useClass: JwtService,
-    }
+    },
   ],
   exports: ['IJwtService'],
 })

@@ -185,9 +185,9 @@ describe('UsersService', () => {
     it('debería rechazar email duplicado', async () => {
       mockUserRepository.findByEmail.mockResolvedValue(mockUserEntity);
 
-      await expect(
-        service.registerByOwner(validEmployeeData),
-      ).rejects.toThrow('Ya existe un usuario con ese email');
+      await expect(service.registerByOwner(validEmployeeData)).rejects.toThrow(
+        'Ya existe un usuario con ese email',
+      );
     });
   });
 

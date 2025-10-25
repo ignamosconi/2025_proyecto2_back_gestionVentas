@@ -14,7 +14,7 @@ import { AppDataSource } from '../typeorm.config';
 export async function seedCatalogoProductos(): Promise<void> {
   // Initialize the data source
   let dataSource: DataSource;
-  
+
   try {
     dataSource = AppDataSource;
     if (!dataSource.isInitialized) {
@@ -31,7 +31,8 @@ export async function seedCatalogoProductos(): Promise<void> {
     const marcaLineaRepository = dataSource.getRepository(MarcaLinea);
     const proveedorRepository = dataSource.getRepository(Proveedor);
     const productoRepository = dataSource.getRepository(Producto);
-    const productoProveedorRepository = dataSource.getRepository(ProductoProveedor);
+    const productoProveedorRepository =
+      dataSource.getRepository(ProductoProveedor);
 
     console.log('📦 Iniciando seed de catálogo y productos...');
 
@@ -47,10 +48,10 @@ export async function seedCatalogoProductos(): Promise<void> {
 
     const lineas: Linea[] = [];
     for (const lineaData of lineasData) {
-      const existingLinea = await lineaRepository.findOne({ 
-        where: { nombre: lineaData.nombre } 
+      const existingLinea = await lineaRepository.findOne({
+        where: { nombre: lineaData.nombre },
       });
-      
+
       if (existingLinea) {
         lineas.push(existingLinea);
         console.log(`  ⏭️  Línea "${lineaData.nombre}" ya existe`);
@@ -65,10 +66,19 @@ export async function seedCatalogoProductos(): Promise<void> {
     // === 2. CREAR MARCAS ===
     console.log('📝 Creando marcas...');
     const marcasData = [
-      { nombre: 'Samsung', descripcion: 'Tecnología de vanguardia en electrónica' },
+      {
+        nombre: 'Samsung',
+        descripcion: 'Tecnología de vanguardia en electrónica',
+      },
       { nombre: 'LG', descripcion: 'Innovación en electrodomésticos' },
-      { nombre: 'Sony', descripcion: 'Entretenimiento y electrónica de alta calidad' },
-      { nombre: 'Nike', descripcion: 'Equipamiento deportivo de alto rendimiento' },
+      {
+        nombre: 'Sony',
+        descripcion: 'Entretenimiento y electrónica de alta calidad',
+      },
+      {
+        nombre: 'Nike',
+        descripcion: 'Equipamiento deportivo de alto rendimiento',
+      },
       { nombre: 'Adidas', descripcion: 'Ropa y calzado deportivo' },
       { nombre: 'Philips', descripcion: 'Iluminación y electrodomésticos' },
       { nombre: 'HP', descripcion: 'Computadoras y equipos de oficina' },
@@ -77,10 +87,10 @@ export async function seedCatalogoProductos(): Promise<void> {
 
     const marcas: Marca[] = [];
     for (const marcaData of marcasData) {
-      const existingMarca = await marcaRepository.findOne({ 
-        where: { nombre: marcaData.nombre } 
+      const existingMarca = await marcaRepository.findOne({
+        where: { nombre: marcaData.nombre },
       });
-      
+
       if (existingMarca) {
         marcas.push(existingMarca);
         console.log(`  ⏭️  Marca "${marcaData.nombre}" ya existe`);
@@ -102,44 +112,48 @@ export async function seedCatalogoProductos(): Promise<void> {
       { marcaNombre: 'Philips', lineaNombre: 'Electrónica' },
       { marcaNombre: 'HP', lineaNombre: 'Electrónica' },
       { marcaNombre: 'Canon', lineaNombre: 'Electrónica' },
-      
+
       // Hogar y Cocina
       { marcaNombre: 'Samsung', lineaNombre: 'Hogar y Cocina' },
       { marcaNombre: 'LG', lineaNombre: 'Hogar y Cocina' },
       { marcaNombre: 'Philips', lineaNombre: 'Hogar y Cocina' },
-      
+
       // Deportes
       { marcaNombre: 'Nike', lineaNombre: 'Deportes' },
       { marcaNombre: 'Adidas', lineaNombre: 'Deportes' },
-      
+
       // Oficina
       { marcaNombre: 'HP', lineaNombre: 'Oficina' },
       { marcaNombre: 'Canon', lineaNombre: 'Oficina' },
       { marcaNombre: 'Samsung', lineaNombre: 'Oficina' },
-      
+
       // Textil
       { marcaNombre: 'Nike', lineaNombre: 'Textil' },
       { marcaNombre: 'Adidas', lineaNombre: 'Textil' },
     ];
 
     for (const relation of marcaLineaRelations) {
-      const marca = marcas.find(m => m.nombre === relation.marcaNombre);
-      const linea = lineas.find(l => l.nombre === relation.lineaNombre);
-      
+      const marca = marcas.find((m) => m.nombre === relation.marcaNombre);
+      const linea = lineas.find((l) => l.nombre === relation.lineaNombre);
+
       if (marca && linea) {
         const existingRelation = await marcaLineaRepository.findOne({
-          where: { marcaId: marca.id, lineaId: linea.id }
+          where: { marcaId: marca.id, lineaId: linea.id },
         });
-        
+
         if (!existingRelation) {
           const marcaLinea = marcaLineaRepository.create({
             marcaId: marca.id,
             lineaId: linea.id,
           });
           await marcaLineaRepository.save(marcaLinea);
-          console.log(`  ✅ Relación creada: ${marca.nombre} - ${linea.nombre}`);
+          console.log(
+            `  ✅ Relación creada: ${marca.nombre} - ${linea.nombre}`,
+          );
         } else {
-          console.log(`  ⏭️  Relación ${marca.nombre} - ${linea.nombre} ya existe`);
+          console.log(
+            `  ⏭️  Relación ${marca.nombre} - ${linea.nombre} ya existe`,
+          );
         }
       }
     }
@@ -147,39 +161,39 @@ export async function seedCatalogoProductos(): Promise<void> {
     // === 4. CREAR PROVEEDORES ===
     console.log('📝 Creando proveedores...');
     const proveedoresData = [
-      { 
+      {
         nombre: 'Distribuidora Tech SA',
         direccion: 'Av. Tecnología 1234, CABA',
-        telefono: '+54 11 4567-8901'
+        telefono: '+54 11 4567-8901',
       },
-      { 
+      {
         nombre: 'Importadora Global',
         direccion: 'Av. Libertador 5678, Buenos Aires',
-        telefono: '+54 11 4567-8902'
+        telefono: '+54 11 4567-8902',
       },
-      { 
+      {
         nombre: 'Mayorista Deportivo',
         direccion: 'Calle Deporte 910, Rosario',
-        telefono: '+54 341 456-7890'
+        telefono: '+54 341 456-7890',
       },
-      { 
+      {
         nombre: 'Proveedor Express',
         direccion: 'Av. Comercio 1122, Córdoba',
-        telefono: '+54 351 456-7891'
+        telefono: '+54 351 456-7891',
       },
-      { 
+      {
         nombre: 'Electrónica del Sur',
         direccion: 'Calle Principal 3344, Mendoza',
-        telefono: '+54 261 456-7892'
+        telefono: '+54 261 456-7892',
       },
     ];
 
     const proveedores: Proveedor[] = [];
     for (const proveedorData of proveedoresData) {
-      const existingProveedor = await proveedorRepository.findOne({ 
-        where: { nombre: proveedorData.nombre } 
+      const existingProveedor = await proveedorRepository.findOne({
+        where: { nombre: proveedorData.nombre },
       });
-      
+
       if (existingProveedor) {
         proveedores.push(existingProveedor);
         console.log(`  ⏭️  Proveedor "${proveedorData.nombre}" ya existe`);
@@ -193,11 +207,13 @@ export async function seedCatalogoProductos(): Promise<void> {
 
     // === 5. CREAR PRODUCTOS ===
     console.log('📝 Creando productos...');
-    
+
     // Helper para encontrar marca y línea
-    const getMarca = (nombre: string) => marcas.find(m => m.nombre === nombre);
-    const getLinea = (nombre: string) => lineas.find(l => l.nombre === nombre);
-    
+    const getMarca = (nombre: string) =>
+      marcas.find((m) => m.nombre === nombre);
+    const getLinea = (nombre: string) =>
+      lineas.find((l) => l.nombre === nombre);
+
     const productosData = [
       // Electrónica
       {
@@ -208,7 +224,7 @@ export async function seedCatalogoProductos(): Promise<void> {
         alertaStock: 5,
         marcaNombre: 'Samsung',
         lineaNombre: 'Electrónica',
-        foto: null
+        foto: null,
       },
       {
         nombre: 'Notebook HP Pavilion',
@@ -218,7 +234,7 @@ export async function seedCatalogoProductos(): Promise<void> {
         alertaStock: 3,
         marcaNombre: 'HP',
         lineaNombre: 'Electrónica',
-        foto: null
+        foto: null,
       },
       {
         nombre: 'Auriculares Sony WH-1000XM5',
@@ -228,9 +244,9 @@ export async function seedCatalogoProductos(): Promise<void> {
         alertaStock: 8,
         marcaNombre: 'Sony',
         lineaNombre: 'Electrónica',
-        foto: null
+        foto: null,
       },
-      
+
       // Hogar y Cocina
       {
         nombre: 'Refrigerador LG InstaView',
@@ -240,7 +256,7 @@ export async function seedCatalogoProductos(): Promise<void> {
         alertaStock: 2,
         marcaNombre: 'LG',
         lineaNombre: 'Hogar y Cocina',
-        foto: null
+        foto: null,
       },
       {
         nombre: 'Microondas Samsung 28L',
@@ -250,7 +266,7 @@ export async function seedCatalogoProductos(): Promise<void> {
         alertaStock: 5,
         marcaNombre: 'Samsung',
         lineaNombre: 'Hogar y Cocina',
-        foto: null
+        foto: null,
       },
       {
         nombre: 'Licuadora Philips 700W',
@@ -260,9 +276,9 @@ export async function seedCatalogoProductos(): Promise<void> {
         alertaStock: 10,
         marcaNombre: 'Philips',
         lineaNombre: 'Hogar y Cocina',
-        foto: null
+        foto: null,
       },
-      
+
       // Deportes
       {
         nombre: 'Zapatillas Nike Air Max',
@@ -272,7 +288,7 @@ export async function seedCatalogoProductos(): Promise<void> {
         alertaStock: 15,
         marcaNombre: 'Nike',
         lineaNombre: 'Deportes',
-        foto: null
+        foto: null,
       },
       {
         nombre: 'Pelota de Fútbol Adidas',
@@ -282,7 +298,7 @@ export async function seedCatalogoProductos(): Promise<void> {
         alertaStock: 20,
         marcaNombre: 'Adidas',
         lineaNombre: 'Deportes',
-        foto: null
+        foto: null,
       },
       {
         nombre: 'Botella Deportiva Nike 1L',
@@ -292,9 +308,9 @@ export async function seedCatalogoProductos(): Promise<void> {
         alertaStock: 20,
         marcaNombre: 'Nike',
         lineaNombre: 'Deportes',
-        foto: null
+        foto: null,
       },
-      
+
       // Oficina
       {
         nombre: 'Impresora HP LaserJet Pro',
@@ -304,7 +320,7 @@ export async function seedCatalogoProductos(): Promise<void> {
         alertaStock: 4,
         marcaNombre: 'HP',
         lineaNombre: 'Oficina',
-        foto: null
+        foto: null,
       },
       {
         nombre: 'Monitor Samsung 27" 4K',
@@ -314,7 +330,7 @@ export async function seedCatalogoProductos(): Promise<void> {
         alertaStock: 5,
         marcaNombre: 'Samsung',
         lineaNombre: 'Oficina',
-        foto: null
+        foto: null,
       },
       {
         nombre: 'Escáner Canon CanoScan',
@@ -324,9 +340,9 @@ export async function seedCatalogoProductos(): Promise<void> {
         alertaStock: 3,
         marcaNombre: 'Canon',
         lineaNombre: 'Oficina',
-        foto: null
+        foto: null,
       },
-      
+
       // Textil
       {
         nombre: 'Remera Deportiva Nike Dri-FIT',
@@ -336,7 +352,7 @@ export async function seedCatalogoProductos(): Promise<void> {
         alertaStock: 30,
         marcaNombre: 'Nike',
         lineaNombre: 'Textil',
-        foto: null
+        foto: null,
       },
       {
         nombre: 'Pantalón Adidas Training',
@@ -346,7 +362,7 @@ export async function seedCatalogoProductos(): Promise<void> {
         alertaStock: 20,
         marcaNombre: 'Adidas',
         lineaNombre: 'Textil',
-        foto: null
+        foto: null,
       },
       {
         nombre: 'Medias Deportivas Nike 3 Pack',
@@ -356,7 +372,7 @@ export async function seedCatalogoProductos(): Promise<void> {
         alertaStock: 40,
         marcaNombre: 'Nike',
         lineaNombre: 'Textil',
-        foto: null
+        foto: null,
       },
     ];
 
@@ -364,16 +380,18 @@ export async function seedCatalogoProductos(): Promise<void> {
     for (const productoData of productosData) {
       const marca = getMarca(productoData.marcaNombre);
       const linea = getLinea(productoData.lineaNombre);
-      
+
       if (!marca || !linea) {
-        console.log(`  ⚠️  No se encontró marca o línea para ${productoData.nombre}`);
+        console.log(
+          `  ⚠️  No se encontró marca o línea para ${productoData.nombre}`,
+        );
         continue;
       }
 
-      const existingProducto = await productoRepository.findOne({ 
-        where: { nombre: productoData.nombre } 
+      const existingProducto = await productoRepository.findOne({
+        where: { nombre: productoData.nombre },
       });
-      
+
       if (existingProducto) {
         productos.push(existingProducto);
         console.log(`  ⏭️  Producto "${productoData.nombre}" ya existe`);
@@ -396,56 +414,138 @@ export async function seedCatalogoProductos(): Promise<void> {
 
     // === 6. CREAR RELACIONES PRODUCTO-PROVEEDOR ===
     console.log('🔗 Creando relaciones producto-proveedor...');
-    
+
     // Helper para encontrar productos y proveedores
-    const getProducto = (nombre: string) => productos.find(p => p.nombre === nombre);
-    const getProveedor = (nombre: string) => proveedores.find(p => p.nombre === nombre);
-    
+    const getProducto = (nombre: string) =>
+      productos.find((p) => p.nombre === nombre);
+    const getProveedor = (nombre: string) =>
+      proveedores.find((p) => p.nombre === nombre);
+
     const productoProveedorRelations = [
       // Distribuidora Tech SA - Electrónica
-      { productoNombre: 'Smart TV Samsung 55"', proveedorNombre: 'Distribuidora Tech SA', codigoProveedor: 'TECH-SAM-TV55-001' },
-      { productoNombre: 'Notebook HP Pavilion', proveedorNombre: 'Distribuidora Tech SA', codigoProveedor: 'TECH-HP-NB-001' },
-      { productoNombre: 'Monitor Samsung 27" 4K', proveedorNombre: 'Distribuidora Tech SA', codigoProveedor: 'TECH-SAM-MON27-001' },
-      
+      {
+        productoNombre: 'Smart TV Samsung 55"',
+        proveedorNombre: 'Distribuidora Tech SA',
+        codigoProveedor: 'TECH-SAM-TV55-001',
+      },
+      {
+        productoNombre: 'Notebook HP Pavilion',
+        proveedorNombre: 'Distribuidora Tech SA',
+        codigoProveedor: 'TECH-HP-NB-001',
+      },
+      {
+        productoNombre: 'Monitor Samsung 27" 4K',
+        proveedorNombre: 'Distribuidora Tech SA',
+        codigoProveedor: 'TECH-SAM-MON27-001',
+      },
+
       // Importadora Global - Múltiples
-      { productoNombre: 'Auriculares Sony WH-1000XM5', proveedorNombre: 'Importadora Global', codigoProveedor: 'IMP-SONY-AUR-001' },
-      { productoNombre: 'Refrigerador LG InstaView', proveedorNombre: 'Importadora Global', codigoProveedor: 'IMP-LG-REF-001' },
-      { productoNombre: 'Microondas Samsung 28L', proveedorNombre: 'Importadora Global', codigoProveedor: 'IMP-SAM-MIC-001' },
-      { productoNombre: 'Smart TV Samsung 55"', proveedorNombre: 'Importadora Global', codigoProveedor: 'IMP-SAM-TV-002' },
-      
+      {
+        productoNombre: 'Auriculares Sony WH-1000XM5',
+        proveedorNombre: 'Importadora Global',
+        codigoProveedor: 'IMP-SONY-AUR-001',
+      },
+      {
+        productoNombre: 'Refrigerador LG InstaView',
+        proveedorNombre: 'Importadora Global',
+        codigoProveedor: 'IMP-LG-REF-001',
+      },
+      {
+        productoNombre: 'Microondas Samsung 28L',
+        proveedorNombre: 'Importadora Global',
+        codigoProveedor: 'IMP-SAM-MIC-001',
+      },
+      {
+        productoNombre: 'Smart TV Samsung 55"',
+        proveedorNombre: 'Importadora Global',
+        codigoProveedor: 'IMP-SAM-TV-002',
+      },
+
       // Mayorista Deportivo - Deportes y Textil
-      { productoNombre: 'Zapatillas Nike Air Max', proveedorNombre: 'Mayorista Deportivo', codigoProveedor: 'DEP-NIKE-ZAP-001' },
-      { productoNombre: 'Pelota de Fútbol Adidas', proveedorNombre: 'Mayorista Deportivo', codigoProveedor: 'DEP-ADI-PEL-001' },
-      { productoNombre: 'Botella Deportiva Nike 1L', proveedorNombre: 'Mayorista Deportivo', codigoProveedor: 'DEP-NIKE-BOT-001' },
-      { productoNombre: 'Remera Deportiva Nike Dri-FIT', proveedorNombre: 'Mayorista Deportivo', codigoProveedor: 'DEP-NIKE-REM-001' },
-      { productoNombre: 'Pantalón Adidas Training', proveedorNombre: 'Mayorista Deportivo', codigoProveedor: 'DEP-ADI-PAN-001' },
-      { productoNombre: 'Medias Deportivas Nike 3 Pack', proveedorNombre: 'Mayorista Deportivo', codigoProveedor: 'DEP-NIKE-MED-001' },
-      
+      {
+        productoNombre: 'Zapatillas Nike Air Max',
+        proveedorNombre: 'Mayorista Deportivo',
+        codigoProveedor: 'DEP-NIKE-ZAP-001',
+      },
+      {
+        productoNombre: 'Pelota de Fútbol Adidas',
+        proveedorNombre: 'Mayorista Deportivo',
+        codigoProveedor: 'DEP-ADI-PEL-001',
+      },
+      {
+        productoNombre: 'Botella Deportiva Nike 1L',
+        proveedorNombre: 'Mayorista Deportivo',
+        codigoProveedor: 'DEP-NIKE-BOT-001',
+      },
+      {
+        productoNombre: 'Remera Deportiva Nike Dri-FIT',
+        proveedorNombre: 'Mayorista Deportivo',
+        codigoProveedor: 'DEP-NIKE-REM-001',
+      },
+      {
+        productoNombre: 'Pantalón Adidas Training',
+        proveedorNombre: 'Mayorista Deportivo',
+        codigoProveedor: 'DEP-ADI-PAN-001',
+      },
+      {
+        productoNombre: 'Medias Deportivas Nike 3 Pack',
+        proveedorNombre: 'Mayorista Deportivo',
+        codigoProveedor: 'DEP-NIKE-MED-001',
+      },
+
       // Proveedor Express - Oficina y Hogar
-      { productoNombre: 'Impresora HP LaserJet Pro', proveedorNombre: 'Proveedor Express', codigoProveedor: 'EXP-HP-IMP-001' },
-      { productoNombre: 'Escáner Canon CanoScan', proveedorNombre: 'Proveedor Express', codigoProveedor: 'EXP-CAN-ESC-001' },
-      { productoNombre: 'Licuadora Philips 700W', proveedorNombre: 'Proveedor Express', codigoProveedor: 'EXP-PHI-LIC-001' },
-      
+      {
+        productoNombre: 'Impresora HP LaserJet Pro',
+        proveedorNombre: 'Proveedor Express',
+        codigoProveedor: 'EXP-HP-IMP-001',
+      },
+      {
+        productoNombre: 'Escáner Canon CanoScan',
+        proveedorNombre: 'Proveedor Express',
+        codigoProveedor: 'EXP-CAN-ESC-001',
+      },
+      {
+        productoNombre: 'Licuadora Philips 700W',
+        proveedorNombre: 'Proveedor Express',
+        codigoProveedor: 'EXP-PHI-LIC-001',
+      },
+
       // Electrónica del Sur - Electrónica y Hogar
-      { productoNombre: 'Notebook HP Pavilion', proveedorNombre: 'Electrónica del Sur', codigoProveedor: 'SUR-HP-NB-002' },
-      { productoNombre: 'Auriculares Sony WH-1000XM5', proveedorNombre: 'Electrónica del Sur', codigoProveedor: 'SUR-SONY-AUR-002' },
-      { productoNombre: 'Microondas Samsung 28L', proveedorNombre: 'Electrónica del Sur', codigoProveedor: 'SUR-SAM-MIC-002' },
-      { productoNombre: 'Licuadora Philips 700W', proveedorNombre: 'Electrónica del Sur', codigoProveedor: 'SUR-PHI-LIC-002' },
+      {
+        productoNombre: 'Notebook HP Pavilion',
+        proveedorNombre: 'Electrónica del Sur',
+        codigoProveedor: 'SUR-HP-NB-002',
+      },
+      {
+        productoNombre: 'Auriculares Sony WH-1000XM5',
+        proveedorNombre: 'Electrónica del Sur',
+        codigoProveedor: 'SUR-SONY-AUR-002',
+      },
+      {
+        productoNombre: 'Microondas Samsung 28L',
+        proveedorNombre: 'Electrónica del Sur',
+        codigoProveedor: 'SUR-SAM-MIC-002',
+      },
+      {
+        productoNombre: 'Licuadora Philips 700W',
+        proveedorNombre: 'Electrónica del Sur',
+        codigoProveedor: 'SUR-PHI-LIC-002',
+      },
     ];
 
     for (const relation of productoProveedorRelations) {
       const producto = getProducto(relation.productoNombre);
       const proveedor = getProveedor(relation.proveedorNombre);
-      
+
       if (producto && proveedor) {
         const existingRelation = await productoProveedorRepository.findOne({
-          where: { 
-            idProducto: producto.idProducto, 
+          where: {
+            idProducto: producto.idProducto,
             idProveedor: proveedor.idProveedor,
-            codigoProveedor: relation.codigoProveedor 
-          }
+            codigoProveedor: relation.codigoProveedor,
+          },
         });
-        
+
         if (!existingRelation) {
           const productoProveedor = productoProveedorRepository.create({
             idProducto: producto.idProducto,
@@ -453,12 +553,18 @@ export async function seedCatalogoProductos(): Promise<void> {
             codigoProveedor: relation.codigoProveedor,
           });
           await productoProveedorRepository.save(productoProveedor);
-          console.log(`  ✅ Relación creada: ${producto.nombre} - ${proveedor.nombre}`);
+          console.log(
+            `  ✅ Relación creada: ${producto.nombre} - ${proveedor.nombre}`,
+          );
         } else {
-          console.log(`  ⏭️  Relación ${producto.nombre} - ${proveedor.nombre} ya existe`);
+          console.log(
+            `  ⏭️  Relación ${producto.nombre} - ${proveedor.nombre} ya existe`,
+          );
         }
       } else {
-        console.log(`  ⚠️  No se encontró producto o proveedor para: ${relation.productoNombre} - ${relation.proveedorNombre}`);
+        console.log(
+          `  ⚠️  No se encontró producto o proveedor para: ${relation.productoNombre} - ${relation.proveedorNombre}`,
+        );
       }
     }
 
@@ -470,7 +576,6 @@ export async function seedCatalogoProductos(): Promise<void> {
    - ${productos.length} productos
    - ${proveedores.length} proveedores
     `);
-    
   } catch (error) {
     console.error('❌ Error creating catalog and products data', error);
     throw error;

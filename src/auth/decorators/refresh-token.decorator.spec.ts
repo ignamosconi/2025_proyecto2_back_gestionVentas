@@ -49,7 +49,8 @@ describe('RefreshToken Decorator', () => {
   });
 
   it('should extract token from JWT Bearer authorization header', () => {
-    const jwtToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c';
+    const jwtToken =
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c';
     createMockHttpContext(`Bearer ${jwtToken}`);
 
     const result = RefreshToken(undefined, mockExecutionContext);
@@ -162,7 +163,10 @@ describe('RefreshToken Decorator', () => {
       { header: 'Bearer token', expected: 'token' },
       { header: 'Bearer  token', expected: ' token' }, // Extra space becomes part of token
       { header: 'Bearer token ', expected: 'token ' }, // Trailing space becomes part of token
-      { header: 'Bearer  token  with  spaces', expected: ' token  with  spaces' },
+      {
+        header: 'Bearer  token  with  spaces',
+        expected: ' token  with  spaces',
+      },
     ];
 
     validHeaders.forEach(({ header, expected }) => {
@@ -174,13 +178,13 @@ describe('RefreshToken Decorator', () => {
   });
 
   it('should work with real-world JWT tokens', () => {
-    const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c';
+    const token =
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c';
     createMockHttpContext(`Bearer ${token}`);
 
     const result = RefreshToken(undefined, mockExecutionContext);
     expect(result).toBe(token);
   });
-
 
   it('should be case-sensitive for Bearer prefix', () => {
     const caseSensitiveTests = [
