@@ -32,16 +32,21 @@ export class AuditoriaRepository implements IAuditoriaRepository {
     fechaDesde?: Date,
     fechaHasta?: Date,
   ): Promise<AuditLogEntity[]> {
-    const qb = this.repository.createQueryBuilder('audit');
+    const qb = this.repository.createQueryBuilder('audit').leftJoinAndSelect('audit.user', 'user');
 
-    if (userId) {qb.andWhere('audit.userId = :userId', { userId });}
-    if (tipo_evento)
-      {qb.andWhere('audit.tipo_evento = :tipo_evento', { tipo_evento });}
-    if (fechaDesde)
-      {qb.andWhere('audit.fecha_hora >= :fechaDesde', { fechaDesde });}
-    if (fechaHasta)
-      {qb.andWhere('audit.fecha_hora <= :fechaHasta', { fechaHasta });}
+    if (userId) {
+      qb.andWhere('audit.userId = :userId', { userId });
+    }
+    if (tipo_evento) {
+      qb.andWhere('audit.tipo_evento = :tipo_evento', { tipo_evento });
+    }
+    if (fechaDesde) {
+      qb.andWhere('audit.fecha_hora >= :fechaDesde', { fechaDesde });
+    }
+    if (fechaHasta) {
+      qb.andWhere('audit.fecha_hora <= :fechaHasta', { fechaHasta });
+    }
 
-    return await qb.leftJoinAndSelect('audit.user', 'user').getMany();
+    return await qb.getMany();
   }
 }
