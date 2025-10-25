@@ -50,25 +50,35 @@ export class ProductoProveedorService implements ProductoProveedorServiceInterfa
             this.proveedorService.findOneActive(data.idProveedor),
         ]);
 
-        // 2. Validar duplicados (busca si ya existe un vínculo con el mismo proveedor para este producto)
-        const existing = await this.productoProveedorRepo.findByProducto(data.idProducto);
-        if (existing.some(v => v.idProveedor === data.idProveedor)) {
-             // Utilizar idProveedor de la entidad para la verificación de duplicados
-            throw new ConflictException(`El proveedor ya está vinculado a este producto`);
+        // 2. Verificar si existe una relación (incluyendo soft-deleted)
+        const existingRelation = await this.productoProveedorRepo.findExistingRelation(
+            data.idProducto,
+            data.idProveedor
+        );
+
+        // 3. Si existe y está soft-deleted, restaurarla y actualizarla
+        if (existingRelation) {
+            if (existingRelation.deletedAt) {
+                // Restaurar la relación soft-deleted
+                await this.productoProveedorRepo.restore(existingRelation.idProductoProveedor);
+                // Actualizar el código del proveedor
+                return this.productoProveedorRepo.update(existingRelation.idProductoProveedor, {
+                    codigoProveedor: data.codigoProveedor
+                });
+            } else {
+                // Si existe y NO está eliminada, lanzar error de conflicto
+                throw new ConflictException(`El proveedor ya está vinculado a este producto`);
+            }
         }
 
-        // 3. Crear el objeto de la Entidad con el mapeo correcto
+        // 4. Crear el objeto de la Entidad con el mapeo correcto
         const entityToCreate = {
-            // CORRECCIÓN CLAVE: Mapear 'productoId' y 'proveedorId' del DTO a 
-            // 'idProducto' e 'idProveedor' de la entidad (columnas FK).
             idProducto: data.idProducto,
             idProveedor: data.idProveedor,
             codigoProveedor: data.codigoProveedor
-            // NOTA: Las propiedades de relación 'producto' y 'proveedor' no se incluyen aquí.
         };
 
-        // 4. Crear el vínculo en el repositorio
-        // Usamos 'any' en el casting ya que TypeORM espera el nombre de la FK.
+        // 5. Crear el vínculo en el repositorio
         return this.productoProveedorRepo.create(entityToCreate as any); 
     }
 
@@ -84,5 +94,9 @@ export class ProductoProveedorService implements ProductoProveedorServiceInterfa
 
     async restore(id: number): Promise<void> {
         await this.productoProveedorRepo.restore(id);
+    }
+
+    async checkLinkExists(idProducto: number, idProveedor: number): Promise<ProductoProveedor | null> {
+        return this.productoProveedorRepo.findOneByProductAndSupplier(idProducto, idProveedor);
     }
 }

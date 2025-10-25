@@ -39,7 +39,6 @@ export class ProveedorRepository implements ProveedorRepositoryInterface {
         });
     }
 
-
     async create(data: CreateProveedorDto): Promise<Proveedor> {
         const entity = this.repo.create(data);
         return this.repo.save(entity);

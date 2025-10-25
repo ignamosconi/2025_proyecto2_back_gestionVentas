@@ -10,6 +10,8 @@ import { CatalogoModule } from './catalogo/catalogo.module';
 import { ProveedorModule } from './proveedor/proveedor.module';
 import { ProductoModule } from './producto/producto.module';
 import { AuditoriaModule } from './auditoria/auditoria.module';
+import { VentaModule } from './venta/venta.module';
+import { CompraModule } from './compra/compra.module';
 
 @Module({
   imports: [
@@ -40,6 +42,8 @@ import { AuditoriaModule } from './auditoria/auditoria.module';
     ProveedorModule,
     ProductoModule,
     AuditoriaModule,
+    VentaModule,
+    CompraModule
   ],
   controllers: [AppController],
   providers: [AppService],

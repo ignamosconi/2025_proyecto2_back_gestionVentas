@@ -4,12 +4,15 @@ import {
     Injectable, 
     Inject, 
     BadRequestException, 
-    NotFoundException, 
+    NotFoundException,
+    ConflictException,
 } from '@nestjs/common';
 
 import { LineaServiceInterface } from './interfaces/linea.service.interface';
 import { LineaRepositoryInterface } from '../repositories/interfaces/linea.repository.interface';
-import { LINEA_REPOSITORY } from '../../constants'; 
+import { MarcaLineaRepositoryInterface } from '../repositories/interfaces/marca-linea.repository.interface';
+import { ProductoRepositoryInterface } from '../../producto/repositories/interfaces/producto-interface.repository';
+import { LINEA_REPOSITORY, MARCA_LINEA_REPOSITORY, PRODUCTO_REPOSITORY } from '../../constants'; 
 import { Linea } from '../entities/linea.entity';
 import { CreateLineaDto } from '../dto/create-linea.dto';
 import { UpdateLineaDto } from '../dto/update-linea.dto';
@@ -22,7 +25,13 @@ import { UpdateLineaDto } from '../dto/update-linea.dto';
 export class LineaService implements LineaServiceInterface {
     constructor(
         @Inject(LINEA_REPOSITORY)
-        private readonly lineaRepository: LineaRepositoryInterface
+        private readonly lineaRepository: LineaRepositoryInterface,
+        
+        @Inject(MARCA_LINEA_REPOSITORY)
+        private readonly marcaLineaRepository: MarcaLineaRepositoryInterface,
+        
+        @Inject(PRODUCTO_REPOSITORY)
+        private readonly productoRepository: ProductoRepositoryInterface,
     ) {}
 
 // ---------------------------------------------------------------------
@@ -97,14 +106,38 @@ export class LineaService implements LineaServiceInterface {
     
     /**
      * Realiza la eliminación suave de la línea.
+     * RESTRICCIÓN 1: IMPEDIR ELIMINACIÓN si hay marcas asociadas.
+     * RESTRICCIÓN 2: IMPEDIR ELIMINACIÓN si hay productos asociados.
+     * También elimina (soft delete) todas las relaciones marcaLinea asociadas.
      */
     async softDelete(id: number): Promise<void> {
-        // [FUTURA VALIDACIÓN] Aquí iría la validación si la línea tiene productos asociados.
-        
         // 1. Aseguramos que la línea exista y esté activa antes de intentar eliminar
         await this.findOneActive(id); 
 
-        // 2. Delegación al repositorio
+        // 2. Lógica de Negocio: Verificar dependencia de marcas
+        const hasMarcas = await this.marcaLineaRepository.hasMarcasByLineaId(id);
+
+        if (hasMarcas) {
+            // Lanza 409 Conflict si la línea tiene marcas asociadas
+            throw new ConflictException(
+                `No se puede eliminar la línea con ID ${id} porque tiene marcas asociadas. Debe desvincular las marcas primero.`
+            );
+        }
+
+        // 3. Lógica de Negocio: Verificar dependencia de productos
+        const hasProducts = await this.productoRepository.hasProductsByLineaId(id);
+
+        if (hasProducts) {
+            // Lanza 409 Conflict si la línea tiene dependencias activas
+            throw new ConflictException(
+                `No se puede eliminar la línea con ID ${id} porque tiene productos asociados. Debe desvincular los productos primero.`
+            );
+        }
+
+        // 4. Eliminar todas las relaciones marcaLinea asociadas a esta línea (por si acaso)
+        await this.marcaLineaRepository.softDeleteAllByLineaId(id);
+
+        // 5. Delegación al repositorio para eliminar la línea
         await this.lineaRepository.softDelete(id);
     }
     

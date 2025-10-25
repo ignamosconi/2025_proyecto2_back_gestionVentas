@@ -6,4 +6,6 @@ export enum EventosAuditoria {
   CREAR_USUARIO_OWNER = 'crear-duenio',
   REGISTRO_VENTA = 'registrar-venta',
   REGISTRO_COMPRA = 'registrar-compra',
+  MODIFICAR_VENTA = 'modificar-venta',
+  MODIFICAR_COMPRA = 'modificar-compra',
 }

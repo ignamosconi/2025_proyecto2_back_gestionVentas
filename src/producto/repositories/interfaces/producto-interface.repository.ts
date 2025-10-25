@@ -18,4 +18,8 @@ export interface ProductoRepositoryInterface {
     // US 11 (Alerta de Bajo Stock)
     findLowStockProducts(): Promise<Producto[]>; // US 11: Filtra por stock < alertaStock
     updateStock(idProducto: number, change: number): Promise<Producto>;
+    
+    // Validaciones de integridad referencial
+    hasProductsByMarcaId(marcaId: number): Promise<boolean>;
+    hasProductsByLineaId(lineaId: number): Promise<boolean>;
 }

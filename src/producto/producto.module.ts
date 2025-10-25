@@ -1,6 +1,6 @@
 // src/productos/producto.module.ts
 
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
 // --- Entidades ---
@@ -20,6 +20,7 @@ import { UsersService } from 'src/users/users.service';
 import { MailerService } from '@nestjs-modules/mailer';
 import { MailerModule } from 'src/mailer/mailer.module';
 import { S3Module } from 'src/s3/s3.module';
+import { ProveedorModule } from '../proveedor/proveedor.module';
 
 @Module({
     imports: [
@@ -27,11 +28,12 @@ import { S3Module } from 'src/s3/s3.module';
         TypeOrmModule.forFeature([Producto]),
         
         // 2. Módulos de Dependencia
-        CatalogoModule, // Necesario para la lógica M:M (Marca/Línea)
+        forwardRef(() => CatalogoModule), // ⬅️ Usamos forwardRef para evitar dependencia circular
         AuthModule,     // Necesario para AuthGuard y RolesGuard
         UsersModule,    // Necesario para los Roles
         MailerModule,   // Usado para envío de correos a owners cuando hay bajo stock
         S3Module,       //Usado para subir imágenes de productos
+        forwardRef(() => ProveedorModule), // Para validar proveedores asociados
     ],
     controllers: [
         ProductoController
@@ -52,6 +54,7 @@ import { S3Module } from 'src/s3/s3.module';
     // Exportamos el servicio y su token por si otros módulos necesitan inyectar el ProductoService
     exports: [
         PRODUCTO_SERVICE,
+        PRODUCTO_REPOSITORY
     ]
 })
 export class ProductoModule {}

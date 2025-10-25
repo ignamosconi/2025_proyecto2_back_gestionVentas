@@ -12,7 +12,7 @@ export class CreateLineaDto {
     @MaxLength(100, { message: 'El nombre no puede exceder los 100 caracteres.' })
     nombre: string;
 
-    // 🚀 CAMPO AÑADIDO: NECESARIO PARA LA LÓGICA DE PRODUCTOS (US 10)
+    // CAMPO AÑADIDO: NECESARIO PARA LA LÓGICA DE PRODUCTOS (US 10)
     @IsNumber({}, { message: 'El ID de la marca debe ser un número.' })
     @IsPositive({ message: 'El ID de la marca debe ser positivo.' })
     @IsOptional() // Es opcional porque solo lo usamos cuando se crea una línea desde ProductoService
