@@ -12,7 +12,6 @@ import {
   HttpStatus,
   UseGuards,
   Inject,
-  Patch,
   UseInterceptors,
   UploadedFile,
   Put,
@@ -119,7 +118,6 @@ export class ProductoController implements ProductoControllerInterface {
   // US 7: Actualización (Restringido a OWNER)
   // ----------------------------------------------------
 
-  // Usamos Patch o Put, pero Patch es común para actualizaciones parciales
   @Put(':id')
   @Roles(UserRole.OWNER) // Restringido a OWNER
   @UseInterceptors(FileInterceptor('file'))
@@ -136,12 +134,12 @@ export class ProductoController implements ProductoControllerInterface {
     @Body() body: any, //Chequeamos el datatype en el service. No anda con pipes.
     @UploadedFile() file: Express.Multer.File,
   ): Promise<Producto> {
-    console.log(`[ProductoController] PATCH /producto/${id} -> body:`, body);
+    console.log(`[ProductoController] PUT /producto/${id} -> body:`, body);
     return this.productoService.update(id, body, file);
   }
 
-  // PATCH /producto/:id/stock
-  @Patch(':id/stock')
+  // PUT /producto/:id/stock
+  @Put(':id/stock')
   @Roles(UserRole.OWNER) // Solo OWNER puede modificar stock
   @ApiOperation({
     summary: 'US 11: Actualizar stock de un producto.',
@@ -154,7 +152,7 @@ export class ProductoController implements ProductoControllerInterface {
     @Body() updateStockDto: UpdateStockDto,
   ): Promise<Producto> {
     console.log(
-      `[ProductoController] PATCH /producto/${id}/stock -> Body:`,
+      `[ProductoController] PUT /producto/${id}/stock -> Body:`,
       updateStockDto,
     );
     return this.productoService.updateStock(id, updateStockDto);
@@ -180,7 +178,7 @@ export class ProductoController implements ProductoControllerInterface {
     return this.productoService.softDelete(id);
   }
 
-  @Patch(':id/restore') // Usamos Patch/Put para la restauración, ya que es una modificación de estado
+  @Put(':id/restore') // Usamos Put para la restauración, ya que es una modificación de estado
   @HttpCode(HttpStatus.OK)
   @Roles(UserRole.OWNER) // Restringido a OWNER
   @ApiOperation({
@@ -192,7 +190,7 @@ export class ProductoController implements ProductoControllerInterface {
     type: Number,
   })
   restore(@Param('id', ParseIntPipe) id: number): Promise<void> {
-    console.log(`[ProductoController] PATCH /producto/${id}/restore`);
+    console.log(`[ProductoController] PUT /producto/${id}/restore`);
     return this.productoService.restore(id);
   }
 }
