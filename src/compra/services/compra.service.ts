@@ -152,7 +152,9 @@ export class CompraService implements CompraServiceInterface {
         // Recargar producto actualizado
         const productoActualizado = await this.productoRepository.findOneActive(idProducto);
 
-
+        if (!productoActualizado) {
+          throw new NotFoundException('CREATE COMPRA - Producto ID '+ idProducto +' no encontrado.');
+        }
 
         // Si el producto sigue con stock bajo, enviar alerta
         if (productoActualizado.stock <= productoActualizado.alertaStock) {
