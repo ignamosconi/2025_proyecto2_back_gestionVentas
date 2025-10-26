@@ -357,6 +357,27 @@ export class ProductoService implements ProductoServiceInterface {
     return this.productoRepository.findLowStockProducts();
   }
 
+  //Enviamos alerta de stock solo a los owners
+  async enviarAlertaStock(producto: Producto): Promise<void> {
+    // Obtener usuarios EMPLOYER
+    const employers = await this.usersService.findAllOwners();
+
+    // Enviar un mail a cada uno con la alerta
+    for (const user of employers) {
+      await this.mailerService.sendMail(
+        user.email,
+        `⚠️ Alerta de Stock Bajo: ${producto.nombre}`,
+        `
+                  <h2>⚠️ Producto con Stock Crítico</h2>
+                  <p>El producto <strong>${producto.nombre}</strong> tiene un stock actual de <strong>${producto.stock}</strong>.</p>
+                  <p>El umbral de alerta configurado es <strong>${producto.alertaStock}</strong>.</p>
+                  <hr/>
+                  <p>Revisá el inventario lo antes posible.</p>
+                  `,
+      );
+    }
+  }
+
   async updateStock(
     idProducto: number,
     updateStockDto: UpdateStockDto,
@@ -388,23 +409,7 @@ export class ProductoService implements ProductoServiceInterface {
 
     // 2 - Si hay alerta, enviar mail
     if (stockBajo) {
-      // Obtener usuarios EMPLOYER
-      const employers = await this.usersService.findAllOwners(); // <- Inyectar este servicio
-
-      // Enviar un mail a cada uno
-      for (const user of employers) {
-        await this.mailerService.sendMail(
-          user.email,
-          `⚠️ Alerta de Stock Bajo: ${producto.nombre}`,
-          `
-                    <h2>⚠️ Producto con Stock Crítico</h2>
-                    <p>El producto <strong>${producto.nombre}</strong> tiene un stock actual de <strong>${nuevoStock}</strong>.</p>
-                    <p>El umbral de alerta configurado es <strong>${producto.alertaStock}</strong>.</p>
-                    <hr/>
-                    <p>Revisá el inventario lo antes posible.</p>
-                    `,
-        );
-      }
+      this.enviarAlertaStock(productoActualizado)
     }
 
     return productoActualizado;

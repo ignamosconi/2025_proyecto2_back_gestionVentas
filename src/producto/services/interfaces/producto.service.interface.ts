@@ -9,6 +9,7 @@ export interface ProductoServiceInterface {
   findAllSoftDeleted(): Promise<Producto[]>;
 
   // La firma recibe 'any' para el cuerpo (el objeto Multer del form) y la imagen.
+  enviarAlertaStock(producto: Producto): Promise<void>;
   create(data: any, file?: Express.Multer.File): Promise<Producto>;
   update(
     idProducto: number,

@@ -13,11 +13,12 @@ import type { ProductoRepositoryInterface } from '../../producto/repositories/in
 import type { IUserRepository } from '../../users/interfaces/users.repository.interface';
 import { plainToInstance } from 'class-transformer';
 import { VentaResponseDto } from '../dto/venta-response.dto';
-import { VENTA_REPOSITORY, PRODUCTO_REPOSITORY, USUARIO_REPOSITORY } from '../../constants';
+import { VENTA_REPOSITORY, PRODUCTO_REPOSITORY, USUARIO_REPOSITORY, PRODUCTO_SERVICE } from '../../constants';
 import { UpdateVentaDto } from '../dto/update-venta.dto';
 import type { VentaServiceInterface } from './interfaces/venta.service.interface';
 import type { IAuditoriaService } from '../../auditoria/interfaces/auditoria.service.interface';
 import { EventosAuditoria } from '../../auditoria/helpers/enum.eventos';
+import type { ProductoServiceInterface } from 'src/producto/services/interfaces/producto.service.interface';
 
 @Injectable()
 export class VentaService implements VentaServiceInterface {
@@ -33,6 +34,9 @@ export class VentaService implements VentaServiceInterface {
 
     @Inject('IAuditoriaService')
     private readonly auditoriaService: IAuditoriaService,
+
+    @Inject(PRODUCTO_SERVICE)
+    private readonly productoService: ProductoServiceInterface,
 
     private readonly dataSource: DataSource,
   ) {}
@@ -107,12 +111,24 @@ export class VentaService implements VentaServiceInterface {
       throw new BadRequestException(
         'Error al registrar la venta: ' + error.message,
       );
-    } // 5️⃣ Actualizar stock
-
+    } 
+    
+    // 5️⃣ Actualizar stock y verificar alertas
     for (const { idProducto, cantidad } of productosAActualizar) {
       await this.productoRepository.updateStock(idProducto, -cantidad);
-    } // 6️⃣ Recargar venta con relaciones completas
 
+      const productoActualizado = await this.productoRepository.findOneActive(idProducto);
+
+      if (!productoActualizado) {
+        throw new NotFoundException('CREATE VENTA - Producto ID '+ idProducto +' no encontrado.');
+      }
+
+      if (productoActualizado.stock <= productoActualizado.alertaStock) {
+        await this.productoService.enviarAlertaStock(productoActualizado);
+      }
+    }
+    
+    // 6️⃣ Recargar venta con relaciones completas
     const ventaRecargada = await this.ventaRepository.findOne(
       ventaCreada.idVenta,
     );
@@ -300,10 +316,22 @@ export class VentaService implements VentaServiceInterface {
         await queryRunner.manager.remove(detallesAEliminar);
       }
 
-      // 9️⃣ Actualizar stock
-      for (const { idProducto, cambioStock } of productosAActualizar) {
-        await this.productoRepository.updateStock(idProducto, cambioStock);
+    // 9️⃣ Actualizar stock y verificar alertas
+    for (const { idProducto, cambioStock } of productosAActualizar) {
+      await this.productoRepository.updateStock(idProducto, cambioStock);
+
+      // 🔁 Recargar el producto actualizado
+      const productoActualizado = await this.productoRepository.findOneActive(idProducto);
+
+      if (!productoActualizado) {
+        throw new NotFoundException('UPDATE VENTA - Producto ID '+ idProducto +' no encontrado.');
       }
+
+      // ⚠️ Si el stock actual es menor o igual al umbral configurado, enviamos alerta
+      if (productoActualizado.stock <= productoActualizado.alertaStock) {
+        await this.productoService.enviarAlertaStock(productoActualizado);
+      }
+    }
 
       // 🔟 Commit
       await queryRunner.commitTransaction();

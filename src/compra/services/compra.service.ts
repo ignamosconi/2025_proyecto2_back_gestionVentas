@@ -25,12 +25,14 @@ import {
     PRODUCTO_REPOSITORY,
     USUARIO_REPOSITORY,
     PROVEEDOR_REPOSITORY,
-    PRODUCTO_PROVEEDOR_SERVICE // NUEVA CONSTANTE
+    PRODUCTO_PROVEEDOR_SERVICE, // NUEVA CONSTANTE
+    PRODUCTO_SERVICE
 } from '../../constants';
 import type { ProveedorRepositoryInterface } from '../../proveedor/repositories/interfaces/proveedor.repository.interface';
 import type { ProductoProveedorServiceInterface } from '../../proveedor/services/interfaces/producto-proveedor.service.interface';
 import type { IAuditoriaService } from '../../auditoria/interfaces/auditoria.service.interface';
 import { EventosAuditoria } from '../../auditoria/helpers/enum.eventos';
+import type { ProductoServiceInterface } from 'src/producto/services/interfaces/producto.service.interface';
 
 @Injectable()
 export class CompraService implements CompraServiceInterface {
@@ -40,6 +42,9 @@ export class CompraService implements CompraServiceInterface {
 
     @Inject(PRODUCTO_REPOSITORY)
     private readonly productoRepository: ProductoRepositoryInterface,
+
+    @Inject(PRODUCTO_SERVICE)
+    private readonly productoService: ProductoServiceInterface,
 
     @Inject(USUARIO_REPOSITORY)
     private readonly usuarioRepository: IUserRepository,
@@ -140,9 +145,19 @@ export class CompraService implements CompraServiceInterface {
       // Guardar la compra junto con los detalles
       compraCreada = await queryRunner.manager.save(compra);
 
-      // 5. Actualizar stock (SUMAR STOCK)
+      // 5. Actualizar stock (SUMAR STOCK) y verificar alertas
       for (const { idProducto, cantidad } of productosAActualizar) {
         await this.productoRepository.updateStock(idProducto, cantidad);
+
+        // Recargar producto actualizado
+        const productoActualizado = await this.productoRepository.findOneActive(idProducto);
+
+
+
+        // Si el producto sigue con stock bajo, enviar alerta
+        if (productoActualizado.stock <= productoActualizado.alertaStock) {
+          await this.productoService.enviarAlertaStock(productoActualizado);
+        }
       }
 
       // 6. Commit y Recargar
@@ -389,9 +404,21 @@ export class CompraService implements CompraServiceInterface {
         await queryRunner.manager.remove(detallesAEliminar);
       }
 
-      // 9. Actualizar stock
+      // 9 - Actualizar stock y verificar alertas
       for (const { idProducto, cambioStock } of productosAActualizar) {
         await this.productoRepository.updateStock(idProducto, cambioStock);
+
+        // Recargar el producto actualizado
+        const productoActualizado = await this.productoRepository.findOneActive(idProducto);
+
+        if (!productoActualizado) {
+          throw new NotFoundException('UPDATE COMPRA - Producto ID '+ idProducto +' no encontrado.');
+        }
+
+        // Si el stock es menor o igual a alertaStock, enviar alerta
+        if (productoActualizado.stock <= productoActualizado.alertaStock) {
+          await this.productoService.enviarAlertaStock(productoActualizado);
+        }
       }
 
       // 10. Commit
