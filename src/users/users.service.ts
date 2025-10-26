@@ -94,12 +94,24 @@ export class UsersService implements IUsersService {
 
     const savedUser = await this.userRepository.save(user);
 
-    // Enviar correo de bienvenida
-    await this.mailerService.sendMail(
-      savedUser.email,
-      '¡Bienvenido a la plataforma!',
-      `<h1>Hola ${savedUser.firstName} 👋</h1><p>Gracias por registrarte como empleado.</p>`,
-    );
+    // Enviar correo de bienvenida de forma asíncrona, sin bloquear
+    Promise.allSettled([
+      this.mailerService.sendMail(
+        savedUser.email,
+        '¡Bienvenido a la plataforma!',
+        `<h1>Hola ${savedUser.firstName} 👋</h1>
+        <p>Gracias por registrarte como empleado.</p>`,
+      ),
+    ]).then((results) => {
+      const fallidos = results.filter((r) => r.status === 'rejected');
+      if (fallidos.length) {
+        console.warn(
+          `Falló el envío de correo de bienvenida para ${savedUser.email}.`,
+        );
+      }
+    }).catch((error) => {
+      console.error(`Error enviando correo de bienvenida: ${error.message}`);
+    });
 
     //Auditar el proceso
     await this.auditoriaService.registrarEvento(
@@ -134,12 +146,24 @@ export class UsersService implements IUsersService {
 
     const savedUser = await this.userRepository.save(user);
 
-    //Enviar correo de bienvenida
-    await this.mailerService.sendMail(
-      savedUser.email,
-      '¡Bienvenido!',
-      `<h1>Hola ${savedUser.firstName}</h1><p>Tu cuenta fue creada por un OWNER.</p>`,
-    );
+    // Enviar correo de bienvenida de forma asíncrona, sin bloquear
+    Promise.allSettled([
+      this.mailerService.sendMail(
+        savedUser.email,
+        '¡Bienvenido!',
+        `<h1>Hola ${savedUser.firstName}</h1>
+        <p>Tu cuenta fue creada por un OWNER.</p>`,
+      ),
+    ]).then((results) => {
+      const fallidos = results.filter((r) => r.status === 'rejected');
+      if (fallidos.length) {
+        console.warn(
+          `Falló el envío de correo de bienvenida para ${savedUser.email}.`,
+        );
+      }
+    }).catch((error) => {
+      console.error(`Error enviando correo de bienvenida: ${error.message}`);
+    });
 
     //Auditar el proceso
     
