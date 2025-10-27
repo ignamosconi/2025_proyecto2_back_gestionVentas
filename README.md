@@ -89,8 +89,8 @@ El servidor estará disponible en:
 👉 **http://localhost:3000/api**
 
 Y podrá iniciar sesión con la siguiente cuenta por defecto:
-• Email: owner@admin.com
-• Password: Utnfrvm123!
+Email: owner@admin.com
+Password: Utnfrvm123!
 ---
 
 ## 🧑‍💼 Roles del Sistema
